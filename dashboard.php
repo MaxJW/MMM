@@ -12,7 +12,7 @@
   <script src="https://kit.fontawesome.com/d368698d9e.js"></script>
 
   <link rel="stylesheet" type="text/css" href="css/style.css" />
-  <link rel="stylesheet" type="text/css" href="css/weather-icons.css" />
+  <link rel="stylesheet" type="text/css" href="css/weather-icons.min.css" />
 
   <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:100,400&display=swap" rel="stylesheet">
 
