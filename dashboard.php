@@ -5,9 +5,9 @@
   <title>MMM</title>
   <meta http-equiv="refresh" content="900" />
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-slider/1.0.0/simpleslider.min.js"></script>
+  <script src="js/jquery-3.4.1.min.js"></script>
+  <script src="js/moment.min.js"></script>
+  <script src="js/simpleslider.min.js"></script>
 
   <script src="https://kit.fontawesome.com/d368698d9e.js"></script>
 

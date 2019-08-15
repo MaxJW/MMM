@@ -56,7 +56,7 @@ strong {
   font-size: 30px;
   color: #aaa;
   line-height: 0.1;
-  letter-spacing: -1px;
+  /*letter-spacing: -1px;*/
 }
 
 .weather-temperature {
@@ -133,7 +133,7 @@ strong {
 #date {
   font-size: 30px;
   color: #aaa;
-  letter-spacing: -1.8px;
+  /*letter-spacing: -1.8px;*/
 }
 
 #newsfeed {
