@@ -9,13 +9,13 @@ Licensed under the MIT license
 
 */
 
-;(function($) {
+; (function ($) {
 
-	$.fn.openWeather  = function(options) {
+	$.fn.openWeather = function (options) {
 
 		// return if no element was bound
 		// so chained events can continue
-		if(!this.length) {
+		if (!this.length) {
 			return this;
 		}
 
@@ -37,8 +37,8 @@ Licensed under the MIT license
 			lng: null,
 			key: null,
 			lang: 'en',
-			success: function() {},
-			error: function(message) {}
+			success: function () { },
+			error: function (message) { }
 		}
 
 		// define plugin
@@ -60,22 +60,22 @@ Licensed under the MIT license
 		var s = plugin.settings;
 
 		// define basic api endpoint
-		apiURL = '//api.openweathermap.org/data/2.5/weather?lang='+s.lang;
+		apiURL = '//api.openweathermap.org/data/2.5/weather?lang=' + s.lang;
 
 		// if city isn't null
-		if(s.city != null) {
+		if (s.city != null) {
 
-		// define API url using city (and remove any spaces in city)
-		apiURL += '&q='+s.city.replace(' ', '');
+			// define API url using city (and remove any spaces in city)
+			apiURL += '&q=' + s.city.replace(' ', '');
 
-		} else if(s.lat != null && s.lng != null) {
+		} else if (s.lat != null && s.lng != null) {
 
 			// define API url using lat and lng
-			apiURL += '&lat='+s.lat+'&lon='+s.lng;
+			apiURL += '&lat=' + s.lat + '&lon=' + s.lng;
 		}
 
 		// if api key was supplied
-		if(s.key != null) {
+		if (s.key != null) {
 
 			// append api key paramater
 			apiURL += '&appid=' + s.key;
@@ -83,7 +83,7 @@ Licensed under the MIT license
 		}
 
 		// format time function
-		var formatTime = function(unixTimestamp) {
+		var formatTime = function (unixTimestamp) {
 
 			// define milliseconds using unix time stamp
 			var milliseconds = unixTimestamp * 1000;
@@ -95,7 +95,7 @@ Licensed under the MIT license
 			var hours = date.getHours();
 
 			// if hours are greater than 12
-			if(hours > 12) {
+			if (hours > 12) {
 
 				// calculate remaining hours in the day
 				hoursRemaining = 24 - hours;
@@ -111,7 +111,7 @@ Licensed under the MIT license
 			minutes = minutes.toString();
 
 			// if minutes has less than 2 characters
-			if(minutes.length < 2) {
+			if (minutes.length < 2) {
 
 				// add a 0 to minutes
 				minutes = 0 + minutes;
@@ -127,10 +127,10 @@ Licensed under the MIT license
 			type: 'GET',
 			url: apiURL,
 			dataType: 'jsonp',
-			success: function(data) {
+			success: function (data) {
 
 				// if units are 'f'
-				if(s.units == 'f') {
+				if (s.units == 'f') {
 
 					// define temperature as fahrenheit
 					var temperature = Math.round(((data.main.temp - 273.15) * 1.8) + 32) + '°F';
@@ -157,14 +157,14 @@ Licensed under the MIT license
 				el.html(temperature);
 
 				// if minTemperatureTarget isn't null
-				if(s.minTemperatureTarget != null) {
+				if (s.minTemperatureTarget != null) {
 
 					// set minimum temperature
 					$(s.minTemperatureTarget).text(minTemperature);
 				}
 
 				// if maxTemperatureTarget isn't null
-				if(s.maxTemperatureTarget != null) {
+				if (s.maxTemperatureTarget != null) {
 
 					// set maximum temperature
 					$(s.maxTemperatureTarget).text(maxTemperature);
@@ -174,10 +174,10 @@ Licensed under the MIT license
 				$(s.descriptionTarget).text(data.weather[0].description);
 
 				// if iconTarget and default weather icon aren't null
-				if(s.iconTarget != null && data.weather[0].icon != null) {
+				if (s.iconTarget != null && data.weather[0].icon != null) {
 
 					// if customIcons isn't null
-					if(s.customIcons != null) {
+					if (s.customIcons != null) {
 
 						// define the default icon name
 						var defaultIconFileName = data.weather[0].icon;
@@ -187,7 +187,7 @@ Licensed under the MIT license
 						var timeOfDay;
 
 						// if default icon name contains the letter 'd'
-						if(defaultIconFileName.indexOf('d') != -1) {
+						if (defaultIconFileName.indexOf('d') != -1) {
 
 							// define time of day as day
 							timeOfDay = 'day';
@@ -199,48 +199,48 @@ Licensed under the MIT license
 						}
 
 						// if icon is clear sky
-						if(defaultIconFileName == '01d' || defaultIconFileName == '01n') {
+						if (defaultIconFileName == '01d' || defaultIconFileName == '01n') {
 
 							iconName = 'clear';
 						}
 
 						// if icon is clouds
-						if(defaultIconFileName == '02d' || defaultIconFileName == '02n' || defaultIconFileName == '03d' || defaultIconFileName == '03n' || defaultIconFileName == '04d' || defaultIconFileName == '04n') {
+						if (defaultIconFileName == '02d' || defaultIconFileName == '02n' || defaultIconFileName == '03d' || defaultIconFileName == '03n' || defaultIconFileName == '04d' || defaultIconFileName == '04n') {
 
 							iconName = 'clouds';
 						}
 
 						// if icon is rain
-						if(defaultIconFileName == '09d' || defaultIconFileName == '09n' || defaultIconFileName == '10d' || defaultIconFileName == '10n') {
+						if (defaultIconFileName == '09d' || defaultIconFileName == '09n' || defaultIconFileName == '10d' || defaultIconFileName == '10n') {
 
 							iconName = 'rain';
 						}
 
 						// if icon is thunderstorm
-						if(defaultIconFileName == '11d' || defaultIconFileName == '11n') {
+						if (defaultIconFileName == '11d' || defaultIconFileName == '11n') {
 
 							iconName = 'storm';
 						}
 
 						// if icon is snow
-						if(defaultIconFileName == '13d' || defaultIconFileName == '13n') {
+						if (defaultIconFileName == '13d' || defaultIconFileName == '13n') {
 
 							iconName = 'snow';
 						}
 
 						// if icon is mist
-						if(defaultIconFileName == '50d' || defaultIconFileName == '50n') {
+						if (defaultIconFileName == '50d' || defaultIconFileName == '50n') {
 
 							iconName = 'mist';
 						}
 
 						// define custom icon URL
-						var iconURL = s.customIcons+timeOfDay+'/'+iconName+'.png';
+						var iconURL = s.customIcons + timeOfDay + '/' + iconName + '.png';
 
 					} else {
 
 						// define icon URL using default icon
-						var iconURL = 'http://openweathermap.org/img/w/'+data.weather[0].icon+'.png';
+						var iconURL = 'http://openweathermap.org/img/w/' + data.weather[0].icon + '.png';
 					}
 
 					// set iconTarget src attribute as iconURL
@@ -248,28 +248,28 @@ Licensed under the MIT license
 				}
 
 				// if placeTarget isn't null
-				if(s.placeTarget != null) {
+				if (s.placeTarget != null) {
 
 					// set humidity
 					$(s.placeTarget).text(data.name + ', ' + data.sys.country);
 				}
 
 				// if windSpeedTarget isn't null
-				if(s.windSpeedTarget != null) {
+				if (s.windSpeedTarget != null) {
 
 					// set wind speed
 					$(s.windSpeedTarget).text(Math.round(data.wind.speed) + '');
 				}
 
 				// if humidityTarget isn't null
-				if(s.humidityTarget != null) {
+				if (s.humidityTarget != null) {
 
 					// set humidity
 					$(s.humidityTarget).text(data.main.humidity + '%');
 				}
 
 				// if sunriseTarget isn't null
-				if(s.sunriseTarget != null) {
+				if (s.sunriseTarget != null) {
 
 					var sunrise = formatTime(data.sys.sunrise);
 
@@ -278,7 +278,7 @@ Licensed under the MIT license
 				}
 
 				// if sunriseTarget isn't null
-				if(s.sunsetTarget != null) {
+				if (s.sunsetTarget != null) {
 
 					var sunset = formatTime(data.sys.sunset);
 
@@ -290,7 +290,7 @@ Licensed under the MIT license
 				s.success.call(this);
 			},
 
-			error: function(jqXHR, textStatus, errorThrown) {
+			error: function (jqXHR, textStatus, errorThrown) {
 
 				// run error callback
 				s.error.call(this, textStatus);
