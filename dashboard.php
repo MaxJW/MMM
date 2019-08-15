@@ -17,7 +17,7 @@
 
   <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:100,400&display=swap" rel="stylesheet">
 
-  <script type="text/javascript" src="js/jweather.js"></script>
+  <script type="text/javascript" src="js/jweather.min.js"></script>
   <script src="js/rss.min.js" type="text/javascript"></script>
   <script type="text/javascript">
     jQuery(function ($) {
