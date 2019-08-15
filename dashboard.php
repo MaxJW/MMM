@@ -2,29 +2,24 @@
 <html>
 
 <head>
-  <title>Magic Mirror Dashboard - Magicmirrorcentral.com</title>
+  <title>MMM</title>
   <meta http-equiv="refresh" content="900">
   <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"
-    type="39f77f089299ede1154addba-text/javascript"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.1.0/moment.min.js"
-    type="39f77f089299ede1154addba-text/javascript"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.7/js/swiper.js"
-    type="39f77f089299ede1154addba-text/javascript"></script>
-  <script src="https://use.fontawesome.com/1545431219.js" type="39f77f089299ede1154addba-text/javascript"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-slider/1.0.0/simpleslider.min.js"
-    type="39f77f089299ede1154addba-text/javascript"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-slider/1.0.0/simpleslider.min.js"></script>
+
+  <script src="https://kit.fontawesome.com/d368698d9e.js"></script>
+
   <link rel="stylesheet" type="text/css" href="css/style.css" />
   <link rel="stylesheet" type="text/css" href="css/weather-icons.css" />
   <link rel="stylesheet" type="text/css" href="css/jweather.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.7/css/swiper.css">
-  <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto:100,400" rel="stylesheet">
-  <script type="39f77f089299ede1154addba-text/javascript" src="js/jweather.js"></script>
-  <style type="text/css">
 
-  </style>
-  <script src="js/rss.min.js" type="39f77f089299ede1154addba-text/javascript"></script>
-  <script type="39f77f089299ede1154addba-text/javascript">
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:100,400&display=swap" rel="stylesheet">
+
+  <script type="text/javascript" src="js/jweather.js"></script>
+  <script src="js/rss.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
     jQuery(function ($) {
       $("#rss-feeds").rss("https://news.google.com/news/rss", {
         layoutTemplate: "<div id='newsfeed'>{entries}</div>",
@@ -33,13 +28,13 @@
         limit: 10,
         dateFormat: 'DD/MM - HH:mm  '
       })
-    })
+    });
   </script>
 </head>
 
 <body>
-  <script type="39f77f089299ede1154addba-text/javascript">
-    $(window).load(function () {
+  <script type="text/javascript">
+    $(document).ready(function () {
       $('#wrapper').fadeIn();
     });
   </script>
@@ -57,7 +52,7 @@
       </p>
     </div>
     <div id="forecast"></div>
-    <script type="39f77f089299ede1154addba-text/javascript">
+    <script type="text/javascript">
       $(document).ready(function () {
         var forecasttext = $("#forecast").jweather({
           location: 'Dundee%2C%20GB',
@@ -87,7 +82,7 @@
     <br />
     <div id="rss-feeds"></div>
   </div>
-  <script type="39f77f089299ede1154addba-text/javascript">
+  <script type="text/javascript">
     setTimeout(function () {
       simpleslider.getSlider({
         container: document.getElementById('newsfeed'),
@@ -111,7 +106,7 @@
       end: 0
     });
   </script>
-  <script type="39f77f089299ede1154addba-text/javascript">
+  <script type="text/javascript">
     function displayTime() {
       var hours = moment().format('HH:mm');
       var seconds = moment().format('ss');
@@ -127,13 +122,8 @@
       displayTime();
     });
   </script>
-  <script type="39f77f089299ede1154addba-text/javascript">
-    if (typeof jQuery == 'undefined') {
-      document.write(unescape("%3Cscript src='js/lib/jquery.1.9.1.min.js' type='text/javascript'%3E%3C/script%3E"));
-    }
-  </script>
-  <script src="modules/weather/openWeather.js" type="39f77f089299ede1154addba-text/javascript"></script>
-  <script type="39f77f089299ede1154addba-text/javascript">
+  <script src="modules/weather/openWeather.js" type="text/javascript"></script>
+  <script type="text/javascript">
     $(function () {
 
       $('.weather-temperature').openWeather({
@@ -160,12 +150,7 @@
 
     });
   </script>
-  <div id="editbutton">
-    <a href="index.php?mode=edit&id=ObVEk&email=maxjw98@gmail.com" <i class="fa fa-wrench" aria-hidden="true"></a></i>
   </div>
-  </div>
-  <script src="https://ajax.cloudflare.com/cdn-cgi/scripts/95c75768/cloudflare-static/rocket-loader.min.js"
-    data-cf-settings="39f77f089299ede1154addba-|49" defer=""></script>
 </body>
 
 </html>
