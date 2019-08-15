@@ -13,11 +13,10 @@
 
   <link rel="stylesheet" type="text/css" href="css/style.css" />
   <link rel="stylesheet" type="text/css" href="css/weather-icons.css" />
-  <link rel="stylesheet" type="text/css" href="css/jweather.css" />
 
   <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:100,400&display=swap" rel="stylesheet">
 
-  <script type="text/javascript" src="js/jweather.min.js"></script>
+  
   <script src="js/rss.min.js" type="text/javascript"></script>
   <script type="text/javascript">
     jQuery(function ($) {
@@ -41,7 +40,7 @@
   <div id="wrapper">
     <div id="weatherbox">
       <p><span class="weather-place"></span></p>
-      <p><img src="" class="weather-icon" alt="Weather Icon" /><span class="weather-temperature"></span>
+      <p><i class="" id="weather-icon" style="font-size: 60px;"></i><span class="weather-temperature"></span>
         <br />
         <span class="weather-description" class="capitalize"></span>
         <div class="weather-sub">
@@ -52,16 +51,6 @@
       </p>
     </div>
     <div id="forecast"></div>
-    <script type="text/javascript">
-      $(document).ready(function () {
-        var forecasttext = $("#forecast").jweather({
-          location: 'Dundee%2C%20GB',
-          forecast: 5,
-          view: "forecast",
-          units: "metric", //force imperial units
-        });
-      });
-    </script>
   </div>
   <div id="clockbox">
     <div id="date">loading...</div>
@@ -138,8 +127,7 @@
         sunriseTarget: '.weather-sunrise',
         sunsetTarget: '.weather-sunset',
         placeTarget: '.weather-place',
-        iconTarget: '.weather-icon',
-        customIcons: 'modules/weather/img/weather/',
+        iconTarget: '#weather-icon',
         success: function () {
           $('.weather-wrapper').show();
         },
