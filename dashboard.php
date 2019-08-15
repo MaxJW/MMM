@@ -11,15 +11,15 @@
 
   <script src="https://kit.fontawesome.com/d368698d9e.js"></script>
 
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link rel="stylesheet" type="text/css" href="css/style.min.css" />
   <link rel="stylesheet" type="text/css" href="css/weather-icons.min.css" />
 
   <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400&display=swap" rel="stylesheet" />
 
   <script src="config.js" type="text/javascript"></script>
-  <script src="modules/weather/openWeather.js" type="text/javascript"></script>
+  <script src="modules/weather/openWeather.min.js" type="text/javascript"></script>
   <script src="modules/rss/rss.min.js" type="text/javascript"></script>
-  <script src="modules/calendar/jquery-google-calendar-events.js" type="text/javascript"></script>
+  <script src="modules/calendar/jquery-google-calendar-events.min.js" type="text/javascript"></script>
 </head>
 
 <body>
