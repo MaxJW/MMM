@@ -107,7 +107,7 @@
         show: 1,
         end: 0
       });
-    }, 1000);
+    }, 20000);
   </script>
 
   <!-- Compliments Box Module -->
