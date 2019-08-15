@@ -3,8 +3,8 @@
 
 <head>
   <title>MMM</title>
-  <meta http-equiv="refresh" content="900">
-  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="refresh" content="900" />
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-slider/1.0.0/simpleslider.min.js"></script>
@@ -14,7 +14,7 @@
   <link rel="stylesheet" type="text/css" href="css/style.css" />
   <link rel="stylesheet" type="text/css" href="css/weather-icons.min.css" />
 
-  <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:100,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400&display=swap" rel="stylesheet" />
 
   <script src="config.js" type="text/javascript"></script>
   <script src="modules/weather/openWeather.js" type="text/javascript"></script>
@@ -150,6 +150,7 @@
     });
   </script>
 
+  <!-- Calendar Module -->
   <script type="text/javascript">
   var gcal_key = config.GCAL_API_KEY;
   var gcal_id = config.GCAL_ID;
