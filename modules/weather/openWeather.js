@@ -138,7 +138,9 @@ Licensed under the MIT license
 				// if windSpeedTarget isn't null
 				if (s.windSpeedTarget != null) {
 					// set wind speed
-					$(s.windSpeedTarget).text(Math.round(data.wind.speed) + '');
+					var windSpeedNum = Math.round(data.wind.speed) + '';
+					var windSpeedIcon = 'wi wi-wind-beaufort-' + windSpeedNum;
+					$(s.windSpeedTarget).attr('class', windSpeedIcon)
 				}
 				// if humidityTarget isn't null
 				if (s.humidityTarget != null) {

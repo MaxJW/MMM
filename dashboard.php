@@ -16,7 +16,6 @@
 
   <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:100,400&display=swap" rel="stylesheet">
 
-  
   <script src="js/rss.min.js" type="text/javascript"></script>
   <script type="text/javascript">
     jQuery(function ($) {
@@ -40,14 +39,13 @@
   <div id="wrapper">
     <div id="weatherbox">
       <p><span class="weather-place"></span></p>
-      <p><i class="" id="weather-icon" style="font-size: 60px;"></i><span class="weather-temperature"></span>
+      <p>
+        <i class="" id="weather-icon" style="font-size: 60px;"></i><span class="weather-temperature"></span>
         <br />
         <span class="weather-description" class="capitalize"></span>
         <div class="weather-sub">
-          <i class="wi wi-strong-wind"></i> <span class="weather-wind-speed"></span> | <i class="wi wi-humidity"></i>
-          <span class="weather-humidity"></span> | <span class="min-max-temp"><i class="fa fa-long-arrow-down"
-              aria-hidden="true"> </i><span class="weather-min-temperature"></span> <i class="fa fa-long-arrow-up"
-              aria-hidden="true"></i> <span class="weather-max-temperature"></span></span>
+          <i class="" id="weather-wind-speed"></i> | <i class="wi wi-humidity"></i> <span class="weather-humidity"></span> | <span class="min-max-temp"><i class="fas fa-long-arrow-alt-down"></i><span class="weather-min-temperature"></span> <i class="fas fa-long-arrow-alt-up"></i><span class="weather-max-temperature"></span></span>
+        </div>
       </p>
     </div>
     <div id="forecast"></div>
@@ -114,13 +112,12 @@
   <script src="modules/weather/openWeather.js" type="text/javascript"></script>
   <script type="text/javascript">
     $(function () {
-
       $('.weather-temperature').openWeather({
         key: 'd2e4d541802b524195b9b8f1544ef756',
         city: 'Dundee%2C%20GB',
         units: 'c',
         descriptionTarget: '.weather-description',
-        windSpeedTarget: '.weather-wind-speed',
+        windSpeedTarget: '#weather-wind-speed',
         minTemperatureTarget: '.weather-min-temperature',
         maxTemperatureTarget: '.weather-max-temperature',
         humidityTarget: '.weather-humidity',
@@ -135,7 +132,6 @@
           console.log("These aren't the droids you're looking for.");
         }
       });
-
     });
   </script>
   </div>
