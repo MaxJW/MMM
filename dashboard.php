@@ -16,26 +16,11 @@
 
   <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:100,400&display=swap" rel="stylesheet">
 
-  <script src="js/rss.min.js" type="text/javascript"></script>
-  <script type="text/javascript">
-    jQuery(function ($) {
-      $("#rss-feeds").rss("https://news.google.com/news/rss", {
-        layoutTemplate: "<div id='newsfeed'>{entries}</div>",
-        entryTemplate: "<div class='newstitle'>{title}</div>",
-        ssl: true,
-        limit: 10,
-        dateFormat: 'DD/MM - HH:mm  '
-      })
-    });
-  </script>
+  <script src="modules/weather/openWeather.js" type="text/javascript"></script>
+  <script src="modules/rss/rss.min.js" type="text/javascript"></script>
 </head>
 
 <body>
-  <script type="text/javascript">
-    $(document).ready(function () {
-      $('#wrapper').fadeIn();
-    });
-  </script>
   <div id="wrapper">
     <div id="weatherbox">
       <p><span class="weather-place"></span></p>
@@ -53,15 +38,14 @@
       <div id="forecast"></div>
     </div>
     <div id="clockbox">
-      <div id="date">loading...</div>
+      <div id="date">Loading...</div>
       <div id="clock">
-        <div id="clockhours" class="clockhours">loading ...</div>
-        <div id="clockseconds" class="clockseconds">loading ...</div>
-        <div id="ampm">loading ...</div>
+        <div id="clockhours" class="clockhours">loading...</div>
+        <div id="clockseconds" class="clockseconds">Loading...</div>
       </div>
     </div>
     <div id="complimentsbox">
-      <span class="compliment">Hey!</span>
+      <span class="compliment">Hello!</span>
       <span class="compliment">Looking good!</span>
       <span class="compliment">Hi there!</span>
       <span class="compliment">Enjoy your day!</span>
@@ -71,72 +55,82 @@
       <br />
       <div id="rss-feeds"></div>
     </div>
-    <script type="text/javascript">
-      setTimeout(function () {
-        simpleslider.getSlider({
-          container: document.getElementById('newsfeed'),
-          duration: 1,
-          delay: 15,
-          prop: 'opacity',
-          unit: '',
-          init: 0,
-          show: 1,
-          end: 0
-        });
-      }, 2000);
+  </div>
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $('#wrapper').fadeIn();
+    });
+  </script>
+  <script type="text/javascript">
+    function displayTime() {
+      var hours = moment().format('HH:mm');
+      var seconds = moment().format('ss');
+      var date = moment().format('dddd, MMMM Do YYYY');
+      $('#clockhours').html(hours);
+      $('#clockseconds').html(seconds);
+      $('#date').html(date);
+      setTimeout(displayTime, 1000);
+    }
+    $(document).ready(function () {
+      displayTime();
+    });
+  </script>
+  <script type="text/javascript">
+    $("#rss-feeds").rss("https://news.google.com/news/rss", {
+      layoutTemplate: "<div id='newsfeed'>{entries}</div>",
+      entryTemplate: "<div class='newstitle'>{title}</div>",
+      ssl: true,
+      limit: 10,
+      dateFormat: 'DD/MM - HH:mm  '
+    });
+  </script>
+  <script type="text/javascript">
+    simpleslider.getSlider({
+      container: document.getElementById('complimentsbox'),
+      duration: 1,
+      delay: 35,
+      prop: 'opacity',
+      unit: '',
+      init: 0,
+      show: 1,
+      end: 0
+    });
+    setTimeout(function () {
       simpleslider.getSlider({
-        container: document.getElementById('complimentsbox'),
+        container: document.getElementById('newsfeed'),
         duration: 1,
-        delay: 35,
+        delay: 15,
         prop: 'opacity',
         unit: '',
         init: 0,
         show: 1,
         end: 0
       });
-    </script>
-    <script type="text/javascript">
-      function displayTime() {
-        var hours = moment().format('HH:mm');
-        var seconds = moment().format('ss');
-        var date = moment().format('dddd, MMMM Do YYYY');
-        var ampm = moment().format('  ');
-        $('#clockhours').html(hours);
-        $('#clockseconds').html(seconds);
-        $('#date').html(date);
-        $('#ampm').html(ampm);
-        setTimeout(displayTime, 1000);
+    }, 1000);
+  </script>
+  <script type="text/javascript">
+    $('.weather-temperature').openWeather({
+      key: 'd2e4d541802b524195b9b8f1544ef756',
+      city: 'Kirkcaldy%2C%20GB',
+      units: 'c',
+      descriptionTarget: '.weather-description',
+      windSpeedTarget: '#weather-wind-speed',
+      minTemperatureTarget: '.weather-min-temperature',
+      maxTemperatureTarget: '.weather-max-temperature',
+      humidityTarget: '.weather-humidity',
+      sunriseTarget: '.weather-sunrise',
+      sunsetTarget: '.weather-sunset',
+      placeTarget: '.weather-place',
+      iconTarget: '#weather-icon',
+      success: function () {
+        $('.weatherbox').show();
+      },
+      error: function () {
+        console.log("These aren't the droids you're looking for.");
       }
-      $(document).ready(function () {
-        displayTime();
-      });
-    </script>
-    <script src="modules/weather/openWeather.js" type="text/javascript"></script>
-    <script type="text/javascript">
-      $(function () {
-        $('.weather-temperature').openWeather({
-          key: 'd2e4d541802b524195b9b8f1544ef756',
-          city: 'Dundee%2C%20GB',
-          units: 'c',
-          descriptionTarget: '.weather-description',
-          windSpeedTarget: '#weather-wind-speed',
-          minTemperatureTarget: '.weather-min-temperature',
-          maxTemperatureTarget: '.weather-max-temperature',
-          humidityTarget: '.weather-humidity',
-          sunriseTarget: '.weather-sunrise',
-          sunsetTarget: '.weather-sunset',
-          placeTarget: '.weather-place',
-          iconTarget: '#weather-icon',
-          success: function () {
-            $('.weather-wrapper').show();
-          },
-          error: function () {
-            console.log("These aren't the droids you're looking for.");
-          }
-        });
-      });
-    </script>
-  </div>
+    });
+  </script>
 </body>
 
 </html>
