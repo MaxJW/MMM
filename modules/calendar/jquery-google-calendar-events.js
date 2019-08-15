@@ -5,7 +5,7 @@
     var s = {
         key: null,
         calendar: null,
-        max: 10
+        max: 5
     };
     function r(e, n) {
         this.element = e;
@@ -36,24 +36,17 @@
     };
     r.prototype.build = function(e) {
         var n = this;
-        t(n.element).html('<ul class="google_event_list"></ul>');
         for (var a = 0; a < e.length; a++) {
             var i = e[a];
             var s = !i.start.hasOwnProperty("dateTime");
             var r = s ? new Date(i.start.date) : new Date(i.start.dateTime);
             var o = "<li>";
             if (i.summary && i.htmlLink) {
-                o += '<div class="google_event_title"><a href="' + i.htmlLink + '" rel="' + i.summary + '">' + i.summary + "</a></div>";
+                o += '<div class="google_event_title"><i class="far fa-calendar-check"></i> ' + i.summary + "</div>";
             }
             o += '<div class="google_event_date">' + n.formatDate(r, s) + "</div>";
-            if (i.location) {
-                o += '<div class="google_event_location">' + i.location + "</div>";
-            }
-            if (i.description) {
-                o += '<div class="google_event_description">' + i.description + "</div>";
-            }
             o += "</li>";
-            t(n.element).find("ul.google_event_list").append(o);
+            t(n.element).append(o);
         }
     };
     r.prototype.formatDate = function(t, e) {
@@ -66,8 +59,8 @@
         i = i > 12 ? i - 12 : i;
         s = s < 10 ? "0" + s : s;
         var o = i + ":" + s + r;
-        var l = n[t.getDay()] + " " + a[t.getMonth()] + " " + t.getDate() + ", " + t.getFullYear();
-        return e ? l : l + " - " + o;
+        var l = n[t.getDay()] + " " + a[t.getMonth()] + " " + t.getDate();
+        return e ? l : l + " @ " + o;
     };
     t.fn[i] = function(e) {
         return this.each(function() {

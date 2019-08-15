@@ -37,7 +37,7 @@
               class="fas fa-long-arrow-alt-up"></i><span class="weather-max-temperature"></span></span>
         </div>
       </p>
-      <p><span class="weather-sunrise"></span> | <span class="weather-sunset"></span></p>
+      <p class="weather-sub"><i class="wi wi-sunrise"></i> <span class="weather-sunrise"></span> | <i class="wi wi-sunset"></i> <span class="weather-sunset"></span></p>
       <div id="forecast"></div>
     </div>
     <div id="clockbox">
@@ -47,7 +47,9 @@
         <div id="clockseconds" class="clockseconds">Loading...</div>
       </div>
     </div>
-    <div id="my-element"></div>
+    <div id="calendar">
+      <div id="gradient"></div>
+    </div>
     <div id="complimentsbox">
       <span class="compliment">Hello!</span>
       <span class="compliment">Looking good!</span>
@@ -152,10 +154,10 @@
   var gcal_key = config.GCAL_API_KEY;
   var gcal_id = config.GCAL_ID;
 
-  $('#my-element').google_calendar_events({
+  $('#calendar').google_calendar_events({
 		key: gcal_key, // Google Calendar API Key see: https://console.developers.google.com
 		calendar: gcal_id,
-		max: 10
+		max: 5
 	});
   </script>
 </body>

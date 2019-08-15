@@ -7,6 +7,8 @@ html {
   letter-spacing: -0px;
   -webkit-font-smoothing: antialiased;
   padding-top: 20px;
+  height: 100%;
+  overflow: hidden;
   /*cursor: none;*/
 }
 
@@ -175,4 +177,46 @@ strong {
 .newstitle {
   font-size: 24px;
   width: 100%;
+}
+
+#gradient {
+  height: 150px;
+  width: 400px;
+  position: absolute;
+  background: -moz-linear-gradient(top,rgba(0,0,0,0) 0%,rgba(0,0,0,0.85) 100%);
+  background: -webkit-linear-gradient(top,rgba(0,0,0,0) 0%,rgba(0,0,0,0.85) 100%);
+  background: linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,0.85) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000',endColorstr='#a6000000',GradientType=0 )
+}
+
+#calendar {
+  width: 400px;
+  text-align: left;
+  margin-left: 20px;
+  text-transform: capitalize
+}
+
+.google_event_title {
+  font-size: 18px;
+  font-weight: 700;
+  width: 60%;
+  min-width: 200px;
+  float: left;
+  text-align: left;
+  line-height: 1.5;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: roboto condensed,sans-serif;
+  font-weight: 400
+}
+
+.google_event_date {
+  float: right;
+  width: 40%;
+  text-align: right;
+  font-size: 18px;
+  line-height: 1.5;
+  font-family: roboto condensed,sans-serif;
+  font-weight: 400
 }
