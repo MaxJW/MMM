@@ -44,96 +44,98 @@
         <br />
         <span class="weather-description" class="capitalize"></span>
         <div class="weather-sub">
-          <i class="" id="weather-wind-speed"></i> | <i class="wi wi-humidity"></i> <span class="weather-humidity"></span> | <span class="min-max-temp"><i class="fas fa-long-arrow-alt-down"></i><span class="weather-min-temperature"></span> <i class="fas fa-long-arrow-alt-up"></i><span class="weather-max-temperature"></span></span>
+          <i class="" id="weather-wind-speed"></i> | <i class="wi wi-humidity"></i> <span
+            class="weather-humidity"></span> | <span class="min-max-temp"><i
+              class="fas fa-long-arrow-alt-down"></i><span class="weather-min-temperature"></span> <i
+              class="fas fa-long-arrow-alt-up"></i><span class="weather-max-temperature"></span></span>
         </div>
       </p>
+      <div id="forecast"></div>
     </div>
-    <div id="forecast"></div>
-  </div>
-  <div id="clockbox">
-    <div id="date">loading...</div>
-    <div id="clock">
-      <div id="clockhours" class="clockhours">loading ...</div>
-      <div id="clockseconds" class="clockseconds">loading ...</div>
-      <div id="ampm">loading ...</div>
+    <div id="clockbox">
+      <div id="date">loading...</div>
+      <div id="clock">
+        <div id="clockhours" class="clockhours">loading ...</div>
+        <div id="clockseconds" class="clockseconds">loading ...</div>
+        <div id="ampm">loading ...</div>
+      </div>
     </div>
-  </div>
-  <div id="complimentsbox">
-    <span class="compliment">Hey!</span>
-    <span class="compliment">Looking good!</span>
-    <span class="compliment">Hi there!</span>
-    <span class="compliment">Enjoy your day!</span>
-  </div>
-  <div id="rssbox">
-    <div id="rsstitle">Google News</div>
-    <br />
-    <div id="rss-feeds"></div>
-  </div>
-  <script type="text/javascript">
-    setTimeout(function () {
+    <div id="complimentsbox">
+      <span class="compliment">Hey!</span>
+      <span class="compliment">Looking good!</span>
+      <span class="compliment">Hi there!</span>
+      <span class="compliment">Enjoy your day!</span>
+    </div>
+    <div id="rssbox">
+      <div id="rsstitle">Google News</div>
+      <br />
+      <div id="rss-feeds"></div>
+    </div>
+    <script type="text/javascript">
+      setTimeout(function () {
+        simpleslider.getSlider({
+          container: document.getElementById('newsfeed'),
+          duration: 1,
+          delay: 15,
+          prop: 'opacity',
+          unit: '',
+          init: 0,
+          show: 1,
+          end: 0
+        });
+      }, 2000);
       simpleslider.getSlider({
-        container: document.getElementById('newsfeed'),
+        container: document.getElementById('complimentsbox'),
         duration: 1,
-        delay: 15,
+        delay: 35,
         prop: 'opacity',
         unit: '',
         init: 0,
         show: 1,
         end: 0
       });
-    }, 2000);
-    simpleslider.getSlider({
-      container: document.getElementById('complimentsbox'),
-      duration: 1,
-      delay: 35,
-      prop: 'opacity',
-      unit: '',
-      init: 0,
-      show: 1,
-      end: 0
-    });
-  </script>
-  <script type="text/javascript">
-    function displayTime() {
-      var hours = moment().format('HH:mm');
-      var seconds = moment().format('ss');
-      var date = moment().format('dddd, MMMM Do YYYY');
-      var ampm = moment().format('  ');
-      $('#clockhours').html(hours);
-      $('#clockseconds').html(seconds);
-      $('#date').html(date);
-      $('#ampm').html(ampm);
-      setTimeout(displayTime, 1000);
-    }
-    $(document).ready(function () {
-      displayTime();
-    });
-  </script>
-  <script src="modules/weather/openWeather.js" type="text/javascript"></script>
-  <script type="text/javascript">
-    $(function () {
-      $('.weather-temperature').openWeather({
-        key: 'd2e4d541802b524195b9b8f1544ef756',
-        city: 'Dundee%2C%20GB',
-        units: 'c',
-        descriptionTarget: '.weather-description',
-        windSpeedTarget: '#weather-wind-speed',
-        minTemperatureTarget: '.weather-min-temperature',
-        maxTemperatureTarget: '.weather-max-temperature',
-        humidityTarget: '.weather-humidity',
-        sunriseTarget: '.weather-sunrise',
-        sunsetTarget: '.weather-sunset',
-        placeTarget: '.weather-place',
-        iconTarget: '#weather-icon',
-        success: function () {
-          $('.weather-wrapper').show();
-        },
-        error: function () {
-          console.log("These aren't the droids you're looking for.");
-        }
+    </script>
+    <script type="text/javascript">
+      function displayTime() {
+        var hours = moment().format('HH:mm');
+        var seconds = moment().format('ss');
+        var date = moment().format('dddd, MMMM Do YYYY');
+        var ampm = moment().format('  ');
+        $('#clockhours').html(hours);
+        $('#clockseconds').html(seconds);
+        $('#date').html(date);
+        $('#ampm').html(ampm);
+        setTimeout(displayTime, 1000);
+      }
+      $(document).ready(function () {
+        displayTime();
       });
-    });
-  </script>
+    </script>
+    <script src="modules/weather/openWeather.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      $(function () {
+        $('.weather-temperature').openWeather({
+          key: 'd2e4d541802b524195b9b8f1544ef756',
+          city: 'Dundee%2C%20GB',
+          units: 'c',
+          descriptionTarget: '.weather-description',
+          windSpeedTarget: '#weather-wind-speed',
+          minTemperatureTarget: '.weather-min-temperature',
+          maxTemperatureTarget: '.weather-max-temperature',
+          humidityTarget: '.weather-humidity',
+          sunriseTarget: '.weather-sunrise',
+          sunsetTarget: '.weather-sunset',
+          placeTarget: '.weather-place',
+          iconTarget: '#weather-icon',
+          success: function () {
+            $('.weather-wrapper').show();
+          },
+          error: function () {
+            console.log("These aren't the droids you're looking for.");
+          }
+        });
+      });
+    </script>
   </div>
 </body>
 
