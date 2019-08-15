@@ -9,7 +9,7 @@ html {
   padding-top: 20px;
   height: 100%;
   overflow: hidden;
-  /*cursor: none;*/
+  cursor: none;
 }
 
 a {
