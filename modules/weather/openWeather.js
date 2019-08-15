@@ -6,7 +6,8 @@ Author URL: http://michaelynch.com
 Date Created: August 28, 2013
 Licensed under the MIT license
 */
-; (function ($) {
+;
+(function ($) {
 	$.fn.openWeather = function (options) {
 		// return if no element was bound
 		// so chained events can continue
@@ -30,8 +31,8 @@ Licensed under the MIT license
 			lng: null,
 			key: null,
 			lang: 'en',
-			success: function () { },
-			error: function (message) { }
+			success: function () {},
+			error: function (message) {}
 		}
 		// define plugin
 		var plugin = this;
@@ -47,20 +48,12 @@ Licensed under the MIT license
 		var s = plugin.settings;
 		// define basic api endpoint
 		apiURL = '//api.openweathermap.org/data/2.5/weather?lang=' + s.lang;
-		// if city isn't null
-		if (s.city != null) {
-			// define API url using city (and remove any spaces in city)
-			apiURL += '&q=' + s.city.replace(' ', '');
-		} else if (s.lat != null && s.lng != null) {
-			// define API url using lat and lng
-			apiURL += '&lat=' + s.lat + '&lon=' + s.lng;
-		}
-		// if api key was supplied
-		if (s.key != null) {
-			// append api key paramater
-			apiURL += '&appid=' + s.key;
-		}
-		// format time function
+		// define API url using city (and remove any spaces in city)
+		apiURL += '&q=' + s.city.replace(' ', '');
+		// append api key paramater
+		apiURL += '&appid=' + s.key;
+
+		// Format Time for Sunrise/Sunset
 		var formatTime = function (unixTimestamp) {
 			// define milliseconds using unix time stamp
 			var milliseconds = unixTimestamp * 1000;
@@ -88,6 +81,7 @@ Licensed under the MIT license
 			var time = hours + ':' + minutes;
 			return time;
 		}
+
 		$.ajax({
 			type: 'GET',
 			url: apiURL,
@@ -125,8 +119,8 @@ Licensed under the MIT license
 				$(s.descriptionTarget).text(data.weather[0].description);
 				// if iconTarget and default weather icon aren't null
 				if (s.iconTarget != null && data.weather[0].id != null) {
-					var iconIDYEE = data.weather[0].id;
-					var iconURL = 'wi wi-owm-' + iconIDYEE;
+					var iconID = data.weather[0].id;
+					var iconURL = 'wi wi-owm-' + iconID;
 					// set iconTarget src attribute as iconURL
 					$(s.iconTarget).attr('class', iconURL);
 				}

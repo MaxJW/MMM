@@ -16,8 +16,10 @@
 
   <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:100,400&display=swap" rel="stylesheet">
 
+  <script src="config.js" type="text/javascript"></script>
   <script src="modules/weather/openWeather.js" type="text/javascript"></script>
   <script src="modules/rss/rss.min.js" type="text/javascript"></script>
+  <script src="modules/calendar/jquery-google-calendar-events.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -35,6 +37,7 @@
               class="fas fa-long-arrow-alt-up"></i><span class="weather-max-temperature"></span></span>
         </div>
       </p>
+      <p><span class="weather-sunrise"></span> | <span class="weather-sunset"></span></p>
       <div id="forecast"></div>
     </div>
     <div id="clockbox">
@@ -44,6 +47,7 @@
         <div id="clockseconds" class="clockseconds">Loading...</div>
       </div>
     </div>
+    <div id="my-element"></div>
     <div id="complimentsbox">
       <span class="compliment">Hello!</span>
       <span class="compliment">Looking good!</span>
@@ -57,11 +61,14 @@
     </div>
   </div>
 
+  <!-- Fade In Mirror -->
   <script type="text/javascript">
     $(document).ready(function () {
       $('#wrapper').fadeIn();
     });
   </script>
+
+  <!-- Clock Module -->
   <script type="text/javascript">
     function displayTime() {
       var hours = moment().format('HH:mm');
@@ -76,6 +83,8 @@
       displayTime();
     });
   </script>
+
+  <!-- RSS Module -->
   <script type="text/javascript">
     $("#rss-feeds").rss("https://news.google.com/news/rss", {
       layoutTemplate: "<div id='newsfeed'>{entries}</div>",
@@ -84,18 +93,7 @@
       limit: 10,
       dateFormat: 'DD/MM - HH:mm  '
     });
-  </script>
-  <script type="text/javascript">
-    simpleslider.getSlider({
-      container: document.getElementById('complimentsbox'),
-      duration: 1,
-      delay: 35,
-      prop: 'opacity',
-      unit: '',
-      init: 0,
-      show: 1,
-      end: 0
-    });
+
     setTimeout(function () {
       simpleslider.getSlider({
         container: document.getElementById('newsfeed'),
@@ -109,9 +107,27 @@
       });
     }, 1000);
   </script>
+
+  <!-- Compliments Box Module -->
   <script type="text/javascript">
+    simpleslider.getSlider({
+      container: document.getElementById('complimentsbox'),
+      duration: 1,
+      delay: 35,
+      prop: 'opacity',
+      unit: '',
+      init: 0,
+      show: 1,
+      end: 0
+    });
+  </script>
+
+  <!-- Open Weather Module -->
+  <script type="text/javascript">
+  var owm_key = config.OWM_KEY;
+
     $('.weather-temperature').openWeather({
-      key: 'd2e4d541802b524195b9b8f1544ef756',
+      key: owm_key,
       city: 'Kirkcaldy%2C%20GB',
       units: 'c',
       descriptionTarget: '.weather-description',
@@ -127,9 +143,20 @@
         $('.weatherbox').show();
       },
       error: function () {
-        console.log("These aren't the droids you're looking for.");
+        console.log("ERROR: Weather was unable to load.");
       }
     });
+  </script>
+
+  <script type="text/javascript">
+  var gcal_key = config.GCAL_API_KEY;
+  var gcal_id = config.GCAL_ID;
+
+  $('#my-element').google_calendar_events({
+		key: gcal_key, // Google Calendar API Key see: https://console.developers.google.com
+		calendar: gcal_id,
+		max: 10
+	});
   </script>
 </body>
 
