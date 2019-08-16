@@ -2,6 +2,8 @@
 <html>
 
 <head>
+<?php
+header('Access-Control-Allow-Origin: *');?>
   <title>MMM</title>
   <meta http-equiv="refresh" content="15000" />
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />

@@ -7,6 +7,7 @@
             authorizeEndpoint: '//accounts.spotify.com/authorize',
             tokenRefreshEndpoint: '//accounts.spotify.com/api/token',
             apiEndpoint: '//api.spotify.com/v1/me/player',
+            redirectURL: 'http://192.168.64.2/index.php',
             albumImgTarget: null,
             songTitleTarget: null,
             songArtistTarget: null,
@@ -29,8 +30,7 @@
             var client_id = s.clientID;
 
             var scopes = 'user-read-playback-state';
-            var redirect_uri = 'http://192.168.64.2/dashboard.php';
-            var authorizeURL = s.authorizeEndpoint + '?response_type=code' + '&client_id=' + client_id + '&scope=' + encodeURIComponent(scopes) + '&redirect_uri=' + encodeURIComponent(redirect_uri);
+            var authorizeURL = s.authorizeEndpoint + '?response_type=code' + '&client_id=' + client_id + '&scope=' + encodeURIComponent(scopes) + '&redirect_uri=' + encodeURIComponent(s.redirectURL);
             if (getUrlParameter('code') == "" || FORCE_UPDATE) {
                 window.location.replace(authorizeURL);
             }
@@ -42,7 +42,6 @@
         var getRefreshToken = function () {
             var client_id = s.clientID;
             var client_secret = s.clientSecret;
-            var redirect_uri = 'http://192.168.64.2/dashboard.php';
             var wow_data;
             $.ajax({
                 method: "POST",
@@ -50,7 +49,7 @@
                 data: {
                     "grant_type": "authorization_code",
                     "code": s.authToken,
-                    "redirect_uri": redirect_uri,
+                    "redirect_uri": s.redirectURL,
                     "client_secret": client_secret,
                     "client_id": client_id,
                 },
@@ -58,6 +57,7 @@
                     'Authorisation': 'Basic ' + btoa(client_id + ':' + client_secret)
                 },
                 async: false,
+                json: true,
                 success: function (result) {
                     wow_data = result;
                 },
@@ -74,7 +74,6 @@
                 return getSpotifyData();
             } else {
                 s.authToken = getAuthorizationToken(false);
-
                 var refreshResponse = getRefreshToken();
                 s.accessToken = refreshResponse.access_token;
                 s.refreshToken = refreshResponse.refresh_token;
@@ -91,6 +90,7 @@
                     'Authorization': 'Bearer ' + s.accessToken
                 },
                 async: false,
+                json: true,
                 success: (data) => {
                     spotData = data;
                 }
@@ -129,7 +129,6 @@
         }
 
         var response = retrieveCurrentlyPlaying();
-        console.log(response);
         if (response) {
             var currentSongInfo = retrieveSongInfo(response);
             console.log(currentSongInfo);
