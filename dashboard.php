@@ -3,7 +3,7 @@
 
 <head>
   <title>MMM</title>
-  <meta http-equiv="refresh" content="900" />
+  <meta http-equiv="refresh" content="15000" />
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <script src="js/jquery-3.4.1.min.js"></script>
   <script src="js/moment.min.js"></script>
@@ -20,6 +20,7 @@
   <script src="modules/weather/openWeather.min.js" type="text/javascript"></script>
   <script src="modules/rss/rss.min.js" type="text/javascript"></script>
   <script src="modules/calendar/jquery-google-calendar-events.min.js" type="text/javascript"></script>
+  <script src="modules/spotify/nowplaying.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -37,8 +38,15 @@
               class="fas fa-long-arrow-alt-up"></i><span class="weather-max-temperature"></span></span>
         </div>
       </p>
-      <p class="weather-sub"><i class="wi wi-sunrise"></i> <span class="weather-sunrise"></span> | <i class="wi wi-sunset"></i> <span class="weather-sunset"></span></p>
+      <p class="weather-sub"><i class="wi wi-sunrise"></i> <span class="weather-sunrise"></span> | <i
+          class="wi wi-sunset"></i> <span class="weather-sunset"></span></p>
       <div id="forecast"></div>
+    </div>
+    <div id="spotify">
+      <h1>SPOTIFY</h1>
+      <img src="" id="spot-img" />
+      <p id="spot-title"></p>
+      <p id="spot-artist"></p>
     </div>
     <div id="clockbox">
       <div id="date">Loading...</div>
@@ -126,7 +134,7 @@
 
   <!-- Open Weather Module -->
   <script type="text/javascript">
-  var owm_key = config.OWM_KEY;
+    var owm_key = config.OWM_KEY;
 
     $('.weather-temperature').openWeather({
       key: owm_key,
@@ -152,14 +160,31 @@
 
   <!-- Calendar Module -->
   <script type="text/javascript">
-  var gcal_key = config.GCAL_API_KEY;
-  var gcal_id = config.GCAL_ID;
+    var gcal_key = config.GCAL_API_KEY;
+    var gcal_id = config.GCAL_ID;
 
-  $('#calendar').google_calendar_events({
-		key: gcal_key, // Google Calendar API Key see: https://console.developers.google.com
-		calendar: gcal_id,
-		max: 5
-	});
+    $('#calendar').google_calendar_events({
+      key: gcal_key, // Google Calendar API Key see: https://console.developers.google.com
+      calendar: gcal_id,
+      max: 5
+    });
+  </script>
+
+  <!-- Spotify -->
+  <script type="text/javascript">
+    $('#spotify').startSpotify({
+      clientID: config.SpotClientID,
+      clientSecret: config.SpotClientSecret,
+      albumImgTarget: '#spot-img',
+      songTitleTarget: '#spot-title',
+      songArtistTarget: '#spot-artist',
+      success: function () {
+        $('#spotify').show();
+      },
+      error: function () {
+        console.log("ERROR: Spotify was unable to load.");
+      }
+    });
   </script>
 </body>
 
