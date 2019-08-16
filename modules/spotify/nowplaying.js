@@ -47,7 +47,6 @@
             $.ajax({
                 method: "POST",
                 url: s.tokenRefreshEndpoint,
-                dataType: 'jsonp',
                 data: {
                     "grant_type": "authorization_code",
                     "code": s.authToken,
@@ -88,7 +87,6 @@
             $.ajax({
                 url: s.apiEndpoint,
                 type: "GET",
-                dataType: 'jsonp',
                 headers: {
                     'Authorization': 'Bearer ' + s.accessToken
                 },
