@@ -7,3 +7,19 @@ This is obviously not very modular, compared to the very sophisticated MagicMirr
 
 # Please see the official project [HERE](https://github.com/MichMich/MagicMirror)!
 # And the Dashboard Generator [HERE](https://www.magicmirrorcentral.com/dash/)
+
+# Current Modules
+## Date and Time
+Duh, kind of need this one!
+
+## Weather
+OpenWeatherMap, including weather icons, sunrise/sunset, the lot!
+
+## Spotify
+This one took a long time, so I'm rather proud of it. Simply displays the album artwork along with the title and artist, linked to your account!
+
+## Compliments
+Looking good :D
+
+## News
+Imports RSS feed from google news, can be changed easily!
