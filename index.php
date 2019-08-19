@@ -2,10 +2,8 @@
 <html>
 
 <head>
-<?php
-header('Access-Control-Allow-Origin: *');?>
   <title>MMM</title>
-  <meta http-equiv="refresh" content="15000" />
+  <meta http-equiv="refresh" content="1800" />
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <script src="js/jquery-3.4.1.min.js"></script>
   <script src="js/moment.min.js"></script>
@@ -174,18 +172,24 @@ header('Access-Control-Allow-Origin: *');?>
 
   <!-- Spotify -->
   <script type="text/javascript">
-    $('#spotify').startSpotify({
-      clientID: config.SpotClientID,
-      clientSecret: config.SpotClientSecret,
-      albumImgTarget: '#spot-img',
-      songTitleTarget: '#spot-title',
-      songArtistTarget: '#spot-artist',
-      success: function () {
-        $('#spotify').show();
-      },
-      error: function () {
-        console.log("ERROR: Spotify was unable to load.");
-      }
+    function spotifyRefresh() {
+      $('#spotify').startSpotify({
+        clientID: config.SpotClientID,
+        albumImgTarget: '#spot-img',
+        songTitleTarget: '#spot-title',
+        songArtistTarget: '#spot-artist',
+        success: function () {
+          $('#spotify').show();
+        },
+        error: function () {
+          console.log("ERROR: Spotify was unable to load.");
+          $('#spotify').hide();
+        }
+      });
+      setTimeout(spotifyRefresh, 10000);
+    }
+    $(document).ready(function () {
+      spotifyRefresh();
     });
   </script>
 </body>
