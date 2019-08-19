@@ -43,7 +43,7 @@
                         $(s.albumImgTarget).attr('src', response.item.album.images[1].url);
                         if ((response.item.name).length > 20) {
                             //$(s.songTitleTarget).attr('class', 'marquee');
-                            $(s.songTitleTarget).text((response.item.name).substring(0, 15) + '...');
+                            $(s.songTitleTarget).text((response.item.name).substring(0, 20) + '...');
                         } else {
                             $(s.songTitleTarget).attr('class', '');
                         }
