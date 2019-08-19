@@ -3,7 +3,7 @@
         var defaults = {
             authorizeEndpoint: 'https://accounts.spotify.com/authorize',
             apiEndpoint: 'https://api.spotify.com/v1/me/player',
-            redirectURI: 'http://192.168.64.2/',
+            redirectURI: 'https://www.maxwilson.co.uk/MMM',
             clientID: null,
             access_token: null,
             scope: 'user-read-playback-state',
