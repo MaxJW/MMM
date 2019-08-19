@@ -134,8 +134,8 @@
 
   <!-- Open Weather Module -->
   <script type="text/javascript">
-    //var owm_key = config.OWM_KEY;
-    var owm_key = prompt("Please enter OpenWeatherMap API Key", "Type Key Here");
+    var owm_key = config.OWM_KEY;
+
     $('.weather-temperature').openWeather({
       key: owm_key,
       city: 'Kirkcaldy%2C%20GB',
@@ -160,10 +160,9 @@
 
   <!-- Calendar Module -->
   <script type="text/javascript">
-    //var gcal_key = config.GCAL_API_KEY;
-    //var gcal_id = config.GCAL_ID;
-    var gcal_key = prompt("Please enter GCAL API Key", "Type Key Here");
-    var gcal_id = prompt("Please enter GCAL ID", "Type ID Here");
+    var gcal_key = config.GCAL_API_KEY;
+    var gcal_id = config.GCAL_ID;
+
     $('#calendar').google_calendar_events({
       key: gcal_key, // Google Calendar API Key see: https://console.developers.google.com
       calendar: gcal_id,
@@ -173,8 +172,7 @@
 
   <!-- Spotify -->
   <script type="text/javascript">
-    //var spot_client_id = config.SpotClientID;
-    var spot_client_id = prompt("Please enter Spotify Client ID", "Type ID Here");
+    var spot_client_id = config.SpotClientID;
     
     function spotifyRefresh() {
       $('#spotify').startSpotify({
