@@ -42,12 +42,13 @@
                     if (response !== undefined) {
                         $(s.albumImgTarget).attr('src', response.item.album.images[1].url);
                         if ((response.item.name).length > 20) {
-                            //$(s.songTitleTarget).attr('class', 'marquee');
-                            $(s.songTitleTarget).text((response.item.name).substring(0, 20) + '...');
+                            $(s.songTitleTarget).attr('class', 'marquee');
+                            //$(s.songTitleTarget).text((response.item.name).substring(0, 20) + '...');
                         } else {
+                            //$(s.songTitleTarget).text(response.item.name);
                             $(s.songTitleTarget).attr('class', '');
                         }
-                        //$(s.songTitleTarget).text(response.item.name);
+                        $(s.songTitleTarget).text(response.item.name);
                         $(s.songArtistTarget).text(response.item.artists[0].name);
                     }
                 },
