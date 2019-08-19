@@ -37,18 +37,28 @@
                 headers: {
                     'Authorization': 'Bearer ' + s.access_token
                 },
-                success: function(response) {
-                    $(s.albumImgTarget).attr('src', response.item.album.images[1].url);
-                    $(s.songTitleTarget).text(response.item.name);
-                    $(s.songArtistTarget).text(response.item.artists[0].name);
+                success: function (response) {
+                    console.log(response);
+                    if (response !== undefined) {
+                        $(s.albumImgTarget).attr('src', response.item.album.images[1].url);
+                        if ((response.item.name).length > 20) {
+                            //$(s.songTitleTarget).attr('class', 'marquee');
+                            $(s.songTitleTarget).text((response.item.name).substring(0, 15) + '...');
+                        } else {
+                            $(s.songTitleTarget).attr('class', '');
+                        }
+                        //$(s.songTitleTarget).text(response.item.name);
+                        $(s.songArtistTarget).text(response.item.artists[0].name);
+                    }
                 },
-                error: function(response) {
+                error: function (response) {
                     console.log("Spotify Token Expired: Refreshing...");
                     authorize(true);
                 }
             });
         }
 
+        //Start of executed code
         if (s.access_token == null) {
             s.access_token = authorize(false);
         }

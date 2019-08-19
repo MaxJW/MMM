@@ -11,10 +11,9 @@
 
   <script src="https://kit.fontawesome.com/d368698d9e.js"></script>
 
-  <link rel="stylesheet" type="text/css" href="css/style.min.css" />
-  <link rel="stylesheet" type="text/css" href="css/weather-icons.min.css" />
-
   <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:300,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="css/weather-icons.min.css" />
+  <link rel="stylesheet" type="text/css" href="css/style.min.css" />
 
   <script src="config.js" type="text/javascript"></script>
   <script src="modules/weather/openWeather.min.js" type="text/javascript"></script>
@@ -43,9 +42,10 @@
       <div id="forecast"></div>
     </div>
     <div id="spotify">
-      <h1>SPOTIFY</h1>
       <img src="" id="spot-img" />
-      <p id="spot-title"></p>
+      <div class="wrap-m">
+        <p id="spot-title"></p>
+      </div>
       <p id="spot-artist"></p>
     </div>
     <div id="clockbox">
