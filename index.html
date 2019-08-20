@@ -20,13 +20,13 @@
   <script src="modules/rss/rss.min.js" type="text/javascript"></script>
   <script src="modules/calendar/jquery-google-calendar-events.min.js" type="text/javascript"></script>
   <script src="modules/spotify/nowplaying.min.js" type="text/javascript"></script>
-  <script src="modules/crypto/coinmarketcap.js" type="text/javascript"></script>
+  <script src="modules/crypto/coinmarketcap.min.js" type="text/javascript"></script>
 </head>
 
 <body>
   <div id="wrapper">
     <div id="weatherbox">
-      <p><span class="weather-place"></span></p>
+      <p><span class="weather-place">Loading...</span></p>
       <p>
         <i class="" id="weather-icon" style="font-size: 60px;"></i><span class="weather-temperature"></span>
         <br />
@@ -52,34 +52,46 @@
     <div id="clockbox">
       <div id="date">Loading...</div>
       <div id="clock">
-        <div id="clockhours" class="clockhours">loading...</div>
-        <div id="clockseconds" class="clockseconds">Loading...</div>
+        <div id="clockhours" class="clockhours"></div>
+        <div id="clockseconds" class="clockseconds"></div>
       </div>
     </div>
     <div id="calendar">
       <div id="gradient"></div>
     </div>
     <div id="crypto">
-      <h1 id="bitcoin-name"></h1>
-      <p id="bitcoin-price"></p>
-      <p id="bitcoin-price-change"></p>
-      <img src="" id="bitcoin-img" />
-      <img src="" id="bitcoin-graph" />
-      <h1 id="litecoin-name"></h1>
-      <p id="litecoin-price"></p>
-      <p id="litecoin-price-change"></p>
-      <img src="" id="litecoin-img" />
-      <img src="" id="litecoin-graph" />
-      <h1 id="ethereum-name"></h1>
-      <p id="ethereum-price"></p>
-      <p id="ethereum-price-change"></p>
-      <img src="" id="ethereum-img" />
-      <img src="" id="ethereum-graph" />
-      <h1 id="bat-name"></h1>
-      <p id="bat-price"></p>
-      <p id="bat-price-change"></p>
-      <img src="" id="bat-img" />
-      <img src="" id="bat-graph" />
+      <div id="crypto-wrap">
+        <img src="" id="bitcoin-img" />
+        <div id="crypto-text">
+          <p id="bitcoin-price">LOADING...</p>
+          <p id="bitcoin-price-change"></p>
+        </div>
+        <img src="" id="bitcoin-graph" class="graph" />
+      </div>
+      <div id="crypto-wrap">
+        <img src="" id="litecoin-img" />
+        <div id="crypto-text">
+          <p id="litecoin-price"></p>
+          <p id="litecoin-price-change"></p>
+        </div>
+        <img src="" id="litecoin-graph" class="graph" />
+      </div>
+      <div id="crypto-wrap">
+        <img src="" id="ethereum-img" />
+        <div id="crypto-text">
+          <p id="ethereum-price"></p>
+          <p id="ethereum-price-change"></p>
+        </div>
+        <img src="" id="ethereum-graph" class="graph" />
+      </div>
+      <div id="crypto-wrap">
+        <img src="" id="bat-img" />
+        <div id="crypto-text">
+          <p id="bat-price"></p>
+          <p id="bat-price-change"></p>
+        </div>
+        <img src="" id="bat-graph" class="graph" />
+      </div>
     </div>
     <div id="complimentsbox">
       <span class="compliment">Hello!</span>
@@ -220,31 +232,31 @@
 
   <!-- Crypto Module -->
   <script type="text/javascript">
+    var coinmarketkey = config.COINMARKET_CAP_KEY;
+
     setTimeout(function () {
       $('#crypto').coinMarketCap({
-        BitcoinNameTarget: '#bitcoin-name',
         BitcoinPriceTarget: '#bitcoin-price',
         BitcoinPercentChangeTarget: '#bitcoin-price-change',
         BitcoinIconTarget: '#bitcoin-img',
         BitcoinGraphTarget: '#bitcoin-graph',
 
-        LitecoinNameTarget: '#litecoin-name',
         LitecoinPriceTarget: '#litecoin-price',
         LitecoinPercentChangeTarget: '#litecoin-price-change',
         LitecoinIconTarget: '#litecoin-img',
         LitecoinGraphTarget: '#litecoin-graph',
 
-        EthereumNameTarget: '#ethereum-name',
         EthereumPriceTarget: '#ethereum-price',
         EthereumPercentChangeTarget: '#ethereum-price-change',
         EthereumIconTarget: '#ethereum-img',
         EthereumGraphTarget: '#ethereum-graph',
 
-        BATNameTarget: '#bat-name',
         BATPriceTarget: '#bat-price',
         BATPercentChangeTarget: '#bat-price-change',
         BATIconTarget: '#bat-img',
         BATGraphTarget: '#bat-graph',
+
+        apiKey: coinmarketkey,
       });
     }, 2000);
   </script>
