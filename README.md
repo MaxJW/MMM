@@ -25,3 +25,6 @@ Looking good :D
 
 ## News
 Imports RSS feed from google news, can be changed easily!
+
+## CoinMarket Cap
+View crytpocurrency prices from over the past 24 hours, can be customised to display different coins but currently shows Bitcoin, Litecoin, Ethereum, and BAT
