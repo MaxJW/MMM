@@ -1,23 +1,18 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import dayjs from 'dayjs';
-import { SIXTY_MIN } from '$lib/types/util';
+import { TIMING_STRATEGIES } from '$lib/types/util';
+import type { BinApiResponse } from '$lib/types/bin';
 
-interface BinCollection {
+interface BinCollectionRaw {
 	date: string;
 	colour: string;
-}
-
-interface BinResponse {
-	data?: {
-		tab_collections?: BinCollection[];
-	};
 }
 
 class BinService {
 	private static authToken: string | null = null;
 	private static tokenExpiry: number = 0;
-	private static cache: { collections: BinCollection[]; expiry: number } | null = null;
+	private static cache: { collections: BinCollectionRaw[]; expiry: number } | null = null;
 
 	private static async getAuthToken(): Promise<string | null> {
 		if (this.authToken && Date.now() < this.tokenExpiry) {
@@ -40,7 +35,7 @@ class BinService {
 		return null;
 	}
 
-	private static async fetchBinCollections(): Promise<BinCollection[]> {
+	private static async fetchBinCollections(): Promise<BinCollectionRaw[]> {
 		const token = await this.getAuthToken();
 		if (!token) {
 			throw new Error('Authentication failed');
@@ -65,13 +60,13 @@ class BinService {
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
 
-		const data: BinResponse = await response.json();
-		return (data.data?.tab_collections as BinCollection[]) || [];
+		const data: BinApiResponse = await response.json();
+		return (data.data?.tab_collections as BinCollectionRaw[]) || [];
 	}
 
 	static async getNextBinCollection(): Promise<{ date: string; bins: string[] } | null> {
 		try {
-			let collections: BinCollection[] = [];
+			let collections: BinCollectionRaw[] = [];
 
 			// Check cache first
 			if (this.cache && Date.now() < this.cache.expiry) {
@@ -83,7 +78,7 @@ class BinService {
 				// Cache the results
 				this.cache = {
 					collections,
-					expiry: Date.now() + SIXTY_MIN
+					expiry: Date.now() + TIMING_STRATEGIES.INFREQUENT.interval
 				};
 			}
 

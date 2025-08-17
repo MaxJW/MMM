@@ -1,13 +1,11 @@
 <script lang="ts">
 	import { Activity, Cpu, HardDrive, MemoryStick, Thermometer } from 'lucide-svelte';
 	import { onMount } from 'svelte';
+	import { SystemStatsService } from '$lib/services/systemStatsService';
+	import type { SystemStats } from '$lib/types/system-stats';
+	import { TIMING_STRATEGIES } from '$lib/types/util';
 
-	let stats = {
-		cpu: 0,
-		memory: 0,
-		disk: 0,
-		tempC: 0
-	};
+	let stats: SystemStats | null = null;
 	let loading = true;
 	let error: string | null = null;
 	let hasInitialData = false;
@@ -19,20 +17,14 @@
 			}
 			error = null;
 
-			const response = await fetch('/api/system-stats');
+			const data = await SystemStatsService.getSystemStats();
 
-			if (!response.ok) {
-				throw new Error(`HTTP error! status: ${response.status}`);
+			if (data) {
+				stats = data;
+				hasInitialData = true;
+			} else {
+				throw new Error('No data received');
 			}
-
-			const data = await response.json();
-
-			if (data.error) {
-				throw new Error(data.error);
-			}
-
-			stats = data;
-			hasInitialData = true;
 		} catch (err) {
 			error = 'Failed to load system stats';
 			console.error('Error loading system stats:', err);
@@ -44,7 +36,7 @@
 	onMount(() => {
 		loadSystemStats();
 
-		const interval = setInterval(loadSystemStats, 30000);
+		const interval = setInterval(loadSystemStats, TIMING_STRATEGIES.FREQUENT.interval);
 
 		return () => clearInterval(interval);
 	});
@@ -70,22 +62,22 @@
 		<div class="flex flex-col items-end gap-2 text-base">
 			<div class="flex items-center gap-3">
 				<Cpu size={20} class="opacity-70" /><span>CPU</span><span class="font-medium tabular-nums"
-					>{stats.cpu}%</span
+					>{stats?.cpu ?? 0}%</span
 				>
 			</div>
 			<div class="flex items-center gap-3">
 				<MemoryStick size={20} class="opacity-70" /><span>Memory</span><span
-					class="font-medium tabular-nums">{stats.memory}%</span
+					class="font-medium tabular-nums">{stats?.memory ?? 0}%</span
 				>
 			</div>
 			<div class="flex items-center gap-3">
 				<HardDrive size={20} class="opacity-70" /><span>Disk</span><span
-					class="font-medium tabular-nums">{stats.disk}%</span
+					class="font-medium tabular-nums">{stats?.disk ?? 0}%</span
 				>
 			</div>
 			<div class="flex items-center gap-3 opacity-80">
 				<Thermometer size={20} class="opacity-70" /><span>Temp</span><span class="tabular-nums"
-					>{stats.tempC}°C</span
+					>{stats?.tempC ?? 0}°C</span
 				>
 			</div>
 		</div>

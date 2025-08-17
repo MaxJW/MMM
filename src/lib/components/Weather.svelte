@@ -18,10 +18,14 @@
 	} from 'lucide-svelte';
 	import { WeatherService } from '$lib/services/weatherService';
 	import type { MeteoAlert, WeatherData, WeatherIcon } from '$lib/types/weather';
-	import { THIRTY_MIN } from '$lib/types/util';
+	import { TIMING_STRATEGIES } from '$lib/types/util';
 
 	let weather: WeatherData | null = null;
 	let alerts: MeteoAlert[] | null = null;
+	let weatherLoading = true;
+	let alertsLoading = true;
+	let weatherError: string | null = null;
+	let alertsError: string | null = null;
 
 	const iconMap: Record<WeatherIcon, typeof Icon> = {
 		'clear-day': Sun,
@@ -41,11 +45,29 @@
 	};
 
 	async function loadWeather() {
-		weather = await WeatherService.getWeather();
+		try {
+			weatherLoading = true;
+			weatherError = null;
+			weather = await WeatherService.getWeather();
+		} catch (err) {
+			weatherError = 'Failed to load weather';
+			console.error('Error loading weather:', err);
+		} finally {
+			weatherLoading = false;
+		}
 	}
 
 	async function loadAlerts() {
-		alerts = await WeatherService.getAlerts();
+		try {
+			alertsLoading = true;
+			alertsError = null;
+			alerts = await WeatherService.getAlerts();
+		} catch (err) {
+			alertsError = 'Failed to load alerts';
+			console.error('Error loading alerts:', err);
+		} finally {
+			alertsLoading = false;
+		}
 	}
 
 	// Map severity to tailwind bg/text colors
@@ -80,12 +102,16 @@
 		const interval = setInterval(() => {
 			loadWeather();
 			loadAlerts();
-		}, THIRTY_MIN);
+		}, TIMING_STRATEGIES.STANDARD.interval);
 		return () => clearInterval(interval);
 	});
 </script>
 
-{#if weather}
+{#if weatherLoading}
+	<p class="text-lg">Loading weather…</p>
+{:else if weatherError}
+	<p class="text-lg text-red-400 opacity-80">{weatherError}</p>
+{:else if weather}
 	<div class="flex flex-col items-end select-none">
 		<div class="flex items-center gap-6">
 			<div class="opacity-90">
@@ -109,11 +135,13 @@
 			{/each}
 		</div>
 	</div>
-{:else}
-	<p class="text-lg">Loading weather…</p>
 {/if}
 
-{#if alerts && alerts.length > 0}
+{#if alertsLoading}
+	<!-- Alerts loading state handled by weather loading -->
+{:else if alertsError}
+	<p class="text-sm text-red-400 opacity-80">{alertsError}</p>
+{:else if alerts && alerts.length > 0}
 	<div class="flex flex-col items-end gap-4 select-none">
 		{#each alerts as alert}
 			<div

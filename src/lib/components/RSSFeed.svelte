@@ -4,7 +4,7 @@
 	import { RSSService } from '$lib/services/rssService';
 	import type { Article } from '$lib/types/rss';
 	import dayjs from 'dayjs';
-	import { THIRTY_MIN } from '$lib/types/util';
+	import { TIMING_STRATEGIES } from '$lib/types/util';
 
 	let articles: Article[] = [];
 	let currentArticle: Article | null = null;
@@ -13,8 +13,7 @@
 	let currentIndex = 0;
 
 	let timer: ReturnType<typeof setInterval> | undefined;
-
-	const FADE_INTERVAL = 10000; // 10 seconds per article
+	let feedTimer: ReturnType<typeof setInterval> | undefined;
 
 	async function loadArticles() {
 		try {
@@ -30,7 +29,7 @@
 			}
 		} catch (err) {
 			error = 'Failed to load RSS feed';
-			console.error(err);
+			console.error('Error loading RSS feed:', err);
 		} finally {
 			loading = false;
 		}
@@ -43,20 +42,20 @@
 	onMount(() => {
 		loadArticles();
 
-		// Rotate articles every FADE_INTERVAL milliseconds
+		// Rotate articles every 10 seconds
 		timer = setInterval(() => {
 			if (articles.length > 0) {
 				currentIndex = (currentIndex + 1) % articles.length;
 				currentArticle = articles[currentIndex];
 			}
-		}, FADE_INTERVAL);
+		}, TIMING_STRATEGIES.UI.FADE);
 
-		// Refresh feed every 10 minutes
-		const feedInterval = setInterval(loadArticles, THIRTY_MIN);
+		// Refresh feed every 30 minutes
+		feedTimer = setInterval(loadArticles, TIMING_STRATEGIES.STANDARD.interval);
 
 		return () => {
 			if (timer) clearInterval(timer);
-			clearInterval(feedInterval);
+			if (feedTimer) clearInterval(feedTimer);
 		};
 	});
 </script>

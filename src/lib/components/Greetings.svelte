@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import dayjs from 'dayjs';
+	import { TIMING_STRATEGIES } from '$lib/types/util';
 
-	let now = dayjs();
+	let now: dayjs.Dayjs;
 	let greeting = '';
 
 	let timer: ReturnType<typeof setInterval> | undefined;
@@ -15,14 +16,17 @@
 	}
 
 	onMount(() => {
+		// Initialize now only on the client side
+		now = dayjs();
+
 		// Set initial values
 		updateGreeting();
 
-		// Update every minute instead of every second for efficiency
+		// Update every minute for efficiency
 		timer = setInterval(() => {
 			now = dayjs();
 			updateGreeting();
-		}, 60_000);
+		}, TIMING_STRATEGIES.UI.MINUTE);
 
 		return () => {
 			if (timer) clearInterval(timer);
@@ -32,6 +36,6 @@
 
 <div class="flex flex-col items-center gap-4 select-none">
 	<div class="text-center text-4xl font-semibold tabular-nums opacity-80">
-		{greeting}!
+		{greeting || 'Loading...'}!
 	</div>
 </div>

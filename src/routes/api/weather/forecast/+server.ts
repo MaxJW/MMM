@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '../$types';
 import type { WeatherData } from '$lib/types/weather';
 import { PIRATE_WEATHER_KEY } from '$env/static/private';
-import { THIRTY_MIN } from '$lib/types/util';
+import { TIMING_STRATEGIES } from '$lib/types/util';
 
 class WeatherService {
 	private static cache: { data: WeatherData; expiry: number } | null = null;
@@ -43,7 +43,7 @@ class WeatherService {
 			return this.cache.data;
 		}
 		const data = await this.fetchWeather();
-		this.cache = { data, expiry: Date.now() + THIRTY_MIN };
+		this.cache = { data, expiry: Date.now() + TIMING_STRATEGIES.STANDARD.interval };
 		return data;
 	}
 }

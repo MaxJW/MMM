@@ -3,7 +3,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { XMLParser } from 'fast-xml-parser';
 import type { Article } from '$lib/types/rss';
-import { THIRTY_MIN } from '$lib/types/util';
+import { TIMING_STRATEGIES } from '$lib/types/util';
 
 interface FeedConfig {
 	url: string;
@@ -53,7 +53,7 @@ class RSSService {
 
 		this.cache = {
 			articles,
-			expiry: Date.now() + THIRTY_MIN // cache for 30 minutes
+			expiry: Date.now() + TIMING_STRATEGIES.STANDARD.interval
 		};
 
 		return { articles };

@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
+import type { BinCollection } from '$lib/types/bin';
 
 export class BinService {
-	static async getNextBinCollection(): Promise<{ date: string; bins: string[] } | null> {
+	static async getNextBinCollection(): Promise<BinCollection | null> {
 		try {
 			const response = await fetch('/api/bin-collections');
 
@@ -27,7 +28,7 @@ export class BinService {
 				return null;
 			}
 
-			return data;
+			return data as BinCollection;
 		} catch (error) {
 			console.error('Failed to fetch bin collections:', error);
 			return null;

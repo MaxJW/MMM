@@ -3,14 +3,47 @@ import type { RequestHandler } from './$types';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { dev } from '$app/environment';
+import type { SystemStats } from '$lib/types/system-stats';
+import { TIMING_STRATEGIES } from '$lib/types/util';
 
 const execAsync = promisify(exec);
 
-interface SystemStats {
-	cpu: number;
-	memory: number;
-	disk: number;
-	tempC: number;
+class SystemStatsService {
+	private static cache: { data: SystemStats; expiry: number } | null = null;
+
+	private static async fetchSystemStats(): Promise<SystemStats> {
+		// Return placeholder data in development mode
+		if (dev) {
+			return {
+				cpu: Math.floor(Math.random() * 50) + 10, // Random between 10-60%
+				memory: Math.floor(Math.random() * 40) + 30, // Random between 30-70%
+				disk: Math.floor(Math.random() * 30) + 50, // Random between 50-80%
+				tempC: Math.floor(Math.random() * 20) + 35 // Random between 35-55°C
+			};
+		}
+
+		const [cpu, memory, disk, tempC] = await Promise.all([
+			getCpuUsage(),
+			getMemoryUsage(),
+			getDiskUsage(),
+			getTemperature()
+		]);
+
+		return { cpu, memory, disk, tempC };
+	}
+
+	static async getSystemStats(): Promise<SystemStats> {
+		if (this.cache && Date.now() < this.cache.expiry) {
+			return this.cache.data;
+		}
+
+		const data = await this.fetchSystemStats();
+		this.cache = {
+			data,
+			expiry: Date.now() + TIMING_STRATEGIES.FREQUENT.interval
+		};
+		return data;
+	}
 }
 
 async function getCpuUsage(): Promise<number> {
@@ -80,31 +113,7 @@ async function getTemperature(): Promise<number> {
 
 export const GET: RequestHandler = async () => {
 	try {
-		// Return placeholder data in development mode
-		if (dev) {
-			const mockStats: SystemStats = {
-				cpu: 23,
-				memory: 45,
-				disk: 67,
-				tempC: 42
-			};
-			return json(mockStats);
-		}
-
-		const [cpu, memory, disk, tempC] = await Promise.all([
-			getCpuUsage(),
-			getMemoryUsage(),
-			getDiskUsage(),
-			getTemperature()
-		]);
-
-		const stats: SystemStats = {
-			cpu,
-			memory,
-			disk,
-			tempC
-		};
-
+		const stats = await SystemStatsService.getSystemStats();
 		return json(stats);
 	} catch (error) {
 		console.error('Error fetching system stats:', error);

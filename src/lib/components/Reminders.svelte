@@ -3,12 +3,12 @@
 	import { BinService } from '$lib/services/binService';
 	import { onMount } from 'svelte';
 	import dayjs from 'dayjs';
-	import { THIRTY_MIN } from '$lib/types/util';
+	import { TIMING_STRATEGIES } from '$lib/types/util';
 
 	let binInfo: { date: string; bins: string[] } | null = null;
 	let loading = true;
 	let error: string | null = null;
-	let now = dayjs();
+	let now: dayjs.Dayjs;
 	let milkReminder = { action: '', show: false };
 
 	let timer: ReturnType<typeof setInterval> | undefined;
@@ -32,6 +32,7 @@
 
 	async function loadBinData() {
 		try {
+			loading = true;
 			error = null;
 			binInfo = await BinService.getNextBinCollection();
 			now = dayjs();
@@ -45,10 +46,13 @@
 	}
 
 	onMount(() => {
+		// Initialize now only on the client side
+		now = dayjs();
+
 		// Initial load
 		loadBinData();
 
-		timer = setInterval(loadBinData, THIRTY_MIN);
+		timer = setInterval(loadBinData, TIMING_STRATEGIES.INFREQUENT.interval);
 
 		return () => {
 			if (timer) clearInterval(timer);
