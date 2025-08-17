@@ -1,30 +1,38 @@
-# MMM
-Max's Magic Mirror - As the official one refuses to run on my Raspberry Pi 1
+# sv
 
-![screenshot](https://i.imgur.com/Fk36n9e.png)
+Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
 
-I've created a completely web based version of the project, using the extremely helpful website [MagicMirrorCentral](https://www.magicmirrorcentral.com/dash/), to hopefully be able to simply launch up chromium on the pi, connect to this website (whether via LAMPP or online hosting), and enjoy my mirror!
+## Creating a project
 
-This is obviously not very modular, compared to the very sophisticated MagicMirror<sup>2</sup> repository, so make sure to check them out if you've arrived here somehow!
+If you're seeing this, you've probably already done this step. Congrats!
 
-# Please see the official project [HERE](https://github.com/MichMich/MagicMirror)!
-# And the Dashboard Generator [HERE](https://www.magicmirrorcentral.com/dash/)
+```sh
+# create a new project in the current directory
+npx sv create
 
-# Current Modules
-## Date and Time
-Duh, kind of need this one!
+# create a new project in my-app
+npx sv create my-app
+```
 
-## Weather
-OpenWeatherMap, including weather icons, sunrise/sunset, the lot!
+## Developing
 
-## Spotify
-This one took a long time, so I'm rather proud of it. Simply displays the album artwork along with the title and artist, linked to your account!
+Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
-## Compliments
-Looking good :D
+```sh
+npm run dev
 
-## News
-Imports RSS feed from google news, can be changed easily!
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
 
-## CoinMarket Cap
-View crytpocurrency prices from over the past 24 hours, can be customised to display different coins but currently shows Bitcoin, Litecoin, Ethereum, and BAT
+## Building
+
+To create a production version of your app:
+
+```sh
+npm run build
+```
+
+You can preview the production build with `npm run preview`.
+
+> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
