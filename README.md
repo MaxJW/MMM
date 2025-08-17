@@ -1,22 +1,32 @@
-# sv
+# Magic Mirror Dashboard
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A modern dashboard application built with SvelteKit, designed to display various widgets like weather, RSS feeds, system stats, and more.
 
-## Creating a project
+## Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+- **Weather Widget**: Current weather and forecasts
+- **RSS Feed Reader**: Display RSS feeds
+- **System Statistics**: Monitor system performance
+- **Clock & Greetings**: Time and personalized greetings
+- **Events & Reminders**: Calendar and reminder management
+- **Bin Collections**: Waste collection schedules
+
+## Technology Stack
+
+- **Frontend**: SvelteKit with TypeScript
+- **Styling**: Tailwind CSS
+- **Runtime**: Node.js
+- **Build Tool**: Vite
+
+## Development
+
+Install dependencies:
 
 ```sh
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
+npm install
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Start the development server:
 
 ```sh
 npm run dev
@@ -35,4 +45,14 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## Project Structure
+
+- `src/lib/components/` - Svelte components for each widget
+- `src/lib/services/` - API services for external data
+- `src/routes/api/` - Server-side API endpoints
+- `src/lib/config/` - Configuration files
+- `src/lib/types/` - TypeScript type definitions
+
+## Deployment
+
+This project uses `@sveltejs/adapter-node` for Node.js deployment. The built application can be deployed to any Node.js hosting platform.
