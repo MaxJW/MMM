@@ -2,7 +2,7 @@ import type { DashboardConfig } from '$lib/types/dashboard';
 import Clock from '$lib/components/Clock.svelte';
 import Weather from '$lib/components/Weather.svelte';
 import Reminders from '$lib/components/Reminders.svelte';
-import Events from '$lib/components/Events.svelte';
+import Calendar from '$lib/components/Calendar.svelte';
 import SystemStats from '$lib/components/SystemStats.svelte';
 import Greetings from '$lib/components/Greetings.svelte';
 import RSSFeed from '$lib/components/RSSFeed.svelte';
@@ -21,7 +21,7 @@ export const dashboardConfig: DashboardConfig = {
 		},
 		{
 			id: 'events',
-			component: Events,
+			component: Calendar,
 			area: 'top-left'
 		},
 		{
