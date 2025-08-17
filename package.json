@@ -39,5 +39,8 @@
 		"dayjs": "^1.11.13",
 		"fast-xml-parser": "^5.2.5",
 		"lucide-svelte": "^0.539.0"
-	}
+	},
+  	"overrides": {
+    		"rollup": "4.45.1"
+  	}
 }
