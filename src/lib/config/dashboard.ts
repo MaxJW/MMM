@@ -6,6 +6,7 @@ import Calendar from '$lib/components/Calendar.svelte';
 import SystemStats from '$lib/components/SystemStats.svelte';
 import Greetings from '$lib/components/Greetings.svelte';
 import RSSFeed from '$lib/components/RSSFeed.svelte';
+import WifiQrCode from '$lib/components/WifiQRCode.svelte';
 
 export const dashboardConfig: DashboardConfig = {
 	components: [
@@ -28,6 +29,11 @@ export const dashboardConfig: DashboardConfig = {
 			id: 'system-stats',
 			component: SystemStats,
 			area: 'bottom-right'
+		},
+		{
+			id: 'wifi-qr-code',
+			component: WifiQrCode,
+			area: 'bottom-left'
 		},
 		{
 			id: 'greetings',

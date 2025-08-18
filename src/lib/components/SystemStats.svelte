@@ -49,7 +49,7 @@
 <div class="flex flex-col items-end gap-3 select-none">
 	<div class="flex items-center gap-3 opacity-90">
 		<Activity size={24} />
-		<h2 class="text-lg tracking-wide uppercase">System</h2>
+		<h2 class="text-lg tracking-wide">System</h2>
 	</div>
 
 	{#if error}
@@ -80,8 +80,8 @@
 				>
 			</div>
 			<div class="flex items-center gap-3 opacity-90">
-				<Thermometer size={20} class="opacity-80" /><span>Temp</span><span class="tabular-nums"
-					>{stats?.tempC ?? 0}°C</span
+				<Thermometer size={20} class="opacity-80" /><span>Temp</span><span
+					class="font-medium tabular-nums">{stats?.tempC ?? 0}°C</span
 				>
 			</div>
 		</div>

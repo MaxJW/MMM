@@ -100,8 +100,7 @@ class GoogleCalendarService {
 					timeMax: end.toISOString(),
 					singleEvents: true,
 					orderBy: 'startTime',
-					eventTypes: ['birthday', 'default', 'focusTime', 'fromGmail', 'outOfOffice'],
-					maxResults: 14
+					eventTypes: ['birthday', 'default', 'focusTime', 'fromGmail', 'outOfOffice']
 				});
 				const eventsUnknown = (res.data.items || []) as unknown[];
 				return eventsUnknown.map((e) => ({ event: e as GoogleEventLite, calendar: cal }));

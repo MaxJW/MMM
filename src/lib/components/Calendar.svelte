@@ -5,6 +5,7 @@
 	import MapPin from '@lucide/svelte/icons/map-pin';
 	import { CalendarService, type CalendarEvent } from '$lib/services/calendarService';
 	import { TIMING_STRATEGIES } from '$lib/types/util';
+	import CalendarDays from '@lucide/svelte/icons/calendar-days';
 
 	let events: CalendarEvent[][] | null = null;
 	let loading = true;
@@ -33,7 +34,11 @@
 	});
 </script>
 
-<div class="flex flex-col items-start gap-2 select-none">
+<div class="flex flex-col items-start gap-3 select-none">
+	<div class="flex items-center gap-3 opacity-90">
+		<CalendarDays size={24} />
+		<h2 class="text-lg tracking-wide">Upcoming Events</h2>
+	</div>
 	{#if loading}
 		<p class="text-lg">Loading calendar…</p>
 	{:else if error}
