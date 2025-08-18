@@ -22,6 +22,10 @@ class RSSService {
 		{
 			url: 'https://feeds.skynews.com/feeds/rss/home.xml',
 			sourceName: 'Sky News'
+		},
+		{
+			url: 'https://www.thecourier.co.uk/feed/',
+			sourceName: 'The Courier'
 		}
 	];
 

@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
-import { google } from 'googleapis';
+import { google, type calendar_v3 } from 'googleapis';
 import dayjs from 'dayjs';
 import { TIMING_STRATEGIES } from '$lib/types/util';
 import { TokenStorage } from '$lib/services/tokenStorage';
@@ -81,7 +81,7 @@ class GoogleCalendarService {
 			throw new Error('Authentication failed');
 		}
 
-		const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+		const calendar: calendar_v3.Calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
 		const calList = await calendar.calendarList.list();
 		const itemsUnknown = (calList.data.items || []) as unknown[];
@@ -99,7 +99,9 @@ class GoogleCalendarService {
 					timeMin: now.toISOString(),
 					timeMax: end.toISOString(),
 					singleEvents: true,
-					orderBy: 'startTime'
+					orderBy: 'startTime',
+					eventTypes: ['birthday', 'default', 'focusTime', 'fromGmail', 'outOfOffice'],
+					maxResults: 14
 				});
 				const eventsUnknown = (res.data.items || []) as unknown[];
 				return eventsUnknown.map((e) => ({ event: e as GoogleEventLite, calendar: cal }));

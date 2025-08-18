@@ -14,23 +14,7 @@
 		try {
 			loading = true;
 			error = null;
-			const allEvents = await CalendarService.getEvents();
-
-			// limit to 14 and re-group by date
-			events = !allEvents
-				? null
-				: allEvents
-						.flatMap((dayEvents) => dayEvents)
-						.slice(0, 14)
-						.reduce((acc: CalendarEvent[][], event) => {
-							const lastGroup = acc[acc.length - 1];
-							if (!lastGroup || lastGroup[0].date !== event.date) {
-								acc.push([event]);
-							} else {
-								lastGroup.push(event);
-							}
-							return acc;
-						}, []);
+			events = await CalendarService.getEvents();
 		} catch (e) {
 			error = 'Failed to load calendar';
 		} finally {
