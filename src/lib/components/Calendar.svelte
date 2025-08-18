@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { CalendarDays, Clock, Circle } from 'lucide-svelte';
+	import { Clock, Circle } from 'lucide-svelte';
 	import { CalendarService, type CalendarEvent } from '$lib/services/calendarService';
 	import { TIMING_STRATEGIES } from '$lib/types/util';
 
@@ -12,7 +12,23 @@
 		try {
 			loading = true;
 			error = null;
-			events = await CalendarService.getEvents();
+			const allEvents = await CalendarService.getEvents();
+
+			// limit to 14 and re-group by date
+			events = !allEvents
+				? null
+				: allEvents
+						.flatMap((dayEvents) => dayEvents)
+						.slice(0, 14)
+						.reduce((acc: CalendarEvent[][], event) => {
+							const lastGroup = acc[acc.length - 1];
+							if (!lastGroup || lastGroup[0].date !== event.date) {
+								acc.push([event]);
+							} else {
+								lastGroup.push(event);
+							}
+							return acc;
+						}, []);
 		} catch (e) {
 			error = 'Failed to load calendar';
 		} finally {
@@ -41,26 +57,28 @@
 			Connect Google Calendar
 		</button>
 	{:else}
-		<div>
+		<div class="relative">
 			{#each events as dayEvents}
 				{#if dayEvents.length > 0}
 					{@const firstEvent = dayEvents[0]}
 					<div class="flex">
 						<!-- Date column -->
-						<div class="min-w- flex min-w-11 flex-col items-center">
+						<div class="flex min-w-11 flex-col items-center">
 							<div class="text-3xl font-bold">{firstEvent.date}</div>
 							<div class="text-base font-medium opacity-90">{firstEvent.day}</div>
 						</div>
 
 						<!-- Events column with per-event timeline -->
 						<div class="flex-1 pb-3 pl-4">
-							{#each dayEvents as event}
+							{#each dayEvents as event, i}
 								<div class="relative">
 									<!-- Event-specific timeline bar -->
 									<div
 										class="absolute top-0 bottom-0 left-0 w-0.5"
 										class:bg-green-500={event.category === 'personal'}
 										class:bg-blue-500={event.category === 'work'}
+										class:rounded-t={i === 0}
+										class:rounded-b={i === dayEvents.length - 1}
 									></div>
 
 									<div class="flex items-start pl-3 font-medium">
@@ -84,6 +102,9 @@
 					</div>
 				{/if}
 			{/each}
+			<div
+				class="pointer-events-none absolute right-0 bottom-0 left-0 h-2/6 bg-gradient-to-t from-black to-transparent"
+			></div>
 		</div>
 	{/if}
 </div>

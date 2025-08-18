@@ -1,5 +1,21 @@
 @import 'tailwindcss';
 
+html {
+    background-color: black;
+    cursor: none;
+}
+
 body {
-    cursor: none !important;
+    animation: nudge 120s infinite alternate;
+    overflow: hidden;
+}
+
+@keyframes nudge {
+    from {
+        transform: translateY(0px);
+    }
+
+    to {
+        transform: translateY(2px);
+    }
 }
