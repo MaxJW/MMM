@@ -39,7 +39,6 @@ class GoogleCalendarService {
 			return this.cache.data;
 		}
 
-		// Load tokens from file
 		const tokenData = await TokenStorage.loadTokens();
 		if (!tokenData) {
 			throw new Error('Not authenticated');
@@ -57,7 +56,6 @@ class GoogleCalendarService {
 			redirectUri: `${origin}/api/google/callback`
 		});
 
-		// Set credentials
 		oauth2Client.setCredentials({
 			refresh_token: tokenData.refreshToken,
 			access_token: tokenData.accessToken,
@@ -65,10 +63,8 @@ class GoogleCalendarService {
 		});
 
 		try {
-			// This will automatically refresh the access token if needed
 			const { token } = await oauth2Client.getAccessToken();
 
-			// Save updated tokens if they changed
 			if (token !== tokenData.accessToken) {
 				await TokenStorage.saveTokens({
 					...tokenData,
@@ -135,6 +131,27 @@ class GoogleCalendarService {
 			};
 			if (!grouped[key]) grouped[key] = [];
 			grouped[key].push(simplified);
+		}
+
+		// Sort events within each day
+		for (const key in grouped) {
+			grouped[key].sort((a, b) => {
+				// All-day events first
+				if (a.isAllDay && !b.isAllDay) {
+					return -1;
+				}
+				if (!a.isAllDay && b.isAllDay) {
+					return 1;
+				}
+				// Then sort by time
+				if (a.time < b.time) {
+					return -1;
+				}
+				if (a.time > b.time) {
+					return 1;
+				}
+				return 0;
+			});
 		}
 
 		const orderedKeys = Object.keys(grouped).sort();

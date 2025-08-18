@@ -20,8 +20,8 @@ class RSSService {
 
 	private static feeds: FeedConfig[] = [
 		{
-			url: 'https://feeds.bbci.co.uk/news/rss.xml',
-			sourceName: 'BBC News'
+			url: 'https://feeds.skynews.com/feeds/rss/home.xml',
+			sourceName: 'Sky News'
 		}
 	];
 

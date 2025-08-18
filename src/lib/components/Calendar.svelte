@@ -83,9 +83,9 @@
 										class:rounded-b={i === dayEvents.length - 1}
 									></div>
 
-									<div class="flex items-start pl-3 font-medium">
+									<div class="flex items-start pl-3">
 										<div class="flex-1">
-											<div class="text-lg font-medium">{event.title}</div>
+											<div class="text-lg">{event.title}</div>
 											<div class="flex items-center gap-2 text-base opacity-70">
 												<div class="flex-shrink-0">
 													{#if event.isAllDay}

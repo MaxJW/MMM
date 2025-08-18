@@ -18,7 +18,7 @@
 		'bottom-right': 'absolute bottom-20 right-0 flex items-end gap-6 flex-col',
 
 		notifications:
-			'absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-6 w-10/12'
+			'absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-6 w-2/3'
 	};
 
 	function getComponentsForArea(area: DashboardArea) {
@@ -26,7 +26,7 @@
 	}
 </script>
 
-<div class="min-h-screen overflow-hidden bg-black text-neutral-100 select-none">
+<div class="min-h-screen overflow-hidden bg-black font-bold text-neutral-100 select-none">
 	<div class="relative inset-0 h-full w-full">
 		<div class="grid h-screen w-full grid-cols-[1fr_1fr_1fr] grid-rows-[auto_1fr_auto_auto]">
 			{#each Object.keys(areaGridClasses) as area (area)}
