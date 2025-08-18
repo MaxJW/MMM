@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { Activity, Cpu, HardDrive, MemoryStick, Thermometer } from 'lucide-svelte';
+	import Activity from '@lucide/svelte/icons/activity';
+	import Cpu from '@lucide/svelte/icons/cpu';
+	import HardDrive from '@lucide/svelte/icons/hard-drive';
+	import MemoryStick from '@lucide/svelte/icons/memory-stick';
+	import Thermometer from '@lucide/svelte/icons/thermometer';
 	import { onMount } from 'svelte';
 	import { SystemStatsService } from '$lib/services/systemStatsService';
 	import type { SystemStats } from '$lib/types/system-stats';

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { Clock, Circle } from 'lucide-svelte';
+	import Circle from '@lucide/svelte/icons/circle';
+	import Clock from '@lucide/svelte/icons/clock';
 	import { CalendarService, type CalendarEvent } from '$lib/services/calendarService';
 	import { TIMING_STRATEGIES } from '$lib/types/util';
 

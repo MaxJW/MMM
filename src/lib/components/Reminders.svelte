@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { Milk, Trash2, CircleAlert } from 'lucide-svelte';
+	import Milk from '@lucide/svelte/icons/milk';
+	import Trash2 from '@lucide/svelte/icons/trash-2';
+	import CircleAlert from '@lucide/svelte/icons/circle-alert';
 	import { BinService } from '$lib/services/binService';
 	import { onMount } from 'svelte';
 	import dayjs from 'dayjs';

@@ -1,21 +1,20 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { CircleAlert, type Icon } from 'lucide-svelte';
-	import {
-		CloudFog,
-		CloudHail,
-		CloudLightning,
-		CloudMoon,
-		CloudRain,
-		CloudSun,
-		CloudSunRain,
-		Cloudy,
-		Snowflake,
-		Sun,
-		CloudOff,
-		Moon,
-		Wind
-	} from 'lucide-svelte';
+	import type { Icon } from '@lucide/svelte';
+	import CircleAlert from '@lucide/svelte/icons/circle-alert';
+	import CloudFog from '@lucide/svelte/icons/cloud-fog';
+	import CloudHail from '@lucide/svelte/icons/cloud-hail';
+	import CloudLightning from '@lucide/svelte/icons/cloud-lightning';
+	import CloudMoon from '@lucide/svelte/icons/cloud-moon';
+	import CloudRain from '@lucide/svelte/icons/cloud-rain';
+	import CloudSun from '@lucide/svelte/icons/cloud-sun';
+	import CloudSunRain from '@lucide/svelte/icons/cloud-sun-rain';
+	import Cloudy from '@lucide/svelte/icons/cloudy';
+	import Snowflake from '@lucide/svelte/icons/snowflake';
+	import Sun from '@lucide/svelte/icons/sun';
+	import CloudOff from '@lucide/svelte/icons/cloud-off';
+	import Moon from '@lucide/svelte/icons/moon';
+	import Wind from '@lucide/svelte/icons/wind';
 	import { WeatherService } from '$lib/services/weatherService';
 	import type { MeteoAlert, WeatherData, WeatherIcon } from '$lib/types/weather';
 	import { TIMING_STRATEGIES } from '$lib/types/util';
