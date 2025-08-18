@@ -4,6 +4,7 @@ import { env } from '$env/dynamic/private';
 import { google } from 'googleapis';
 import dayjs from 'dayjs';
 import { TIMING_STRATEGIES } from '$lib/types/util';
+import { TokenStorage } from '$lib/services/tokenStorage';
 
 type SimplifiedEvent = {
 	day: string;
@@ -33,13 +34,15 @@ type GoogleEventLite = {
 class GoogleCalendarService {
 	private static cache: { data: SimplifiedEvent[][]; expiry: number } | null = null;
 
-	static async getEvents(
-		accessToken: string | undefined,
-		refreshToken: string | undefined,
-		origin: string
-	): Promise<SimplifiedEvent[][]> {
+	static async getEvents(origin: string): Promise<SimplifiedEvent[][]> {
 		if (this.cache && Date.now() < this.cache.expiry) {
 			return this.cache.data;
+		}
+
+		// Load tokens from file
+		const tokenData = await TokenStorage.loadTokens();
+		if (!tokenData) {
+			throw new Error('Not authenticated');
 		}
 
 		const GOOGLE_CLIENT_ID = env.GOOGLE_CLIENT_ID;
@@ -48,22 +51,35 @@ class GoogleCalendarService {
 			throw new Error('Missing Google credentials');
 		}
 
-		if (!accessToken && !refreshToken) {
-			throw new Error('Not authenticated');
-		}
-
 		const oauth2Client = new google.auth.OAuth2({
 			clientId: GOOGLE_CLIENT_ID,
 			clientSecret: GOOGLE_CLIENT_SECRET,
 			redirectUri: `${origin}/api/google/callback`
 		});
 
-		if (accessToken) oauth2Client.setCredentials({ access_token: accessToken });
-		if (refreshToken) oauth2Client.setCredentials({ refresh_token: refreshToken });
-
-		await oauth2Client.getAccessToken().catch((err: unknown) => {
-			console.error('Failed to refresh Google access token', err);
+		// Set credentials
+		oauth2Client.setCredentials({
+			refresh_token: tokenData.refreshToken,
+			access_token: tokenData.accessToken,
+			expiry_date: tokenData.expiryDate
 		});
+
+		try {
+			// This will automatically refresh the access token if needed
+			const { token } = await oauth2Client.getAccessToken();
+
+			// Save updated tokens if they changed
+			if (token !== tokenData.accessToken) {
+				await TokenStorage.saveTokens({
+					...tokenData,
+					accessToken: token || undefined,
+					expiryDate: oauth2Client.credentials.expiry_date || undefined
+				});
+			}
+		} catch (err) {
+			console.error('Failed to refresh Google access token', err);
+			throw new Error('Authentication failed');
+		}
 
 		const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
@@ -129,11 +145,9 @@ class GoogleCalendarService {
 	}
 }
 
-export const GET: RequestHandler = async ({ cookies, url }) => {
+export const GET: RequestHandler = async ({ url }) => {
 	try {
-		const accessToken = cookies.get('gc_access_token');
-		const refreshToken = cookies.get('gc_refresh_token');
-		const data = await GoogleCalendarService.getEvents(accessToken, refreshToken, url.origin);
+		const data = await GoogleCalendarService.getEvents(url.origin);
 		return json(data);
 	} catch (error) {
 		if ((error as Error).message === 'Not authenticated') {

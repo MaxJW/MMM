@@ -1,9 +1,9 @@
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
 import { google } from 'googleapis';
-import { dev } from '$app/environment';
+import { TokenStorage } from '$lib/services/tokenStorage';
 
-export const GET: RequestHandler = async ({ url, cookies }) => {
+export const GET: RequestHandler = async ({ url }) => {
 	const code = url.searchParams.get('code');
 	if (!code) {
 		return new Response('Missing code', { status: 400 });
@@ -24,29 +24,13 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 
 	try {
 		const { tokens } = await oauth2Client.getToken(code);
-		const accessToken = tokens.access_token ?? '';
-		const refreshToken = tokens.refresh_token ?? '';
-		const expiresIn = tokens.expiry_date
-			? Math.max(0, Math.floor((tokens.expiry_date - Date.now()) / 1000))
-			: 3600;
 
-		if (refreshToken) {
-			cookies.set('gc_refresh_token', refreshToken, {
-				path: '/',
-				httpOnly: true,
-				secure: !dev,
-				sameSite: 'lax',
-				maxAge: 60 * 60 * 24 * 365
-			});
-		}
-
-		if (accessToken) {
-			cookies.set('gc_access_token', accessToken, {
-				path: '/',
-				httpOnly: true,
-				secure: !dev,
-				sameSite: 'lax',
-				maxAge: expiresIn
+		// Save tokens to file instead of cookies
+		if (tokens.refresh_token) {
+			await TokenStorage.saveTokens({
+				refreshToken: tokens.refresh_token,
+				accessToken: tokens.access_token || undefined,
+				expiryDate: tokens.expiry_date || undefined
 			});
 		}
 
