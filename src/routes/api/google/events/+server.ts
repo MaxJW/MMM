@@ -11,6 +11,7 @@ type SimplifiedEvent = {
 	month: string;
 	title: string;
 	time: string;
+	location?: string;
 	isAllDay: boolean;
 	category?: 'work' | 'personal';
 };
@@ -26,6 +27,7 @@ type GoogleEventLite = {
 	summary?: string;
 	start?: { dateTime?: string; date?: string };
 	end?: { dateTime?: string; date?: string };
+	location?: string;
 };
 
 class GoogleCalendarService {
@@ -111,6 +113,7 @@ class GoogleCalendarService {
 				month,
 				title: event.summary || '(No title)',
 				time,
+				location: event.location ? event.location.split(',')[0] : undefined,
 				isAllDay,
 				category: cal.primary ? 'personal' : 'work'
 			};

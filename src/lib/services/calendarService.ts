@@ -4,6 +4,7 @@ export type CalendarEvent = {
 	month: string;
 	title: string;
 	time: string;
+	location?: string;
 	isAllDay: boolean;
 	category?: 'work' | 'personal';
 };

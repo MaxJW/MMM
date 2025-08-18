@@ -17,7 +17,8 @@
 			'absolute bottom-20 left-1/2 -translate-x-1/2 flex items-center gap-6 flex-col justify-end',
 		'bottom-right': 'absolute bottom-20 right-0 flex items-end gap-6 flex-col',
 
-		notifications: 'absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-6'
+		notifications:
+			'absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-6 w-10/12'
 	};
 
 	function getComponentsForArea(area: DashboardArea) {

@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import Circle from '@lucide/svelte/icons/circle';
 	import Clock from '@lucide/svelte/icons/clock';
+	import MapPin from '@lucide/svelte/icons/map-pin';
 	import { CalendarService, type CalendarEvent } from '$lib/services/calendarService';
 	import { TIMING_STRATEGIES } from '$lib/types/util';
 
@@ -95,6 +96,14 @@
 												</div>
 												{event.time}
 											</div>
+											{#if event.location}
+												<div class="flex items-center gap-2 text-base opacity-70">
+													<div class="flex-shrink-0">
+														<MapPin size={16} class="stroke-3 opacity-70" />
+													</div>
+													{event.location}
+												</div>
+											{/if}
 										</div>
 									</div>
 								</div>
