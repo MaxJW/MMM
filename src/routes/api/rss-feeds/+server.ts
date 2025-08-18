@@ -29,12 +29,22 @@ class RSSService {
 		}
 	];
 
+	private static decodeNumericEntities(str: string): string {
+		return str
+			.replace(/&#8211;/g, '–') // en dash
+			.replace(/&#8216;/g, '‘') // left single quote
+			.replace(/&#8217;/g, '’'); // right single quote
+	}
+
 	static async fetchFeed(feed: FeedConfig): Promise<Article[]> {
 		const res = await fetch(feed.url);
 		if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 		const xmlText = await res.text();
 
-		const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '' });
+		const parser = new XMLParser({
+			ignoreAttributes: false,
+			attributeNamePrefix: ''
+		});
 		const data = parser.parse(xmlText);
 
 		const channel = data.rss?.channel || data.feed;
@@ -43,7 +53,7 @@ class RSSService {
 		const items = Array.isArray(channel?.item) ? channel.item : channel?.item ? [channel.item] : [];
 
 		return items.map((item: ParsedRSSItem) => ({
-			title: item.title || 'Untitled',
+			title: item.title ? this.decodeNumericEntities(item.title) : 'Untitled',
 			source: feedTitle,
 			date: item.pubDate ? new Date(item.pubDate).toISOString() : ''
 		}));
@@ -54,6 +64,13 @@ class RSSService {
 
 		const allArticles = await Promise.all(this.feeds.map((feed) => this.fetchFeed(feed)));
 		const articles = allArticles.flat();
+
+		// Sort newest → oldest
+		articles.sort((a, b) => {
+			const dateA = a.date ? new Date(a.date).getTime() : 0;
+			const dateB = b.date ? new Date(b.date).getTime() : 0;
+			return dateB - dateA;
+		});
 
 		this.cache = {
 			articles,
