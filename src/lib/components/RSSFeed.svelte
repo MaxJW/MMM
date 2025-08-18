@@ -62,11 +62,11 @@
 
 <div class="flex flex-col items-center gap-4 select-none">
 	{#if loading}
-		<div class="flex items-center gap-2 text-xl opacity-70">
+		<div class="flex items-center gap-2 text-2xl opacity-80">
 			<span>Loading feed...</span>
 		</div>
 	{:else if error}
-		<div class="flex items-center gap-2 text-xl opacity-70">
+		<div class="flex items-center gap-2 text-2xl opacity-80">
 			<span>Feed unavailable</span>
 		</div>
 	{:else if currentArticle}
@@ -74,10 +74,10 @@
 			{#key currentArticle.title}
 				<!-- put the whole article in one fading block -->
 				<div class="flex flex-col items-center gap-1 text-center [grid-area:1/1]" transition:fade>
-					<span class="text-xl font-medium">
+					<span class="text-2xl font-medium">
 						{currentArticle.title}
 					</span>
-					<span class="text-sm opacity-70">
+					<span class="text-base opacity-80">
 						{currentArticle.source}
 						{#if currentArticle.date}
 							· {formatDate(currentArticle.date)}
@@ -87,7 +87,7 @@
 			{/key}
 		</div>
 	{:else}
-		<div class="flex items-center gap-2 text-xl opacity-70">
+		<div class="flex items-center gap-2 text-xl opacity-80">
 			<span>No articles available</span>
 		</div>
 	{/if}

@@ -43,40 +43,40 @@
 </script>
 
 <div class="flex flex-col items-end gap-3 select-none">
-	<div class="flex items-center gap-3 opacity-80">
+	<div class="flex items-center gap-3 opacity-90">
 		<Activity size={24} />
-		<h2 class="text-base tracking-wide uppercase">System</h2>
+		<h2 class="text-lg tracking-wide uppercase">System</h2>
 	</div>
 
 	{#if error}
-		<div class="text-sm text-red-400 opacity-80">
+		<div class="text-base text-red-400 opacity-90">
 			{error}
 		</div>
 	{/if}
 
 	{#if loading && !hasInitialData}
-		<div class="flex flex-col items-end gap-2 text-base opacity-70">
+		<div class="flex flex-col items-end gap-2 text-lg opacity-80">
 			<div>Loading...</div>
 		</div>
 	{:else}
-		<div class="flex flex-col items-end gap-2 text-base">
+		<div class="flex flex-col items-end gap-2 text-lg">
 			<div class="flex items-center gap-3">
-				<Cpu size={20} class="opacity-70" /><span>CPU</span><span class="font-medium tabular-nums"
+				<Cpu size={20} class="opacity-80" /><span>CPU</span><span class="font-medium tabular-nums"
 					>{stats?.cpu ?? 0}%</span
 				>
 			</div>
 			<div class="flex items-center gap-3">
-				<MemoryStick size={20} class="opacity-70" /><span>Memory</span><span
+				<MemoryStick size={20} class="opacity-80" /><span>Memory</span><span
 					class="font-medium tabular-nums">{stats?.memory ?? 0}%</span
 				>
 			</div>
 			<div class="flex items-center gap-3">
-				<HardDrive size={20} class="opacity-70" /><span>Disk</span><span
+				<HardDrive size={20} class="opacity-80" /><span>Disk</span><span
 					class="font-medium tabular-nums">{stats?.disk ?? 0}%</span
 				>
 			</div>
-			<div class="flex items-center gap-3 opacity-80">
-				<Thermometer size={20} class="opacity-70" /><span>Temp</span><span class="tabular-nums"
+			<div class="flex items-center gap-3 opacity-90">
+				<Thermometer size={20} class="opacity-80" /><span>Temp</span><span class="tabular-nums"
 					>{stats?.tempC ?? 0}°C</span
 				>
 			</div>

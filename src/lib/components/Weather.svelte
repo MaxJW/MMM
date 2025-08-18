@@ -108,28 +108,28 @@
 </script>
 
 {#if weatherLoading}
-	<p class="text-lg">Loading weather…</p>
+	<p class="text-xl">Loading weather…</p>
 {:else if weatherError}
-	<p class="text-lg text-red-400 opacity-80">{weatherError}</p>
+	<p class="text-xl text-red-400 opacity-90">{weatherError}</p>
 {:else if weather}
 	<div class="flex flex-col items-end select-none">
 		<div class="flex items-center gap-6">
-			<div class="opacity-90">
+			<div>
 				<svelte:component this={iconMap[weather.current.icon]} size={80} />
 			</div>
-			<div class="text-7xl font-semibold tabular-nums">{weather.current.tempC}°C</div>
+			<div class="text-8xl font-semibold tabular-nums">{weather.current.tempC}°C</div>
 		</div>
-		<div class="my-3 max-w-[24rem] text-right text-xl leading-snug opacity-80">
+		<div class="my-3 max-w-[24rem] text-right text-2xl leading-snug opacity-90">
 			{weather.current.condition}
 		</div>
-		<div class="flex items-center gap-10 opacity-90">
+		<div class="flex items-center gap-10">
 			{#each weather.forecast as day}
 				<div class="flex flex-col items-center gap-3">
-					<div class="text-lg opacity-80">{day.day}</div>
+					<div class="text-xl opacity-80">{day.day}</div>
 					<svelte:component this={iconMap[day.icon]} size={36} />
-					<div class="text-lg tabular-nums">
-						<span class="opacity-90">{day.hi}°</span>
-						<span class="opacity-60">/{day.lo}°</span>
+					<div class="text-xl tabular-nums">
+						<span>{day.hi}°</span>
+						<span class="opacity-70">/{day.lo}°</span>
 					</div>
 				</div>
 			{/each}
@@ -140,7 +140,7 @@
 {#if alertsLoading}
 	<!-- Alerts loading state handled by weather loading -->
 {:else if alertsError}
-	<p class="text-sm text-red-400 opacity-80">{alertsError}</p>
+	<p class="text-base text-red-400 opacity-90">{alertsError}</p>
 {:else if alerts && alerts.length > 0}
 	<div class="flex flex-col items-end gap-4 select-none">
 		{#each alerts as alert}
@@ -151,16 +151,16 @@
 				<!-- Title with exclamation icon -->
 				<div class="mb-2 flex items-center gap-4">
 					<CircleAlert size={30} class="flex-shrink-0" />
-					<div class="flex-1 text-lg leading-tight font-semibold">
+					<div class="flex-1 text-xl leading-tight font-semibold">
 						{alert.event}
-						<div class="text-xs opacity-70">
+						<div class="text-sm opacity-80">
 							{formatDate(alert.start)} – {formatDate(alert.end)}
 						</div>
 					</div>
 				</div>
 
 				<!-- Full description -->
-				<div class="mb-2 text-sm leading-snug break-words opacity-90">
+				<div class="mb-2 text-base leading-snug break-words">
 					{alert.description ?? alert.instruction}
 				</div>
 			</div>

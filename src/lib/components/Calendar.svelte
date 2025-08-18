@@ -50,10 +50,10 @@
 						<div class="flex min-w-16 flex-col items-center">
 							<div class="flex items-center gap-2">
 								<!-- <div class="h-2 w-2 rounded-full bg-blue-400"></div> -->
-								<div class="text-2xl font-bold">{firstEvent.date}</div>
+								<div class="text-3xl font-bold">{firstEvent.date}</div>
 							</div>
-							<div class="text-sm opacity-80">{firstEvent.day}</div>
-							<div class="text-sm opacity-80">{firstEvent.month}</div>
+							<div class="text-base opacity-90">{firstEvent.day}</div>
+							<div class="text-base opacity-90">{firstEvent.month}</div>
 						</div>
 
 						<!-- Events column with timeline -->
@@ -66,8 +66,8 @@
 									<div class="relative">
 										<div class="flex items-start gap-3">
 											<div class="flex-1">
-												<div class="text-base font-medium">{event.title}</div>
-												<div class="flex items-center gap-2 text-sm opacity-70">
+												<div class="text-lg font-medium">{event.title}</div>
+												<div class="flex items-center gap-2 text-base opacity-70">
 													<div class="flex-shrink-0">
 														{#if event.isAllDay}
 															<Circle size={16} class="opacity-70" />

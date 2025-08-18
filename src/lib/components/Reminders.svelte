@@ -63,21 +63,21 @@
 <div class="flex flex-col items-center gap-4 select-none">
 	{#if loading}
 		<div class="flex flex-col items-center gap-2">
-			<div class="flex items-center gap-2 text-xl opacity-70">
+			<div class="flex items-center gap-2 text-2xl opacity-80">
 				<Trash2 size={22} />
 				<span>Loading bin info...</span>
 			</div>
 		</div>
 	{:else if error}
 		<div class="flex flex-col items-center gap-2">
-			<div class="flex items-center gap-2 text-xl opacity-70">
+			<div class="flex items-center gap-2 text-2xl opacity-80">
 				<CircleAlert size={22} />
 				<span>Bin info unavailable</span>
 			</div>
 		</div>
 	{:else if binInfo}
 		<div class="flex flex-col items-center gap-2">
-			<div class="flex items-center gap-2 text-xl">
+			<div class="flex items-center gap-2 text-2xl">
 				<Trash2 size={28} class="opacity-80" />
 				<span class="opacity-80">{BinService.formatDate(binInfo.date)}:</span>
 				<span class="font-medium">
@@ -88,7 +88,7 @@
 	{/if}
 
 	{#if milkReminder.show}
-		<div class="flex items-center gap-3 text-xl opacity-80">
+		<div class="flex items-center gap-3 text-2xl opacity-90">
 			<Milk size={28} class="opacity-80" />
 			<span>{milkReminder.action}</span>
 		</div>

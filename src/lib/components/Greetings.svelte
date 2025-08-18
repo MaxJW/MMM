@@ -35,7 +35,7 @@
 </script>
 
 <div class="flex flex-col items-center gap-4 select-none">
-	<div class="text-center text-4xl font-semibold tabular-nums opacity-80">
+	<div class="text-center text-5xl font-semibold tabular-nums opacity-90">
 		{greeting || 'Loading...'}!
 	</div>
 </div>

@@ -34,8 +34,8 @@
 
 <div class="flex flex-col items-start justify-start gap-3">
 	<div class="-mt-4 flex items-end gap-4 leading-none">
-		<div class="text-8xl font-semibold tabular-nums">{now ? formatTime(now) : '--:--'}</div>
-		<div class="pb-3 text-4xl tabular-nums opacity-70">{now ? formatSeconds(now) : '--'}</div>
+		<div class="text-9xl font-semibold tabular-nums">{now ? formatTime(now) : '--:--'}</div>
+		<div class="pb-3 text-5xl tabular-nums opacity-90">{now ? formatSeconds(now) : '--'}</div>
 	</div>
-	<div class="text-2xl opacity-80">{now ? formatDate(now) : 'Loading...'}</div>
+	<div class="text-3xl opacity-90">{now ? formatDate(now) : 'Loading...'}</div>
 </div>
