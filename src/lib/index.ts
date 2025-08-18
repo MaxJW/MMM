@@ -3,6 +3,7 @@ export { BinService } from './services/binService';
 export { WeatherService } from './services/weatherService';
 export { RSSService } from './services/rssService';
 export { SystemStatsService } from './services/systemStatsService';
+export { CalendarService } from './services/calendarService';
 
 // Types
 export type { BinCollection, BinApiResponse } from './types/bin';

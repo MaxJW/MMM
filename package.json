@@ -38,6 +38,7 @@
 	"dependencies": {
 		"dayjs": "^1.11.13",
 		"fast-xml-parser": "^5.2.5",
+		"googleapis": "^156.0.0",
 		"lucide-svelte": "^0.539.0"
 	},
 	"overrides": {
