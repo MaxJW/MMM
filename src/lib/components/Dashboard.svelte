@@ -10,7 +10,7 @@
 
 		'middle-left': 'absolute top-1/2 left-0 -translate-y-1/2 flex items-start gap-6 flex-col',
 		'middle-right': 'absolute top-1/2 right-0 -translate-y-1/2 flex items-end gap-6 flex-col',
-		center: 'absolute left-1/2 bottom-1/3 -translate-x-1/2',
+		center: 'absolute left-1/2 bottom-1/4 -translate-x-1/2',
 
 		'bottom-left': 'absolute bottom-20 left-0 items-start gap-6 flex flex-col justify-end',
 		'bottom-center':

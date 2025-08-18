@@ -41,47 +41,45 @@
 			Connect Google Calendar
 		</button>
 	{:else}
-		<div class="space-y-2">
+		<div>
 			{#each events as dayEvents}
 				{#if dayEvents.length > 0}
 					{@const firstEvent = dayEvents[0]}
 					<div class="flex">
 						<!-- Date column -->
-						<div class="flex min-w-16 flex-col items-center">
-							<div class="flex items-center gap-2">
-								<!-- <div class="h-2 w-2 rounded-full bg-blue-400"></div> -->
-								<div class="text-3xl font-bold">{firstEvent.date}</div>
-							</div>
-							<div class="text-base opacity-90">{firstEvent.day}</div>
-							<div class="text-base opacity-90">{firstEvent.month}</div>
+						<div class="min-w- flex min-w-11 flex-col items-center">
+							<div class="text-3xl font-bold">{firstEvent.date}</div>
+							<div class="text-base font-medium opacity-90">{firstEvent.day}</div>
 						</div>
 
-						<!-- Events column with timeline -->
-						<div class="relative flex-1">
-							<!-- Main green timeline -->
-							<div class="absolute top-0 bottom-0 left-0 w-0.5 bg-green-500"></div>
+						<!-- Events column with per-event timeline -->
+						<div class="flex-1 pb-3 pl-4">
+							{#each dayEvents as event}
+								<div class="relative">
+									<!-- Event-specific timeline bar -->
+									<div
+										class="absolute top-0 bottom-0 left-0 w-0.5"
+										class:bg-green-500={event.category === 'personal'}
+										class:bg-blue-500={event.category === 'work'}
+									></div>
 
-							<div class="space-y-2 pl-4">
-								{#each dayEvents as event, index}
-									<div class="relative">
-										<div class="flex items-start gap-3">
-											<div class="flex-1">
-												<div class="text-lg font-medium">{event.title}</div>
-												<div class="flex items-center gap-2 text-base opacity-70">
-													<div class="flex-shrink-0">
-														{#if event.isAllDay}
-															<Circle size={16} class="opacity-70" />
-														{:else}
-															<Clock size={16} class="opacity-70" />
-														{/if}
-													</div>
-													{event.time}
+									<div class="flex items-start pl-3 font-medium">
+										<div class="flex-1">
+											<div class="text-lg font-medium">{event.title}</div>
+											<div class="flex items-center gap-2 text-base opacity-70">
+												<div class="flex-shrink-0">
+													{#if event.isAllDay}
+														<Circle size={16} class="stroke-3 opacity-70" />
+													{:else}
+														<Clock size={16} class="stroke-3 opacity-70" />
+													{/if}
 												</div>
+												{event.time}
 											</div>
 										</div>
 									</div>
-								{/each}
-							</div>
+								</div>
+							{/each}
 						</div>
 					</div>
 				{/if}

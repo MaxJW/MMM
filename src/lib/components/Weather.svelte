@@ -129,7 +129,7 @@
 					<svelte:component this={iconMap[day.icon]} size={36} />
 					<div class="text-xl tabular-nums">
 						<span>{day.hi}°</span>
-						<span class="opacity-70">/{day.lo}°</span>
+						<span class="opacity-70">/ {day.lo}°</span>
 					</div>
 				</div>
 			{/each}
