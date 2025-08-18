@@ -39,6 +39,7 @@ class GoogleCalendarService {
 			return this.cache.data;
 		}
 
+		// Load tokens from file
 		const tokenData = await TokenStorage.loadTokens();
 		if (!tokenData) {
 			throw new Error('Not authenticated');
@@ -56,6 +57,7 @@ class GoogleCalendarService {
 			redirectUri: `${origin}/api/google/callback`
 		});
 
+		// Set credentials
 		oauth2Client.setCredentials({
 			refresh_token: tokenData.refreshToken,
 			access_token: tokenData.accessToken,
@@ -63,8 +65,10 @@ class GoogleCalendarService {
 		});
 
 		try {
+			// This will automatically refresh the access token if needed
 			const { token } = await oauth2Client.getAccessToken();
 
+			// Save updated tokens if they changed
 			if (token !== tokenData.accessToken) {
 				await TokenStorage.saveTokens({
 					...tokenData,
@@ -102,11 +106,21 @@ class GoogleCalendarService {
 			})
 		);
 
-		const grouped: Record<string, SimplifiedEvent[]> = {};
-		for (const { event, calendar: cal } of allEvents.flat() as Array<{
+		// Flatten the array of arrays into a single array of all events
+		const flattenedEvents = allEvents.flat() as Array<{
 			event: GoogleEventLite;
 			calendar: CalendarListEntryLite;
-		}>) {
+		}>;
+
+		// Sort all events by their start time
+		flattenedEvents.sort((a, b) => {
+			const aStart = dayjs(a.event.start?.dateTime || a.event.start?.date);
+			const bStart = dayjs(b.event.start?.dateTime || b.event.start?.date);
+			return aStart.diff(bStart);
+		});
+
+		const grouped: Record<string, SimplifiedEvent[]> = {};
+		for (const { event, calendar: cal } of flattenedEvents) {
 			const start = event.start?.dateTime || event.start?.date;
 			if (!start) continue;
 			const d = dayjs(start);
@@ -131,27 +145,6 @@ class GoogleCalendarService {
 			};
 			if (!grouped[key]) grouped[key] = [];
 			grouped[key].push(simplified);
-		}
-
-		// Sort events within each day
-		for (const key in grouped) {
-			grouped[key].sort((a, b) => {
-				// All-day events first
-				if (a.isAllDay && !b.isAllDay) {
-					return -1;
-				}
-				if (!a.isAllDay && b.isAllDay) {
-					return 1;
-				}
-				// Then sort by time
-				if (a.time < b.time) {
-					return -1;
-				}
-				if (a.time > b.time) {
-					return 1;
-				}
-				return 0;
-			});
 		}
 
 		const orderedKeys = Object.keys(grouped).sort();
