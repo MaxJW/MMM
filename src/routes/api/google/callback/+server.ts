@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { env } from '$env/dynamic/private';
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
 import { google } from 'googleapis';
 import { TokenStorage } from '$lib/services/tokenStorage';
 
@@ -7,12 +7,6 @@ export const GET: RequestHandler = async ({ url }) => {
 	const code = url.searchParams.get('code');
 	if (!code) {
 		return new Response('Missing code', { status: 400 });
-	}
-
-	const GOOGLE_CLIENT_ID = env.GOOGLE_CLIENT_ID;
-	const GOOGLE_CLIENT_SECRET = env.GOOGLE_CLIENT_SECRET;
-	if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-		return new Response('Missing Google OAuth credentials', { status: 500 });
 	}
 
 	const redirectUri = `${url.origin}/api/google/callback`;

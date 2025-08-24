@@ -7,6 +7,9 @@ import SystemStats from '$lib/components/SystemStats.svelte';
 import Greetings from '$lib/components/Greetings.svelte';
 import RSSFeed from '$lib/components/RSSFeed.svelte';
 import WifiQrCode from '$lib/components/WifiQRCode.svelte';
+import AdguardHome from '$lib/components/AdguardHome.svelte';
+import EnergyUsage from '$lib/components/EnergyUsage.svelte';
+import SpotifyPlayer from '$lib/components/SpotifyPlayer.svelte';
 
 export const dashboardConfig: DashboardConfig = {
 	components: [
@@ -49,6 +52,21 @@ export const dashboardConfig: DashboardConfig = {
 			id: 'rss-feed',
 			component: RSSFeed,
 			area: 'notifications'
+		},
+		{
+			id: 'adguard',
+			component: AdguardHome,
+			area: 'middle-right'
 		}
+		// {
+		// 	id: 'energy',
+		// 	component: EnergyUsage,
+		// 	area: 'middle-right'
+		// },
+		// {
+		// 	id: 'spotify',
+		// 	component: SpotifyPlayer,
+		// 	area: 'middle-right'
+		// }
 	]
 };

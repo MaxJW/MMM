@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { env } from '$env/dynamic/private';
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
 import { google, type calendar_v3 } from 'googleapis';
 import dayjs from 'dayjs';
 import { TIMING_STRATEGIES } from '$lib/types/util';
@@ -43,12 +43,6 @@ class GoogleCalendarService {
 		const tokenData = await TokenStorage.loadTokens();
 		if (!tokenData) {
 			throw new Error('Not authenticated');
-		}
-
-		const GOOGLE_CLIENT_ID = env.GOOGLE_CLIENT_ID;
-		const GOOGLE_CLIENT_SECRET = env.GOOGLE_CLIENT_SECRET;
-		if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-			throw new Error('Missing Google credentials');
 		}
 
 		const oauth2Client = new google.auth.OAuth2({

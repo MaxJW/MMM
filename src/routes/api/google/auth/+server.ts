@@ -1,17 +1,9 @@
 import type { RequestHandler } from './$types';
-import { env } from '$env/dynamic/private';
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
 import { google } from 'googleapis';
 
 export const GET: RequestHandler = async (event) => {
 	const { url } = event;
-	const GOOGLE_CLIENT_ID = env.GOOGLE_CLIENT_ID;
-	const GOOGLE_CLIENT_SECRET = env.GOOGLE_CLIENT_SECRET;
-	if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-		return new Response(JSON.stringify({ error: 'Missing Google OAuth credentials' }), {
-			status: 500,
-			headers: { 'content-type': 'application/json' }
-		});
-	}
 
 	const redirectUri = `${url.origin}/api/google/callback`;
 
