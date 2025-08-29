@@ -10,7 +10,8 @@ export type DashboardArea =
 	| 'bottom-left'
 	| 'bottom-center'
 	| 'bottom-right'
-	| 'notifications';
+	| 'notifications'
+	| 'custom';
 
 export interface DashboardComponent {
 	id: string;

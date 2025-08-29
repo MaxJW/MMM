@@ -10,9 +10,9 @@
 
 	function updateGreeting() {
 		const hour = now.hour();
-		if (hour < 12) greeting = 'Good morning';
-		else if (hour < 18) greeting = 'Good afternoon';
-		else greeting = 'Good evening';
+		if (hour < 12) greeting = 'Sul Sul';
+		else if (hour < 18) greeting = 'Sul Sul';
+		else greeting = 'Sul Sul';
 	}
 
 	onMount(() => {

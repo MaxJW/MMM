@@ -10,6 +10,7 @@ import WifiQrCode from '$lib/components/WifiQRCode.svelte';
 import AdguardHome from '$lib/components/AdguardHome.svelte';
 import EnergyUsage from '$lib/components/EnergyUsage.svelte';
 import SpotifyPlayer from '$lib/components/SpotifyPlayer.svelte';
+import EventImage from '$lib/components/EventImage.svelte';
 
 export const dashboardConfig: DashboardConfig = {
 	components: [
@@ -23,11 +24,11 @@ export const dashboardConfig: DashboardConfig = {
 			component: Weather,
 			area: 'top-right'
 		},
-		{
-			id: 'events',
-			component: Calendar,
-			area: 'top-left'
-		},
+		// {
+		// 	id: 'events',
+		// 	component: Calendar,
+		// 	area: 'top-left'
+		// },
 		{
 			id: 'system-stats',
 			component: SystemStats,
@@ -39,25 +40,30 @@ export const dashboardConfig: DashboardConfig = {
 			area: 'bottom-left'
 		},
 		{
+			id: 'event-image',
+			component: EventImage,
+			area: 'custom'
+		},
+		{
 			id: 'greetings',
 			component: Greetings,
 			area: 'center'
 		},
-		{
-			id: 'reminders',
-			component: Reminders,
-			area: 'notifications'
-		},
+		// {
+		// 	id: 'reminders',
+		// 	component: Reminders,
+		// 	area: 'notifications'
+		// },
 		{
 			id: 'rss-feed',
 			component: RSSFeed,
 			area: 'notifications'
-		},
-		{
-			id: 'adguard',
-			component: AdguardHome,
-			area: 'middle-right'
 		}
+		// {
+		// 	id: 'adguard',
+		// 	component: AdguardHome,
+		// 	area: 'middle-right'
+		// }
 		// {
 		// 	id: 'energy',
 		// 	component: EnergyUsage,
