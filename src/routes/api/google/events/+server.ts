@@ -3,6 +3,8 @@ import type { RequestHandler } from './$types';
 import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
 import { google, type calendar_v3 } from 'googleapis';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 import { TIMING_STRATEGIES } from '$lib/types/util';
 import { TokenStorage } from '$lib/services/tokenStorage';
 
@@ -32,9 +34,14 @@ type GoogleEventLite = {
 };
 
 class GoogleCalendarService {
-	private static cache: { data: SimplifiedEvent[][]; expiry: number } | null = null;
+	private static cache: {
+		data: Array<{ day: string; date: number; month: string; events: SimplifiedEvent[] }>;
+		expiry: number;
+	} | null = null;
 
-	static async getEvents(origin: string): Promise<SimplifiedEvent[][]> {
+	static async getEvents(
+		origin: string
+	): Promise<Array<{ day: string; date: number; month: string; events: SimplifiedEvent[] }>> {
 		if (this.cache && Date.now() < this.cache.expiry) {
 			return this.cache.data;
 		}
@@ -114,6 +121,7 @@ class GoogleCalendarService {
 			return aStart.diff(bStart);
 		});
 
+		// Grouped is still { key: SimplifiedEvent[] }
 		const grouped: Record<string, SimplifiedEvent[]> = {};
 		for (const { event, calendar: cal } of flattenedEvents) {
 			const start = event.start?.dateTime || event.start?.date;
@@ -142,8 +150,24 @@ class GoogleCalendarService {
 			grouped[key].push(simplified);
 		}
 
-		const orderedKeys = Object.keys(grouped).sort();
-		const result = orderedKeys.map((k) => grouped[k]);
+		const days: Array<{ day: string; date: number; month: string; key: string }> = [];
+		for (let i = 0; i < 5; i++) {
+			const d = dayjs().add(i, 'day');
+			days.push({
+				day: d.format('ddd'),
+				date: parseInt(d.format('D')),
+				month: d.format('MMM').toUpperCase(),
+				key: d.format('YYYY-MM-DD')
+			});
+		}
+
+		const result: Array<{ day: string; date: number; month: string; events: SimplifiedEvent[] }> =
+			days.map(({ day, date, month, key }) => ({
+				day,
+				date,
+				month,
+				events: grouped[key] || []
+			}));
 
 		this.cache = { data: result, expiry: Date.now() + TIMING_STRATEGIES.FREQUENT.interval };
 		return result;
