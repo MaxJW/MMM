@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import dayjs from 'dayjs';
 import { TIMING_STRATEGIES } from '$lib/types/util';
 import type { BinApiResponse } from '$lib/types/bin';
+import { BIN_COLLECTION_UPRN } from '$env/static/private';
 
 interface BinCollectionRaw {
 	date: string;
@@ -51,7 +52,7 @@ class BinService {
 				},
 				body: JSON.stringify({
 					name: 'bin_calendar',
-					data: { uprn: '320329011' }
+					data: { uprn: BIN_COLLECTION_UPRN }
 				})
 			}
 		);

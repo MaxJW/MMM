@@ -26,14 +26,77 @@ class RSSService {
 		{
 			url: 'https://www.thecourier.co.uk/feed/',
 			sourceName: 'The Courier'
+		},
+		{
+			url: 'https://www.fife.gov.uk/news/rss/latest',
+			sourceName: 'Fife Council'
+		},
+		{
+			url: 'https://feeds.arstechnica.com/arstechnica/index/',
+			sourceName: 'Ars Technica'
+		},
+		{
+			url: 'https://www.theguardian.com/world/rss',
+			sourceName: 'The Guardian | World'
+		},
+		{
+			url: 'https://www.theguardian.com/uk-news/rss',
+			sourceName: 'The Guardian | UK'
 		}
 	];
 
 	private static decodeNumericEntities(str: string): string {
+		if (!str) return '';
+		const entityMap: Record<string, string> = {
+			'8211': '–', // en dash
+			'8216': '‘', // left single quote
+			'8217': '’', // right single quote
+			'8230': '…', // ellipsis
+			'8242': '″', // double prime
+			'8243': '‴', // triple prime
+			'8259': '⁠', // non-breaking space
+			'8260': '⁄', // fraction slash
+			'8261': '⁼', // equals to
+			'8262': '⁺', // plus sign
+			'8263': '⁻', // minus sign
+			'8264': '⁰', // zero
+			'8265': 'ⁱ', // i
+			'8266': '⁴', // four
+			'8267': '⁵', // five
+			'8268': '⁶', // six
+			'8269': '⁷', // seven
+			'8270': '⁸', // eight
+			'8271': '⁹', // nine
+			'163': '£', // pound sign
+			'169': '©', // copyright sign
+			'174': '®', // registered trademark
+			'8482': '™', // trademark
+			'8220': '“', // left double quote
+			'8221': '”', // right double quote
+			'8226': '•', // bullet
+			'38': '&', // ampersand
+			'60': '<', // less than
+			'62': '>', // greater than
+			'34': '"', // double quote
+			'39': "'", // single quote
+			'8212': '—', // em dash
+			'8218': '‚', // single low-9 quotation mark
+			'8222': '„', // double low-9 quotation mark
+			'8232': '‒', // figure dash
+			'183': '·' // middle dot
+		};
 		return str
-			.replace(/&#8211;/g, '–') // en dash
-			.replace(/&#8216;/g, '‘') // left single quote
-			.replace(/&#8217;/g, '’'); // right single quote
+			.replace(/&#(\d+);/g, (match, dec) => entityMap[dec] ?? match)
+			.replace(/&amp;/g, '&')
+			.replace(/&lt;/g, '<')
+			.replace(/&gt;/g, '>')
+			.replace(/&quot;/g, '"')
+			.replace(/&apos;/g, "'")
+			.replace(/&nbsp;/g, ' ')
+			.replace(/&copy;/g, '©')
+			.replace(/&reg;/g, '®')
+			.replace(/&pound;/g, '£')
+			.replace(/&hellip;/g, '…');
 	}
 
 	static async fetchFeed(feed: FeedConfig): Promise<Article[]> {
