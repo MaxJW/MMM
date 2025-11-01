@@ -17,7 +17,7 @@ const events: EventConfig[] = [
 	{
 		startDate: dayjs('2025-10-31 00:00:00'),
 		endDate: dayjs('2025-11-01 23:59:59'),
-		eventText: 'Join the Halloween Photo Challenge below!',
+		eventText: 'Join the Halloween POV below!',
 		eventImage: EventImgHalloween,
 		qrCode: QRCodeHalloween,
 		customGreeting: 'Happy Halloween'
