@@ -10,6 +10,7 @@ import WifiQrCode from '$lib/components/WifiQRCode.svelte';
 import AdguardHome from '$lib/components/AdguardHome.svelte';
 import EnergyUsage from '$lib/components/EnergyUsage.svelte';
 import SpotifyPlayer from '$lib/components/SpotifyPlayer.svelte';
+import EventImage from '$lib/components/EventImage.svelte';
 
 export const dashboardConfig: DashboardConfig = {
 	components: [
@@ -37,6 +38,11 @@ export const dashboardConfig: DashboardConfig = {
 			id: 'wifi-qr-code',
 			component: WifiQrCode,
 			area: 'bottom-left'
+		},
+		{
+			id: 'event-image',
+			component: EventImage,
+			area: 'center'
 		},
 		{
 			id: 'greetings',
