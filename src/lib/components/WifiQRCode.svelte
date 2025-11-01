@@ -1,5 +1,5 @@
 <script lang="ts">
-	import QRCode from '$lib/assets/QRCode.png';
+	import QRCode from '$lib/assets/WifiQRCode.png';
 	import Wifi from '@lucide/svelte/icons/wifi';
 </script>
 
