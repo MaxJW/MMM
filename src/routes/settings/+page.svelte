@@ -21,6 +21,79 @@
 	let draggedIndex: number | null = $state(null);
 	let hoverIndex: number | null = $state(null);
 
+	// Area order for grouping components
+	const areaOrder: Array<string> = [
+		'top-left',
+		'top-center',
+		'top-right',
+		'middle-left',
+		'middle-right',
+		'center',
+		'bottom-left',
+		'bottom-center',
+		'bottom-right',
+		'notifications'
+	];
+
+	function getAreaOrder(area: string): number {
+		const index = areaOrder.indexOf(area);
+		return index === -1 ? 999 : index;
+	}
+
+	function reorganizeByArea(changedIndex?: number) {
+		if (!config) return;
+
+		const components = config.dashboard.components;
+
+		// Create a map of components grouped by area, preserving order within each area
+		type ComponentWithMeta = {
+			comp: (typeof components)[0];
+			originalIndex: number;
+			isChanged: boolean;
+		};
+		const areaGroups: Record<string, ComponentWithMeta[]> = {};
+
+		components.forEach((comp, index) => {
+			if (!areaGroups[comp.area]) {
+				areaGroups[comp.area] = [];
+			}
+			areaGroups[comp.area].push({ comp, originalIndex: index, isChanged: index === changedIndex });
+		});
+
+		// For the changed item's area, move it to the end of that group
+		if (changedIndex !== undefined) {
+			const changedComp = components[changedIndex];
+			const changedArea = changedComp.area;
+			if (areaGroups[changedArea]) {
+				// Remove changed item from its current position in the group
+				areaGroups[changedArea] = areaGroups[changedArea].filter(
+					(item) => item.originalIndex !== changedIndex
+				);
+				// Add it at the end
+				areaGroups[changedArea].push({
+					comp: changedComp,
+					originalIndex: changedIndex,
+					isChanged: true
+				});
+			}
+		}
+
+		// Rebuild the components array in area order, maintaining order within each area
+		const reorganized: typeof components = [];
+		areaOrder.forEach((area) => {
+			if (areaGroups[area]) {
+				areaGroups[area].forEach(({ comp }) => {
+					reorganized.push(comp);
+				});
+			}
+		});
+
+		// Update the config with reorganized components
+		config.dashboard.components = reorganized;
+		// Trigger reactivity
+		config = { ...config };
+	}
+
 	// Password visibility states
 	let passwordVisibility: Record<string, boolean> = $state({});
 	function togglePasswordVisibility(fieldId: string) {
@@ -319,7 +392,8 @@
 								<h2 class="text-lg font-semibold text-gray-900 sm:text-xl">Dashboard Layout</h2>
 								<p class="text-sm text-gray-600 sm:text-base">
 									Configure which components are enabled and where they appear on your dashboard.
-									Drag items to reorder them.
+									Components are automatically grouped by location. Drag items to reorder within a
+									location.
 								</p>
 								<div class="space-y-3 sm:space-y-4">
 									{#each config.dashboard.components as comp, i}
@@ -365,6 +439,7 @@
 											<div class="flex items-center gap-4">
 												<select
 													bind:value={comp.area}
+													onchange={() => reorganizeByArea(i)}
 													class="w-full rounded border border-gray-300 px-3 py-2 text-sm sm:w-auto sm:py-1"
 													onclick={(e) => e.stopPropagation()}
 													onmousedown={(e) => e.stopPropagation()}
