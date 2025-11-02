@@ -1,0 +1,92 @@
+{
+	"dashboard": {
+		"components": [
+			{
+				"id": "clock",
+				"enabled": true,
+				"area": "top-left"
+			},
+			{
+				"id": "weather",
+				"enabled": true,
+				"area": "top-right"
+			},
+			{
+				"id": "events",
+				"enabled": true,
+				"area": "top-left"
+			},
+			{
+				"id": "system-stats",
+				"enabled": true,
+				"area": "bottom-right"
+			},
+			{
+				"id": "wifi-qr-code",
+				"enabled": true,
+				"area": "bottom-left"
+			},
+			{
+				"id": "event-image",
+				"enabled": true,
+				"area": "center"
+			},
+			{
+				"id": "greetings",
+				"enabled": true,
+				"area": "center"
+			},
+			{
+				"id": "reminders",
+				"enabled": true,
+				"area": "notifications"
+			},
+			{
+				"id": "rss-feed",
+				"enabled": true,
+				"area": "notifications"
+			}
+		]
+	},
+	"weather": {
+		"apiKey": "",
+		"latitude": "",
+		"longitude": ""
+	},
+	"google": {
+		"clientId": "",
+		"clientSecret": ""
+	},
+	"spotify": {
+		"clientId": "",
+		"clientSecret": "",
+		"refreshToken": ""
+	},
+	"adguard": {
+		"url": "",
+		"token": ""
+	},
+	"energy": {
+		"apiKey": ""
+	},
+	"rssFeeds": [
+		{
+			"url": "https://www.theguardian.com/world/rss",
+			"sourceName": "The Guardian | World"
+		}
+	],
+	"binCollections": {
+		"uprn": "",
+		"apiEndpoint": "",
+		"council": ""
+	},
+	"weatherAlerts": {
+		"country": "united-kingdom",
+		"province": ""
+	},
+	"wifi": {
+		"networkName": "",
+		"password": "",
+		"securityType": "WPA"
+	}
+}

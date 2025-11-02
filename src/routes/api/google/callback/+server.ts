@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
+import { getGoogleConfig } from '$lib/config/userConfig';
 import { google } from 'googleapis';
 import { TokenStorage } from '$lib/services/tokenStorage';
 
@@ -9,10 +9,15 @@ export const GET: RequestHandler = async ({ url }) => {
 		return new Response('Missing code', { status: 400 });
 	}
 
+	const config = await getGoogleConfig();
+	if (!config.clientId || !config.clientSecret) {
+		return new Response('Google OAuth not configured', { status: 500 });
+	}
+
 	const redirectUri = `${url.origin}/api/google/callback`;
 	const oauth2Client = new google.auth.OAuth2({
-		clientId: GOOGLE_CLIENT_ID,
-		clientSecret: GOOGLE_CLIENT_SECRET,
+		clientId: config.clientId,
+		clientSecret: config.clientSecret,
 		redirectUri
 	});
 

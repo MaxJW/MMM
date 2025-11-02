@@ -1,10 +1,5 @@
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
-import eventsConfig from './events.json';
-
-// Import known assets for mapping by slug
-import EventImgHalloween from '$lib/assets/events/halloween/EventImage.png';
-import QRCodeHalloween from '$lib/assets/events/halloween/QRCode.png';
 
 export interface EventConfig {
 	start: string; // Format: 'MM-DD'
@@ -17,90 +12,43 @@ export interface EventConfig {
 	qrCode?: string;
 }
 
-interface EventSlugAssets {
-	eventImage: string;
-	qrCode: string;
-}
-
-// Map of event slugs to their imported assets
-const assetMap: Record<string, EventSlugAssets> = {
-	halloween: {
-		eventImage: EventImgHalloween,
-		qrCode: QRCodeHalloween
-	}
-};
-
 /**
- * Resolve assets for an event slug.
- * Looks up the slug in the asset map and returns the imported asset URLs.
+ * Get the currently active recurring event (client-side)
+ * Fetches from API endpoint
  */
-function resolveEventAssets(slug: string | undefined): Partial<EventSlugAssets> {
-	if (!slug || !assetMap[slug]) {
-		return {};
-	}
-	return assetMap[slug];
-}
+export async function getCurrentEvent(): Promise<
+	(EventConfig & { startDate: Dayjs; endDate: Dayjs }) | null
+> {
+	try {
+		const response = await fetch('/api/events');
+		if (!response.ok) return null;
 
-// Load and process events from JSON config
-const recurringEvents: EventConfig[] = (eventsConfig as EventConfig[]).map(
-	(event: Omit<EventConfig, 'eventImage' | 'qrCode'> & { eventSlug?: string }) => {
-		const assets = resolveEventAssets(event.eventSlug);
+		const data = await response.json();
+		if (!data.currentEvent) return null;
+
 		return {
-			...event,
-			eventImage: assets.eventImage,
-			qrCode: assets.qrCode
+			...data.currentEvent,
+			startDate: dayjs(data.currentEvent.startDate),
+			endDate: dayjs(data.currentEvent.endDate)
 		};
+	} catch (error) {
+		console.error('Failed to fetch current event:', error);
+		return null;
 	}
-);
-
-/**
- * Given a recurring event with start/end dates (MM-DD),
- * return its start and end as Dayjs objects for the correct year.
- */
-function getEventDates(event: EventConfig, now = dayjs()) {
-	const year = now.year();
-
-	let startDate = dayjs(`${year}-${event.start} 00:00:00`);
-	let endDate = dayjs(`${year}-${event.end} 23:59:59`);
-
-	// If the event spans across years (e.g., Dec 31 – Jan 1)
-	if (endDate.isBefore(startDate)) {
-		endDate = endDate.add(1, 'year');
-	}
-
-	// If event has already passed this year, roll it over to next year
-	if (endDate.isBefore(now)) {
-		startDate = startDate.add(1, 'year');
-		endDate = endDate.add(1, 'year');
-	}
-
-	return { startDate, endDate };
 }
 
 /**
- * Get the currently active recurring event
+ * Get the custom greeting for the current event, if any (client-side)
  */
-export function getCurrentEvent(): (EventConfig & { startDate: Dayjs; endDate: Dayjs }) | null {
-	const now = dayjs();
-	const today = now.startOf('day');
+export async function getCurrentEventGreeting(): Promise<string | null> {
+	try {
+		const response = await fetch('/api/events');
+		if (!response.ok) return null;
 
-	for (const event of recurringEvents) {
-		const { startDate, endDate } = getEventDates(event, now);
-		if (
-			(today.isAfter(startDate) || today.isSame(startDate)) &&
-			(today.isBefore(endDate) || today.isSame(endDate))
-		) {
-			return { ...event, startDate, endDate };
-		}
+		const data = await response.json();
+		return data.greeting || null;
+	} catch (error) {
+		console.error('Failed to fetch event greeting:', error);
+		return null;
 	}
-
-	return null;
-}
-
-/**
- * Get the custom greeting for the current event, if any
- */
-export function getCurrentEventGreeting(): string | null {
-	const currentEvent = getCurrentEvent();
-	return currentEvent?.customGreeting || null;
 }

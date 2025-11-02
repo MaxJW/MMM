@@ -3,17 +3,19 @@ import type { RequestHandler } from './$types';
 import { XMLParser } from 'fast-xml-parser';
 import type { MeteoAlert } from '$lib/types/weather';
 import { TIMING_STRATEGIES } from '$lib/types/util';
-
-const COUNTRY = 'united-kingdom';
-const ENDPOINT = `https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-${COUNTRY}`;
-const PROVINCE = 'Central, Tayside & Fife';
+import { getWeatherAlertsConfig } from '$lib/config/userConfig';
 
 class WeatherAlarmService {
 	private static cache: { alerts: MeteoAlert[]; expiry: number } | null = null;
 
 	private static async fetchAlerts(): Promise<MeteoAlert[]> {
 		try {
-			const res = await fetch(ENDPOINT);
+			const config = await getWeatherAlertsConfig();
+			const country = config.country || 'united-kingdom';
+			const province = config.province || '';
+			const endpoint = `https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-${country}`;
+
+			const res = await fetch(endpoint);
 			if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
 
 			const xml = await res.text();
@@ -60,8 +62,9 @@ class WeatherAlarmService {
 						const endDate = new Date(alert.end);
 						if (isNaN(endDate.getTime())) return false;
 
-						// Check if alert is for our province
-						return endDate > new Date() && alert.area.includes(PROVINCE);
+						// Check if alert is for our province (if configured)
+						if (province && !alert.area.includes(province)) return false;
+						return endDate > new Date();
 					} catch (error) {
 						console.warn('Error processing alert:', error, alert);
 						return false;

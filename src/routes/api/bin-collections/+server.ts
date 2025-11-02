@@ -3,7 +3,7 @@ import type { RequestHandler } from './$types';
 import dayjs from 'dayjs';
 import { TIMING_STRATEGIES } from '$lib/types/util';
 import type { BinApiResponse } from '$lib/types/bin';
-import { BIN_COLLECTION_UPRN } from '$env/static/private';
+import { getBinCollectionsConfig } from '$lib/config/userConfig';
 
 interface BinCollectionRaw {
 	date: string;
@@ -15,13 +15,18 @@ class BinService {
 	private static tokenExpiry: number = 0;
 	private static cache: { collections: BinCollectionRaw[]; expiry: number } | null = null;
 
-	private static async getAuthToken(): Promise<string | null> {
+	private static async getAuthToken(apiEndpoint?: string): Promise<string | null> {
 		if (this.authToken && Date.now() < this.tokenExpiry) {
 			return this.authToken;
 		}
 
+		// Default to Fife Council endpoint if not configured
+		const authUrl = apiEndpoint
+			? `${apiEndpoint}/api/citizen?preview=false&locale=en`
+			: 'https://www.fife.gov.uk/api/citizen?preview=false&locale=en';
+
 		try {
-			const response = await fetch('https://www.fife.gov.uk/api/citizen?preview=false&locale=en');
+			const response = await fetch(authUrl);
 			const token = response.headers.get('Authorization');
 
 			if (token) {
@@ -37,25 +42,35 @@ class BinService {
 	}
 
 	private static async fetchBinCollections(): Promise<BinCollectionRaw[]> {
-		const token = await this.getAuthToken();
+		const config = await getBinCollectionsConfig();
+		const uprn = config.uprn;
+		const apiEndpoint = config.apiEndpoint;
+
+		if (!uprn) {
+			throw new Error('Missing UPRN in configuration');
+		}
+
+		const token = await this.getAuthToken(apiEndpoint);
 		if (!token) {
 			throw new Error('Authentication failed');
 		}
 
-		const response = await fetch(
-			'https://www.fife.gov.uk/api/custom?action=powersuite_bin_calendar_collections&actionedby=bin_calendar&loadform=true&access=citizen&locale=en',
-			{
-				method: 'POST',
-				headers: {
-					Authorization: token,
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					name: 'bin_calendar',
-					data: { uprn: BIN_COLLECTION_UPRN }
-				})
-			}
-		);
+		// Default to Fife Council endpoint if not configured
+		const endpoint = apiEndpoint
+			? `${apiEndpoint}/api/custom?action=powersuite_bin_calendar_collections&actionedby=bin_calendar&loadform=true&access=citizen&locale=en`
+			: 'https://www.fife.gov.uk/api/custom?action=powersuite_bin_calendar_collections&actionedby=bin_calendar&loadform=true&access=citizen&locale=en';
+
+		const response = await fetch(endpoint, {
+			method: 'POST',
+			headers: {
+				Authorization: token,
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				name: 'bin_calendar',
+				data: { uprn }
+			})
+		});
 
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);

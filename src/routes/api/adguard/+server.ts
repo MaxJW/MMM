@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { ADGUARD_URL, ADGUARD_TOKEN } from '$env/static/private';
+import { getAdguardConfig } from '$lib/config/userConfig';
 import type { AdguardStats } from '$lib/types/adguard';
 import { TIMING_STRATEGIES } from '$lib/types/util';
 
@@ -8,8 +8,13 @@ class AdguardApi {
 	private static cache: { data: AdguardStats; expiry: number } | null = null;
 
 	private static async fetchStats(): Promise<AdguardStats> {
-		const res = await fetch(`${ADGUARD_URL}/control/stats`, {
-			headers: { Authorization: `Basic ${ADGUARD_TOKEN}` }
+		const config = await getAdguardConfig();
+		if (!config.url || !config.token) {
+			throw new Error('Missing Adguard URL or token');
+		}
+
+		const res = await fetch(`${config.url}/control/stats`, {
+			headers: { Authorization: `Basic ${config.token}` }
 		});
 		if (!res.ok) throw new Error(`HTTP ${res.status}`);
 		const data = await res.json();

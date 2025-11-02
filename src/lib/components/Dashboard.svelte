@@ -22,6 +22,8 @@
 	};
 
 	function getComponentsForArea(area: DashboardArea) {
+		// Filter by area, preserving the order from config.components array
+		// The order comes from the JSON array position
 		return config.components.filter((comp) => comp.area === area);
 	}
 </script>

@@ -1,4 +1,5 @@
-import type { DashboardConfig } from '$lib/types/dashboard';
+import type { DashboardConfig, DashboardArea } from '$lib/types/dashboard';
+import type { SvelteComponent } from 'svelte';
 import Clock from '$lib/components/Clock.svelte';
 import Weather from '$lib/components/Weather.svelte';
 import Reminders from '$lib/components/Reminders.svelte';
@@ -11,68 +12,49 @@ import AdguardHome from '$lib/components/AdguardHome.svelte';
 import EnergyUsage from '$lib/components/EnergyUsage.svelte';
 import SpotifyPlayer from '$lib/components/SpotifyPlayer.svelte';
 import EventImage from '$lib/components/EventImage.svelte';
+import type { DashboardComponentConfig } from './userConfig';
 
-export const dashboardConfig: DashboardConfig = {
-	components: [
-		{
-			id: 'clock',
-			component: Clock,
-			area: 'top-left'
-		},
-		{
-			id: 'weather',
-			component: Weather,
-			area: 'top-right'
-		},
-		{
-			id: 'events',
-			component: Calendar,
-			area: 'top-left'
-		},
-		{
-			id: 'system-stats',
-			component: SystemStats,
-			area: 'bottom-right'
-		},
-		{
-			id: 'wifi-qr-code',
-			component: WifiQrCode,
-			area: 'bottom-left'
-		},
-		{
-			id: 'event-image',
-			component: EventImage,
-			area: 'center'
-		},
-		{
-			id: 'greetings',
-			component: Greetings,
-			area: 'center'
-		},
-		{
-			id: 'reminders',
-			component: Reminders,
-			area: 'notifications'
-		},
-		{
-			id: 'rss-feed',
-			component: RSSFeed,
-			area: 'notifications'
-		},
-		{
-			id: 'adguard',
-			component: AdguardHome,
-			area: 'middle-right'
-		}
-		// {
-		// 	id: 'energy',
-		// 	component: EnergyUsage,
-		// 	area: 'middle-right'
-		// },
-		// {
-		// 	id: 'spotify',
-		// 	component: SpotifyPlayer,
-		// 	area: 'middle-right'
-		// }
-	]
+// Map of component IDs to their Svelte component classes
+export const componentMap: Record<string, typeof SvelteComponent> = {
+	clock: Clock as typeof SvelteComponent,
+	weather: Weather as typeof SvelteComponent,
+	events: Calendar as typeof SvelteComponent,
+	'system-stats': SystemStats as typeof SvelteComponent,
+	'wifi-qr-code': WifiQrCode as typeof SvelteComponent,
+	'event-image': EventImage as typeof SvelteComponent,
+	greetings: Greetings as typeof SvelteComponent,
+	reminders: Reminders as typeof SvelteComponent,
+	'rss-feed': RSSFeed as typeof SvelteComponent,
+	adguard: AdguardHome as typeof SvelteComponent,
+	energy: EnergyUsage as typeof SvelteComponent,
+	spotify: SpotifyPlayer as typeof SvelteComponent
 };
+
+/**
+ * Build dashboard config from user config
+ * Filters enabled components and maps IDs to components
+ * Preserves the order from the JSON array (components appear in the order they're listed)
+ */
+export function buildDashboardConfig(userConfig: {
+	components: DashboardComponentConfig[];
+}): DashboardConfig {
+	// Filter enabled components and preserve array order
+	const enabledComponents = userConfig.components.filter((comp) => comp.enabled);
+
+	const components = enabledComponents
+		.map((comp) => {
+			const component = componentMap[comp.id];
+			if (!component) {
+				console.warn(`Component ${comp.id} not found in componentMap`);
+				return null;
+			}
+			return {
+				id: comp.id,
+				component,
+				area: comp.area as DashboardArea
+			};
+		})
+		.filter((comp): comp is NonNullable<typeof comp> => comp !== null);
+
+	return { components };
+}
