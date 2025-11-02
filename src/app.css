@@ -2,12 +2,10 @@
 
 html {
     background-color: black;
-    cursor: none;
 }
 
 body {
     animation: nudge 120s infinite alternate;
-    overflow: hidden;
 }
 
 @keyframes nudge {

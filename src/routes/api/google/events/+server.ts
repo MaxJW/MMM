@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '$env/static/private';
+import { getGoogleConfig } from '$lib/config/userConfig';
 import { google, type calendar_v3 } from 'googleapis';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -52,9 +52,14 @@ class GoogleCalendarService {
 			throw new Error('Not authenticated');
 		}
 
+		const config = await getGoogleConfig();
+		if (!config.clientId || !config.clientSecret) {
+			throw new Error('Google OAuth not configured');
+		}
+
 		const oauth2Client = new google.auth.OAuth2({
-			clientId: GOOGLE_CLIENT_ID,
-			clientSecret: GOOGLE_CLIENT_SECRET,
+			clientId: config.clientId,
+			clientSecret: config.clientSecret,
 			redirectUri: `${origin}/api/google/callback`
 		});
 

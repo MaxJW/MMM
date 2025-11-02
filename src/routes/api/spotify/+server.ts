@@ -1,10 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import {
-	SPOTIFY_CLIENT_ID,
-	SPOTIFY_CLIENT_SECRET,
-	SPOTIFY_REFRESH_TOKEN
-} from '$env/static/private';
+import { getSpotifyConfig } from '$lib/config/userConfig';
 import type { SpotifyTrack } from '$lib/types/spotify';
 import { TIMING_STRATEGIES } from '$lib/types/util';
 
@@ -12,17 +8,21 @@ class SpotifyApi {
 	private static cache: { data: SpotifyTrack; expiry: number } | null = null;
 
 	private static async getAccessToken(): Promise<string> {
+		const config = await getSpotifyConfig();
+		if (!config.clientId || !config.clientSecret || !config.refreshToken) {
+			throw new Error('Missing Spotify credentials');
+		}
+
 		const res = await fetch('https://accounts.spotify.com/api/token', {
 			method: 'POST',
 			headers: {
 				Authorization:
-					'Basic ' +
-					Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64'),
+					'Basic ' + Buffer.from(`${config.clientId}:${config.clientSecret}`).toString('base64'),
 				'Content-Type': 'application/x-www-form-urlencoded'
 			},
 			body: new URLSearchParams({
 				grant_type: 'refresh_token',
-				refresh_token: SPOTIFY_REFRESH_TOKEN
+				refresh_token: config.refreshToken
 			})
 		});
 		const data = await res.json();
@@ -41,7 +41,7 @@ class SpotifyApi {
 		const data = await res.json();
 		return {
 			title: data.item.name,
-			artist: data.item.artists.map((a: any) => a.name).join(', '),
+			artist: data.item.artists.map((a: { name: string }) => a.name).join(', '),
 			albumArt: data.item.album.images[0]?.url,
 			isPlaying: data.is_playing
 		};

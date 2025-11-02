@@ -10,9 +10,9 @@
 
 	let timer: ReturnType<typeof setInterval> | undefined;
 
-	function updateGreeting() {
+	async function updateGreeting() {
 		// Check for custom greeting from active event first
-		customGreeting = getCurrentEventGreeting();
+		customGreeting = await getCurrentEventGreeting();
 
 		if (customGreeting) {
 			greeting = customGreeting;
@@ -31,12 +31,12 @@
 		now = dayjs();
 
 		// Set initial values
-		updateGreeting();
+		updateGreeting().catch(console.error);
 
 		// Update every minute for efficiency
 		timer = setInterval(() => {
 			now = dayjs();
-			updateGreeting();
+			updateGreeting().catch(console.error);
 		}, TIMING_STRATEGIES.UI.MINUTE);
 
 		return () => {

@@ -18,32 +18,14 @@ interface ParsedRSSItem {
 class RSSService {
 	private static cache: { articles: Article[]; expiry: number } | null = null;
 
-	private static feeds: FeedConfig[] = [
-		{
-			url: 'https://feeds.skynews.com/feeds/rss/home.xml',
-			sourceName: 'Sky News'
-		},
-		{
-			url: 'https://www.thecourier.co.uk/feed/',
-			sourceName: 'The Courier'
-		},
-		{
-			url: 'https://www.fife.gov.uk/news/rss/latest',
-			sourceName: 'Fife Council'
-		},
-		{
-			url: 'https://feeds.arstechnica.com/arstechnica/index/',
-			sourceName: 'Ars Technica'
-		},
-		{
-			url: 'https://www.theguardian.com/world/rss',
-			sourceName: 'The Guardian | World'
-		},
-		{
-			url: 'https://www.theguardian.com/uk-news/rss',
-			sourceName: 'The Guardian | UK'
-		}
-	];
+	private static async getFeeds(): Promise<FeedConfig[]> {
+		const { getRSSFeedsConfig } = await import('$lib/config/userConfig');
+		const feeds = await getRSSFeedsConfig();
+		return feeds.map((feed) => ({
+			url: feed.url,
+			sourceName: feed.sourceName
+		}));
+	}
 
 	private static decodeNumericEntities(str: string): string {
 		if (!str) return '';
@@ -125,22 +107,34 @@ class RSSService {
 	static async getArticles(): Promise<{ articles: Article[] }> {
 		if (this.cache && Date.now() < this.cache.expiry) return { articles: this.cache.articles };
 
-		const allArticles = await Promise.all(this.feeds.map((feed) => this.fetchFeed(feed)));
+		const feeds = await this.getFeeds();
+		const allArticles = await Promise.all(feeds.map((feed) => this.fetchFeed(feed)));
 		const articles = allArticles.flat();
 
+		// Calculate the date one week ago
+		const oneWeekAgo = new Date();
+		oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+		// Filter to only include articles from the past week
+		const recentArticles = articles.filter((article) => {
+			if (!article.date) return false; // Exclude articles without dates
+			const articleDate = new Date(article.date);
+			return articleDate >= oneWeekAgo;
+		});
+
 		// Sort newest → oldest
-		articles.sort((a, b) => {
+		recentArticles.sort((a, b) => {
 			const dateA = a.date ? new Date(a.date).getTime() : 0;
 			const dateB = b.date ? new Date(b.date).getTime() : 0;
 			return dateB - dateA;
 		});
 
 		this.cache = {
-			articles,
+			articles: recentArticles,
 			expiry: Date.now() + TIMING_STRATEGIES.STANDARD.interval
 		};
 
-		return { articles };
+		return { articles: recentArticles };
 	}
 }
 

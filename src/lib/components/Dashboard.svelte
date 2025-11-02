@@ -22,11 +22,15 @@
 	};
 
 	function getComponentsForArea(area: DashboardArea) {
+		// Filter by area, preserving the order from config.components array
+		// The order comes from the JSON array position
 		return config.components.filter((comp) => comp.area === area);
 	}
 </script>
 
-<div class="min-h-screen overflow-hidden bg-black font-bold text-neutral-100 select-none">
+<div
+	class="h-screen min-h-screen cursor-none overflow-hidden bg-black font-bold text-neutral-100 select-none"
+>
 	<div class="relative inset-0 h-full w-full">
 		<div class="grid h-screen w-full grid-cols-[1fr_1fr_1fr] grid-rows-[auto_1fr_auto_auto]">
 			{#each Object.keys(areaGridClasses) as area (area)}

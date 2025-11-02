@@ -1,17 +1,41 @@
 <script lang="ts">
-	import QRCode from '$lib/assets/WifiQRCode.png';
+	import { onMount } from 'svelte';
 	import Wifi from '@lucide/svelte/icons/wifi';
+
+	let qrCodeUrl: string | null = null;
+	let networkName: string = '';
+	let loading = true;
+
+	onMount(async () => {
+		try {
+			const response = await fetch('/api/wifi/qrcode');
+			if (response.ok) {
+				const data = await response.json();
+				qrCodeUrl = data.qrCode;
+				networkName = data.networkName || '';
+			}
+		} catch (error) {
+			console.error('Failed to load WiFi QR code:', error);
+		} finally {
+			loading = false;
+		}
+	});
 </script>
 
-<div class="flex flex-col items-start gap-3 select-none">
-	<div class="flex items-center gap-3 opacity-90">
-		<Wifi size={24} />
-		<h2 class="text-lg">WiFi Details</h2>
-	</div>
+{#if !loading && networkName}
+	<div class="flex flex-col items-start gap-3 select-none">
+		<div class="flex items-center gap-3 opacity-90">
+			<Wifi size={24} />
+			<h2 class="text-lg">WiFi Details</h2>
+		</div>
 
-	<img class="size-40" src={QRCode} alt="Wifi QR Code" />
+		{#if qrCodeUrl}
+			<img class="size-40" src={qrCodeUrl} alt="Wifi QR Code" />
+		{/if}
 
-	<div class="text-base opacity-90">
-		<span class="font-extrabold">Network:</span> VM6417600
+		<div class="text-base opacity-90">
+			<span class="font-extrabold">Network:</span>
+			{networkName}
+		</div>
 	</div>
-</div>
+{/if}

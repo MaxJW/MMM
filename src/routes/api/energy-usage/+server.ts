@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { GLOWMARKT_API_KEY } from '$env/static/private';
+import { getEnergyConfig } from '$lib/config/userConfig';
 import type { EnergyUsage } from '$lib/types/energy';
 import { TIMING_STRATEGIES } from '$lib/types/util';
 
@@ -8,7 +8,12 @@ class EnergyApi {
 	private static cache: { data: EnergyUsage; expiry: number } | null = null;
 
 	private static async fetchUsage(): Promise<EnergyUsage> {
-		const headers = { Authorization: `Bearer ${GLOWMARKT_API_KEY}` };
+		const config = await getEnergyConfig();
+		if (!config.apiKey) {
+			throw new Error('Missing Glowmarkt API key');
+		}
+
+		const headers = { Authorization: `Bearer ${config.apiKey}` };
 		const todayRes = await fetch('https://api.glowmarkt.com/api/v0-1/resource/day', { headers });
 		const monthRes = await fetch('https://api.glowmarkt.com/api/v0-1/resource/month', { headers });
 

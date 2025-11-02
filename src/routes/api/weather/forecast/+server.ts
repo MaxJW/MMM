@@ -1,20 +1,17 @@
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from '../$types';
+import type { RequestHandler } from './$types';
 import type { WeatherData } from '$lib/types/weather';
-import {
-	PIRATE_WEATHER_KEY,
-	PIRATE_WEATHER_LATITUDE,
-	PIRATE_WEATHER_LONGITUDE
-} from '$env/static/private';
+import { getWeatherConfig } from '$lib/config/userConfig';
 import { TIMING_STRATEGIES } from '$lib/types/util';
 
 class WeatherService {
 	private static cache: { data: WeatherData; expiry: number } | null = null;
 
 	private static async fetchWeather(): Promise<WeatherData> {
-		const apiKey = PIRATE_WEATHER_KEY;
-		const latitude = PIRATE_WEATHER_LATITUDE;
-		const longitude = PIRATE_WEATHER_LONGITUDE;
+		const config = await getWeatherConfig();
+		const apiKey = config.apiKey;
+		const latitude = config.latitude;
+		const longitude = config.longitude;
 
 		if (!apiKey) throw new Error('Missing Pirate Weather API key');
 		if (!latitude || !longitude) throw new Error('Missing Pirate Weather latitude or longitude');
