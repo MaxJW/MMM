@@ -107,43 +107,43 @@ function mergeWithDefaults(config: Partial<UserConfig>): UserConfig {
 
 	const merged: UserConfig = {
 		dashboard: {
-			components: config.dashboard?.components || defaults.dashboard.components
+			components: config.dashboard?.components ?? defaults.dashboard.components
 		},
 		weather: {
-			apiKey: config.weather?.apiKey || defaults.weather.apiKey,
-			latitude: config.weather?.latitude || defaults.weather.latitude,
-			longitude: config.weather?.longitude || defaults.weather.longitude
+			apiKey: config.weather?.apiKey ?? defaults.weather.apiKey,
+			latitude: config.weather?.latitude ?? defaults.weather.latitude,
+			longitude: config.weather?.longitude ?? defaults.weather.longitude
 		},
 		google: {
-			clientId: config.google?.clientId || defaults.google.clientId,
-			clientSecret: config.google?.clientSecret || defaults.google.clientSecret
+			clientId: config.google?.clientId ?? defaults.google.clientId,
+			clientSecret: config.google?.clientSecret ?? defaults.google.clientSecret
 		},
 		spotify: {
-			clientId: config.spotify?.clientId || defaults.spotify.clientId,
-			clientSecret: config.spotify?.clientSecret || defaults.spotify.clientSecret,
-			refreshToken: config.spotify?.refreshToken || defaults.spotify.refreshToken
+			clientId: config.spotify?.clientId ?? defaults.spotify.clientId,
+			clientSecret: config.spotify?.clientSecret ?? defaults.spotify.clientSecret,
+			refreshToken: config.spotify?.refreshToken ?? defaults.spotify.refreshToken
 		},
 		adguard: {
-			url: config.adguard?.url || defaults.adguard.url,
-			token: config.adguard?.token || defaults.adguard.token
+			url: config.adguard?.url ?? defaults.adguard.url,
+			token: config.adguard?.token ?? defaults.adguard.token
 		},
 		energy: {
-			apiKey: config.energy?.apiKey || defaults.energy.apiKey
+			apiKey: config.energy?.apiKey ?? defaults.energy.apiKey
 		},
-		rssFeeds: config.rssFeeds || defaults.rssFeeds,
+		rssFeeds: config.rssFeeds ?? defaults.rssFeeds,
 		binCollections: {
-			uprn: config.binCollections?.uprn || defaults.binCollections.uprn,
-			apiEndpoint: config.binCollections?.apiEndpoint || defaults.binCollections.apiEndpoint,
-			council: config.binCollections?.council || defaults.binCollections.council
+			uprn: config.binCollections?.uprn ?? defaults.binCollections.uprn,
+			apiEndpoint: config.binCollections?.apiEndpoint ?? defaults.binCollections.apiEndpoint,
+			council: config.binCollections?.council ?? defaults.binCollections.council
 		},
 		weatherAlerts: {
-			country: config.weatherAlerts?.country || defaults.weatherAlerts.country,
-			province: config.weatherAlerts?.province || defaults.weatherAlerts.province
+			country: config.weatherAlerts?.country ?? defaults.weatherAlerts.country,
+			province: config.weatherAlerts?.province ?? defaults.weatherAlerts.province
 		},
 		wifi: {
-			networkName: config.wifi?.networkName || defaults.wifi.networkName,
-			password: config.wifi?.password || defaults.wifi.password,
-			securityType: config.wifi?.securityType || defaults.wifi.securityType || 'WPA'
+			networkName: config.wifi?.networkName ?? defaults.wifi.networkName,
+			password: config.wifi?.password ?? defaults.wifi.password,
+			securityType: config.wifi?.securityType ?? defaults.wifi.securityType ?? 'WPA'
 		}
 	};
 

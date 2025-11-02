@@ -111,19 +111,30 @@ class RSSService {
 		const allArticles = await Promise.all(feeds.map((feed) => this.fetchFeed(feed)));
 		const articles = allArticles.flat();
 
+		// Calculate the date one week ago
+		const oneWeekAgo = new Date();
+		oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+		// Filter to only include articles from the past week
+		const recentArticles = articles.filter((article) => {
+			if (!article.date) return false; // Exclude articles without dates
+			const articleDate = new Date(article.date);
+			return articleDate >= oneWeekAgo;
+		});
+
 		// Sort newest → oldest
-		articles.sort((a, b) => {
+		recentArticles.sort((a, b) => {
 			const dateA = a.date ? new Date(a.date).getTime() : 0;
 			const dateB = b.date ? new Date(b.date).getTime() : 0;
 			return dateB - dateA;
 		});
 
 		this.cache = {
-			articles,
+			articles: recentArticles,
 			expiry: Date.now() + TIMING_STRATEGIES.STANDARD.interval
 		};
 
-		return { articles };
+		return { articles: recentArticles };
 	}
 }
 

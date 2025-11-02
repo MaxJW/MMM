@@ -13,6 +13,15 @@ import QRCodeHalloween from '$lib/assets/events/halloween/QRCode.png';
 const EVENTS_FILE = join(process.cwd(), 'data', 'events.json');
 const EVENTS_DIR = join(process.cwd(), 'data');
 
+/**
+ * Ensure events directory exists
+ */
+async function ensureEventsDir() {
+	if (!existsSync(EVENTS_DIR)) {
+		await mkdir(EVENTS_DIR, { recursive: true });
+	}
+}
+
 interface EventSlugAssets {
 	eventImage: string;
 	qrCode: string;
@@ -122,9 +131,7 @@ export const PUT: RequestHandler = async ({ request }) => {
 		const events = body.events as Array<Omit<EventConfig, 'eventImage' | 'qrCode'>>;
 
 		// Ensure data directory exists
-		if (!existsSync(EVENTS_DIR)) {
-			await mkdir(EVENTS_DIR, { recursive: true });
-		}
+		await ensureEventsDir();
 
 		// Validate events structure
 		for (const event of events) {

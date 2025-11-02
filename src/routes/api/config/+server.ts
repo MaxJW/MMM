@@ -62,7 +62,7 @@ export const PUT: RequestHandler = async ({ request }) => {
 		};
 
 		await saveConfig(updatedConfig);
-		clearConfigCache();
+		// saveConfig already updates the cache, no need to clear it
 
 		// Broadcast config change to all connected clients
 		broadcastConfigChange();
