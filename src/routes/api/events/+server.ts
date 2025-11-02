@@ -1,5 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { broadcastConfigChange } from '$lib/services/configStream';
 import { readFile, writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { join } from 'path';
@@ -132,18 +133,18 @@ export const PUT: RequestHandler = async ({ request }) => {
 			}
 			// Validate date format (MM-DD)
 			if (!/^\d{2}-\d{2}$/.test(event.start) || !/^\d{2}-\d{2}$/.test(event.end)) {
-				return json(
-					{ error: 'Dates must be in MM-DD format (e.g., 10-31)' },
-					{ status: 400 }
-				);
+				return json({ error: 'Dates must be in MM-DD format (e.g., 10-31)' }, { status: 400 });
 			}
 		}
 
 		await writeFile(EVENTS_FILE, JSON.stringify(events, null, 2));
+
+		// Broadcast config change to all connected clients
+		broadcastConfigChange();
+
 		return json({ success: true, events });
 	} catch (error) {
 		console.error('Error saving events:', error);
 		return json({ error: 'Failed to save events' }, { status: 500 });
 	}
 };
-

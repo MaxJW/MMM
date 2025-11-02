@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getConfig, saveConfig, clearConfigCache } from '$lib/config/userConfig';
 import type { UserConfig } from '$lib/config/userConfig';
+import { broadcastConfigChange } from '$lib/services/configStream';
 
 export const GET: RequestHandler = async () => {
 	try {
@@ -62,6 +63,9 @@ export const PUT: RequestHandler = async ({ request }) => {
 
 		await saveConfig(updatedConfig);
 		clearConfigCache();
+
+		// Broadcast config change to all connected clients
+		broadcastConfigChange();
 
 		return json({ success: true, config: updatedConfig });
 	} catch (error) {
