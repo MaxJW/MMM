@@ -4,6 +4,7 @@ import { getCached, setCache } from '$lib/core/utils';
 import type { CacheEntry } from '$lib/core/utils';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { readFile } from 'fs/promises';
 import { dev } from '$app/environment';
 
 const execAsync = promisify(exec);
@@ -11,14 +12,68 @@ const execAsync = promisify(exec);
 let cache: CacheEntry<SystemStats> | null = null;
 
 async function getCpuUsage(): Promise<number> {
+	// Try multiple methods to get CPU usage, with fallbacks
+	// Method 1: Use vmstat if available (most reliable single-reading method)
+	try {
+		const { stdout } = await execAsync("vmstat 1 2 | tail -1 | awk '{print 100 - $15}'");
+		const value = parseFloat(stdout.trim());
+		if (!isNaN(value) && value >= 0 && value <= 100) {
+			return Math.round(value);
+		}
+	} catch {
+		// Continue to next method
+	}
+
+	// Method 2: Use top with better parsing for different formats
 	try {
 		const { stdout } = await execAsync(
-			"top -bn1 | grep 'Cpu(s)' | awk '{print $2}' | cut -d'%' -f1"
+			'top -bn1 | grep -E \'%Cpu|%cpu|Cpu\\(s\\)\' | head -1 | awk \'{for(i=1;i<=NF;i++){if($i ~ /%sy|%us|%ni|%wa|%hi|%si|%st|%id/){split($i,a,"%");if(a[1]~/id/){idle=a[1];gsub(/[^0-9.]/,"",idle);print 100-idle}}}}\' | head -1'
 		);
-		return Math.round(parseFloat(stdout.trim()));
+		const value = parseFloat(stdout.trim());
+		if (!isNaN(value) && value >= 0 && value <= 100) {
+			return Math.round(value);
+		}
 	} catch {
-		return 0;
+		// Continue to next method
 	}
+
+	// Method 3: Parse top output for idle percentage
+	try {
+		const { stdout } = await execAsync(
+			"top -bn1 | grep -E '%Cpu|%cpu|Cpu\\(s\\)' | head -1 | awk -F'id,' '{print $2}' | awk '{print 100-$1}' | sed 's/%//'"
+		);
+		const value = parseFloat(stdout.trim());
+		if (!isNaN(value) && value >= 0 && value <= 100) {
+			return Math.round(value);
+		}
+	} catch {
+		// Continue to next method
+	}
+
+	// Method 4: Use /proc/stat with approximation (less accurate but works)
+	try {
+		const stat = await readFile('/proc/stat', 'utf8');
+		const lines = stat.split('\n');
+		const cpuLine = lines.find((line) => line.startsWith('cpu '));
+
+		if (cpuLine) {
+			const values = cpuLine.split(/\s+/).slice(1).map(Number);
+			// Calculate non-idle percentage (approximation from single reading)
+			// This won't be perfectly accurate but gives a reasonable estimate
+			const total = values.reduce((a, b) => a + b, 0);
+			const idle = values[3] + (values[4] || 0); // idle + iowait
+			if (total > 0) {
+				const usage = ((total - idle) / total) * 100;
+				if (!isNaN(usage) && usage >= 0 && usage <= 100) {
+					return Math.round(usage);
+				}
+			}
+		}
+	} catch {
+		// Return 0 if all methods fail
+	}
+
+	return 0;
 }
 
 async function getMemoryUsage(): Promise<number> {
@@ -91,7 +146,8 @@ async function fetchSystemStats(): Promise<SystemStats> {
 	return { cpu, memory, disk, tempC };
 }
 
-export async function GET(config: any): Promise<SystemStats | { error: string }> {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function GET(_config?: unknown): Promise<SystemStats | { error: string }> {
 	try {
 		// Check cache
 		const cached = getCached(cache);

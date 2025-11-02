@@ -42,14 +42,23 @@
 
 			if (data.error) {
 				error = data.error;
+				binInfo = null;
 				return;
 			}
 
-			binInfo = data;
+			// Handle null response (no collection in next day) - not an error
+			if (data === null) {
+				binInfo = null;
+				error = null;
+			} else {
+				binInfo = data;
+			}
+
 			now = dayjs();
 			milkReminder = updateMilkReminder();
 		} catch (err) {
 			error = 'Failed to load bin data';
+			binInfo = null;
 			console.error('Error loading bin data:', err);
 		} finally {
 			loading = false;
