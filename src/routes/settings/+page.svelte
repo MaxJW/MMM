@@ -9,7 +9,7 @@
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
 	import type { ComponentManifest } from '$lib/components/types';
 	import ComponentField from '$lib/components/ComponentField.svelte';
-	import type { DashboardArea } from '$lib/types/dashboard';
+	import type { DashboardArea } from '$lib/core/types';
 
 	let config: UserConfig | null = $state(null);
 	let loading = $state(true);

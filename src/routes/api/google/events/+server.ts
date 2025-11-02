@@ -5,7 +5,7 @@ import { google, type calendar_v3 } from 'googleapis';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
-import { TIMING_STRATEGIES } from '$lib/types/util';
+import { TIMING_STRATEGIES } from '$lib/core/timing';
 import { TokenStorage } from '$lib/services/tokenStorage';
 
 type SimplifiedEvent = {
