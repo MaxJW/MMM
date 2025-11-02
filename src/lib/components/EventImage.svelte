@@ -27,10 +27,16 @@
 
 {#if currentEvent}
 	<div class="flex flex-col items-center select-none">
-		<img src={currentEvent.eventImage} alt="Event" />
+		{#if currentEvent.eventImage}
+			<img src={currentEvent.eventImage} alt="Event" />
+		{/if}
 		<div class="flex flex-col items-center">
-			<h2 class="text-xl">{currentEvent.eventText}</h2>
-			<img class="size-60" src={currentEvent.qrCode} alt="QR Code" />
+			{#if currentEvent.eventText}
+				<h2 class="text-xl">{currentEvent.eventText}</h2>
+			{/if}
+			{#if currentEvent.qrCode}
+				<img class="size-60" src={currentEvent.qrCode} alt="QR Code" />
+			{/if}
 		</div>
 	</div>
 {/if}

@@ -1,60 +1,104 @@
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
+import eventsConfig from './events.json';
 
+// Import known assets for mapping by slug
 import EventImgHalloween from '$lib/assets/events/halloween/EventImage.png';
 import QRCodeHalloween from '$lib/assets/events/halloween/QRCode.png';
 
 export interface EventConfig {
-	startDate: Dayjs;
-	endDate: Dayjs;
-	eventText: string;
-	eventImage: string;
-	qrCode: string;
+	start: string; // Format: 'MM-DD'
+	end: string; // Format: 'MM-DD'
+	eventSlug?: string; // Folder name in assets/events/ (e.g., 'halloween')
+	eventText?: string;
 	customGreeting?: string;
+	// Resolved asset paths (set internally, not in JSON)
+	eventImage?: string;
+	qrCode?: string;
 }
 
-const events: EventConfig[] = [
-	{
-		startDate: dayjs('2025-10-31 00:00:00'),
-		endDate: dayjs('2025-11-01 23:59:59'),
-		eventText: 'Join the Halloween POV below!',
+interface EventSlugAssets {
+	eventImage: string;
+	qrCode: string;
+}
+
+// Map of event slugs to their imported assets
+const assetMap: Record<string, EventSlugAssets> = {
+	halloween: {
 		eventImage: EventImgHalloween,
-		qrCode: QRCodeHalloween,
-		customGreeting: 'Happy Halloween'
+		qrCode: QRCodeHalloween
 	}
-	// Add future events here:
-	// {
-	// 	startDate: dayjs('2024-12-24'),
-	// 	endDate: dayjs('2024-12-26'),
-	// 	eventText: 'Merry Christmas!',
-	// 	eventImage: EventImgChristmas,
-	// 	qrCode: QRCodeChristmas,
-	// 	customGreeting: 'Merry Christmas!'
-	// }
-];
+};
 
 /**
- * Get the currently active event based on the current date
- * @returns The active event config or null if no event is active
+ * Resolve assets for an event slug.
+ * Looks up the slug in the asset map and returns the imported asset URLs.
  */
-export function getCurrentEvent(): EventConfig | null {
+function resolveEventAssets(slug: string | undefined): Partial<EventSlugAssets> {
+	if (!slug || !assetMap[slug]) {
+		return {};
+	}
+	return assetMap[slug];
+}
+
+// Load and process events from JSON config
+const recurringEvents: EventConfig[] = (eventsConfig as EventConfig[]).map(
+	(event: Omit<EventConfig, 'eventImage' | 'qrCode'> & { eventSlug?: string }) => {
+		const assets = resolveEventAssets(event.eventSlug);
+		return {
+			...event,
+			eventImage: assets.eventImage,
+			qrCode: assets.qrCode
+		};
+	}
+);
+
+/**
+ * Given a recurring event with start/end dates (MM-DD),
+ * return its start and end as Dayjs objects for the correct year.
+ */
+function getEventDates(event: EventConfig, now = dayjs()) {
+	const year = now.year();
+
+	let startDate = dayjs(`${year}-${event.start} 00:00:00`);
+	let endDate = dayjs(`${year}-${event.end} 23:59:59`);
+
+	// If the event spans across years (e.g., Dec 31 – Jan 1)
+	if (endDate.isBefore(startDate)) {
+		endDate = endDate.add(1, 'year');
+	}
+
+	// If event has already passed this year, roll it over to next year
+	if (endDate.isBefore(now)) {
+		startDate = startDate.add(1, 'year');
+		endDate = endDate.add(1, 'year');
+	}
+
+	return { startDate, endDate };
+}
+
+/**
+ * Get the currently active recurring event
+ */
+export function getCurrentEvent(): (EventConfig & { startDate: Dayjs; endDate: Dayjs }) | null {
 	const now = dayjs();
 	const today = now.startOf('day');
 
-	return (
-		events.find((event) => {
-			const start = event.startDate.startOf('day');
-			const end = event.endDate.startOf('day');
-			return (
-				(today.isAfter(start) || today.isSame(start)) && (today.isBefore(end) || today.isSame(end))
-			);
-		}) || null
-	);
+	for (const event of recurringEvents) {
+		const { startDate, endDate } = getEventDates(event, now);
+		if (
+			(today.isAfter(startDate) || today.isSame(startDate)) &&
+			(today.isBefore(endDate) || today.isSame(endDate))
+		) {
+			return { ...event, startDate, endDate };
+		}
+	}
+
+	return null;
 }
 
 /**
  * Get the custom greeting for the current event, if any
- * @returns Custom greeting string or null
  */
 export function getCurrentEventGreeting(): string | null {
 	const currentEvent = getCurrentEvent();

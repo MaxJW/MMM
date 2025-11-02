@@ -1,0 +1,23 @@
+[
+	{
+		"start": "10-31",
+		"end": "11-01",
+		"eventSlug": "halloween",
+		"customGreeting": "🎃 Happy Halloween! 🎃"
+	},
+	{
+		"start": "12-25",
+		"end": "12-26",
+		"customGreeting": "🎄 Merry Christmas! 🎅"
+	},
+	{
+		"start": "01-01",
+		"end": "01-02",
+		"customGreeting": "🎆 Happy New Year! 🎆"
+	},
+	{
+		"start": "02-14",
+		"end": "02-14",
+		"customGreeting": "❤️ Happy Valentine's Day! ❤️"
+	}
+]
