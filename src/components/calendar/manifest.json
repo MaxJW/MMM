@@ -1,0 +1,26 @@
+{
+	"id": "calendar",
+	"name": "Calendar",
+	"version": "1.0.0",
+	"description": "Display upcoming calendar events from Google Calendar",
+	"config": {
+		"title": "Google Calendar Settings",
+		"description": "Configure OAuth credentials for Google Calendar integration",
+		"fields": [
+			{
+				"key": "clientId",
+				"type": "text",
+				"label": "Client ID",
+				"description": "Your Google OAuth Client ID",
+				"placeholder": "Enter Google OAuth Client ID"
+			},
+			{
+				"key": "clientSecret",
+				"type": "password",
+				"label": "Client Secret",
+				"description": "Your Google OAuth Client Secret",
+				"placeholder": "Enter Google OAuth Client Secret"
+			}
+		]
+	}
+}

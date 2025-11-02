@@ -1,0 +1,62 @@
+{
+	"id": "events",
+	"name": "Events",
+	"version": "1.0.0",
+	"description": "Display holiday event images and QR codes based on active events",
+	"config": {
+		"title": "Events Settings",
+		"description": "Configure recurring holiday events (e.g., Halloween, Christmas) with custom greetings and images. Date format: MM-DD (e.g., 10-31 for October 31st).",
+		"fields": [
+			{
+				"key": "events",
+				"type": "array",
+				"label": "Holiday Events",
+				"description": "List of recurring holiday events",
+				"itemFields": [
+					{
+						"key": "start",
+						"type": "text",
+						"label": "Start Date (MM-DD)",
+						"description": "Event start date in MM-DD format",
+						"placeholder": "10-31"
+					},
+					{
+						"key": "end",
+						"type": "text",
+						"label": "End Date (MM-DD)",
+						"description": "Event end date in MM-DD format",
+						"placeholder": "11-01"
+					},
+					{
+						"key": "eventSlug",
+						"type": "text",
+						"label": "Image Name",
+						"description": "Image filename in src/components/events/assets/ (without .png extension, e.g., halloween)",
+						"placeholder": "e.g., halloween"
+					},
+					{
+						"key": "eventText",
+						"type": "text",
+						"label": "Event Text",
+						"description": "Optional event description",
+						"placeholder": "Optional event description"
+					},
+					{
+						"key": "qrCodeLink",
+						"type": "text",
+						"label": "QR Code Link",
+						"description": "URL or text to encode in QR code (e.g., https://example.com or WiFi connection string)",
+						"placeholder": "e.g., https://example.com"
+					},
+					{
+						"key": "customGreeting",
+						"type": "text",
+						"label": "Custom Greeting",
+						"description": "Custom greeting message for this event",
+						"placeholder": "e.g., 🎃 Happy Halloween! 🎃"
+					}
+				]
+			}
+		]
+	}
+}

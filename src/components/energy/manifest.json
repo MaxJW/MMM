@@ -1,0 +1,19 @@
+{
+	"id": "energy",
+	"name": "Energy Usage",
+	"version": "1.0.0",
+	"description": "Display energy usage statistics from Glowmarkt API",
+	"config": {
+		"title": "Energy Usage Settings",
+		"description": "Configure your energy usage API credentials",
+		"fields": [
+			{
+				"key": "apiKey",
+				"type": "password",
+				"label": "API Key",
+				"description": "Your Glowmarkt API key",
+				"placeholder": "Enter energy API key"
+			}
+		]
+	}
+}

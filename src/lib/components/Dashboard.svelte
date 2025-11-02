@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { DashboardConfig, DashboardArea } from '$lib/types/dashboard';
+	import type { DashboardConfig, DashboardArea } from '$lib/core/types';
 
 	export let config: DashboardConfig;
 
@@ -29,7 +29,7 @@
 </script>
 
 <div
-	class="h-screen min-h-screen cursor-none overflow-hidden bg-black font-bold text-neutral-100 select-none"
+	class="dashboard-container h-screen min-h-screen cursor-none overflow-hidden bg-black font-bold text-neutral-100 select-none"
 >
 	<div class="relative inset-0 h-full w-full">
 		<div class="grid h-screen w-full grid-cols-[1fr_1fr_1fr] grid-rows-[auto_1fr_auto_auto]">
@@ -43,3 +43,25 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	@keyframes nudge {
+		from {
+			transform: translateY(0px);
+		}
+
+		to {
+			transform: translateY(2px);
+		}
+	}
+
+	.dashboard-container {
+		animation: nudge 120s infinite alternate;
+	}
+
+	/* Hide overflow on html and body when dashboard is active */
+	:global(html:has(.dashboard-container)),
+	:global(body:has(.dashboard-container)) {
+		overflow: hidden;
+	}
+</style>

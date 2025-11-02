@@ -1,0 +1,26 @@
+{
+	"id": "adguard",
+	"name": "AdGuard Home",
+	"version": "1.0.0",
+	"description": "Display AdGuard Home DNS statistics",
+	"config": {
+		"title": "AdGuard Home Settings",
+		"description": "Configure your AdGuard Home instance connection details",
+		"fields": [
+			{
+				"key": "url",
+				"type": "text",
+				"label": "AdGuard Home URL",
+				"description": "URL of your AdGuard Home instance",
+				"placeholder": "e.g., http://192.168.1.100:3000"
+			},
+			{
+				"key": "token",
+				"type": "password",
+				"label": "API Token",
+				"description": "AdGuard Home API token",
+				"placeholder": "Enter AdGuard Home API token"
+			}
+		]
+	}
+}

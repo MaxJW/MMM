@@ -5,15 +5,6 @@ html {
 }
 
 body {
-    animation: nudge 120s infinite alternate;
-}
-
-@keyframes nudge {
-    from {
-        transform: translateY(0px);
-    }
-
-    to {
-        transform: translateY(2px);
-    }
+    margin: 0;
+    padding: 0;
 }

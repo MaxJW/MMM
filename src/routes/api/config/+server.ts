@@ -1,7 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getConfig, saveConfig, clearConfigCache } from '$lib/config/userConfig';
-import type { UserConfig } from '$lib/config/userConfig';
+import { getConfig, saveConfig, type UserConfig } from '$lib/core/config';
 import { broadcastConfigChange } from '$lib/services/configStream';
 
 export const GET: RequestHandler = async () => {
@@ -22,42 +21,12 @@ export const PUT: RequestHandler = async ({ request }) => {
 		// Merge with existing config to preserve fields not in the update
 		const updatedConfig: UserConfig = {
 			...currentConfig,
-			...body,
 			dashboard: {
 				components: body.dashboard?.components || currentConfig.dashboard.components
 			},
-			weather: {
-				...currentConfig.weather,
-				...body.weather
-			},
-			google: {
-				...currentConfig.google,
-				...body.google
-			},
-			spotify: {
-				...currentConfig.spotify,
-				...body.spotify
-			},
-			adguard: {
-				...currentConfig.adguard,
-				...body.adguard
-			},
-			energy: {
-				...currentConfig.energy,
-				...body.energy
-			},
-			rssFeeds: body.rssFeeds || currentConfig.rssFeeds,
-			binCollections: {
-				...currentConfig.binCollections,
-				...body.binCollections
-			},
-			weatherAlerts: {
-				...currentConfig.weatherAlerts,
-				...body.weatherAlerts
-			},
-			wifi: {
-				...currentConfig.wifi,
-				...body.wifi
+			components: {
+				...currentConfig.components,
+				...(body.components || {})
 			}
 		};
 

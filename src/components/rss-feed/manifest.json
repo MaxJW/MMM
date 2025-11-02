@@ -1,0 +1,34 @@
+{
+	"id": "rss-feed",
+	"name": "RSS Feeds",
+	"version": "1.0.0",
+	"description": "Display news articles from RSS feeds",
+	"config": {
+		"title": "RSS Feeds Settings",
+		"description": "Manage your RSS feed sources for the news widget",
+		"fields": [
+			{
+				"key": "rssFeeds",
+				"type": "array",
+				"label": "RSS Feeds",
+				"description": "List of RSS feed sources",
+				"itemFields": [
+					{
+						"key": "sourceName",
+						"type": "text",
+						"label": "Feed Name",
+						"description": "Display name for this RSS feed",
+						"placeholder": "e.g., The Guardian | World"
+					},
+					{
+						"key": "url",
+					"type": "text",
+						"label": "Feed URL",
+						"description": "RSS feed URL",
+						"placeholder": "https://example.com/feed.xml"
+				}
+				]
+			}
+		]
+	}
+}

@@ -12,7 +12,7 @@
 				"area": "top-right"
 			},
 			{
-				"id": "events",
+				"id": "calendar",
 				"enabled": true,
 				"area": "top-left"
 			},
@@ -27,7 +27,7 @@
 				"area": "bottom-left"
 			},
 			{
-				"id": "event-image",
+				"id": "events",
 				"enabled": true,
 				"area": "center"
 			},
@@ -48,45 +48,66 @@
 			}
 		]
 	},
-	"weather": {
-		"apiKey": "",
-		"latitude": "",
-		"longitude": ""
-	},
-	"google": {
-		"clientId": "",
-		"clientSecret": ""
-	},
-	"spotify": {
-		"clientId": "",
-		"clientSecret": "",
-		"refreshToken": ""
-	},
-	"adguard": {
-		"url": "",
-		"token": ""
-	},
-	"energy": {
-		"apiKey": ""
-	},
-	"rssFeeds": [
-		{
-			"url": "https://www.theguardian.com/world/rss",
-			"sourceName": "The Guardian | World"
+	"components": {
+		"weather": {
+			"apiKey": "",
+			"latitude": "",
+			"longitude": "",
+			"alertsCountry": "united-kingdom",
+			"alertsProvince": ""
+		},
+		"calendar": {
+			"clientId": "",
+			"clientSecret": ""
+		},
+		"events": {
+			"events": [
+				{
+					"start": "10-31",
+					"end": "11-01",
+					"eventSlug": "halloween",
+					"customGreeting": "🎃 Happy Halloween! 🎃"
+				},
+				{
+					"start": "12-25",
+					"end": "12-26",
+					"customGreeting": "🎄 Merry Christmas! 🎅"
+				},
+				{
+					"start": "01-01",
+					"end": "01-02",
+					"customGreeting": "🎆 Happy New Year! 🎆"
+				}
+			]
+		},
+		"spotify": {
+			"clientId": "",
+			"clientSecret": "",
+			"refreshToken": ""
+		},
+		"adguard": {
+			"url": "",
+			"token": ""
+		},
+		"energy": {
+			"apiKey": ""
+		},
+		"rss-feed": {
+			"rssFeeds": [
+				{
+					"url": "https://www.theguardian.com/world/rss",
+					"sourceName": "The Guardian | World"
+				}
+			]
+		},
+		"reminders": {
+			"uprn": "",
+			"apiEndpoint": ""
+		},
+		"wifi-qr-code": {
+			"networkName": "",
+			"password": "",
+			"securityType": "WPA"
 		}
-	],
-	"binCollections": {
-		"uprn": "",
-		"apiEndpoint": "",
-		"council": ""
-	},
-	"weatherAlerts": {
-		"country": "united-kingdom",
-		"province": ""
-	},
-	"wifi": {
-		"networkName": "",
-		"password": "",
-		"securityType": "WPA"
 	}
 }

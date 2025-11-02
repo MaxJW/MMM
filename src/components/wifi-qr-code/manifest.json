@@ -1,0 +1,38 @@
+{
+	"id": "wifi-qr-code",
+	"name": "WiFi QR Code",
+	"version": "1.0.0",
+	"description": "Display WiFi network QR code for easy connection",
+	"config": {
+		"title": "WiFi Settings",
+		"description": "Configure your WiFi network details. A QR code will be generated automatically.",
+		"fields": [
+			{
+				"key": "networkName",
+				"type": "text",
+				"label": "Network Name (SSID)",
+				"description": "The name of the WiFi endpoint you want users to be able to connect to",
+				"placeholder": "Enter network name"
+			},
+			{
+				"key": "password",
+				"type": "password",
+				"label": "Password",
+				"description": "WiFi network password",
+				"placeholder": "Enter WiFi password"
+			},
+			{
+				"key": "securityType",
+				"type": "select",
+				"label": "Security Type",
+				"description": "WiFi security protocol",
+				"default": "WPA",
+				"options": [
+					{ "value": "WPA", "label": "WPA/WPA2" },
+					{ "value": "WEP", "label": "WEP" },
+					{ "value": "nopass", "label": "No Password" }
+				]
+			}
+		]
+	}
+}

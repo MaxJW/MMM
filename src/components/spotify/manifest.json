@@ -1,0 +1,33 @@
+{
+	"id": "spotify",
+	"name": "Spotify",
+	"version": "1.0.0",
+	"description": "Display currently playing Spotify track",
+	"config": {
+		"title": "Spotify Settings",
+		"description": "Configure OAuth credentials for Spotify integration",
+		"fields": [
+			{
+				"key": "clientId",
+				"type": "text",
+				"label": "Client ID",
+				"description": "Your Spotify OAuth Client ID",
+				"placeholder": "Enter Spotify Client ID"
+			},
+			{
+				"key": "clientSecret",
+				"type": "password",
+				"label": "Client Secret",
+				"description": "Your Spotify OAuth Client Secret",
+				"placeholder": "Enter Spotify Client Secret"
+			},
+			{
+				"key": "refreshToken",
+				"type": "password",
+				"label": "Refresh Token",
+				"description": "Your Spotify OAuth Refresh Token",
+				"placeholder": "Enter Spotify Refresh Token"
+			}
+		]
+	}
+}

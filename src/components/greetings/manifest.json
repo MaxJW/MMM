@@ -1,0 +1,11 @@
+{
+	"id": "greetings",
+	"name": "Greetings",
+	"version": "1.0.0",
+	"description": "Display time-based or event-based greetings",
+	"config": {
+		"title": "Greetings Settings",
+		"description": "Greetings component displays personalized greetings based on time of day or active events. No configuration required.",
+		"fields": []
+	}
+}

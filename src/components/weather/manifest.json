@@ -1,0 +1,51 @@
+{
+	"id": "weather",
+	"name": "Weather",
+	"version": "1.0.0",
+	"description": "Display current weather and forecasts",
+	"config": {
+		"title": "Weather Settings",
+		"description": "Configure your weather widget with API credentials and location",
+		"fields": [
+			{
+				"key": "apiKey",
+				"type": "password",
+				"label": "API Key",
+				"description": "Your Pirate Weather API key",
+				"placeholder": "Enter API key"
+			},
+			{
+				"key": "latitude",
+				"type": "text",
+				"label": "Latitude",
+				"description": "Your location's latitude",
+				"placeholder": "e.g., 56.0",
+				"default": ""
+			},
+			{
+				"key": "longitude",
+				"type": "text",
+				"label": "Longitude",
+				"description": "Your location's longitude",
+				"placeholder": "e.g., -3.2",
+				"default": ""
+			},
+			{
+				"key": "alertsCountry",
+				"type": "text",
+				"label": "Alerts Country",
+				"description": "Country code for weather alerts (e.g., united-kingdom)",
+				"placeholder": "e.g., united-kingdom",
+				"default": "united-kingdom"
+			},
+			{
+				"key": "alertsProvince",
+				"type": "text",
+				"label": "Alerts Province/Region",
+				"description": "Province or region name for filtering alerts",
+				"placeholder": "e.g., Central, Tayside & Fife",
+				"default": ""
+			}
+		]
+	}
+}

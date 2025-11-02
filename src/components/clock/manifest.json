@@ -1,0 +1,11 @@
+{
+	"id": "clock",
+	"name": "Clock",
+	"version": "1.0.0",
+	"description": "Display current time and date",
+	"config": {
+		"title": "Clock Settings",
+		"description": "Clock component displays the current time and date. No configuration required.",
+		"fields": []
+	}
+}
