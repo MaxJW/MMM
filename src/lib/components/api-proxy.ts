@@ -25,9 +25,10 @@ export async function callComponentApi(
 		const config = await getComponentConfig(componentId);
 		const result = await component.apiHandler(config, request);
 
-		// If result has an error, return it with 500 status
+		// If result has an error, return it with appropriate status
 		if (result && typeof result === 'object' && 'error' in result) {
-			return { error: result.error, status: 500 };
+			const errorStatus = result.error === 'Not authenticated' ? 401 : 500;
+			return { error: result.error, status: errorStatus };
 		}
 
 		return { data: result, status: 200 };

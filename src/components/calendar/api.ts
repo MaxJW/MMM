@@ -1,6 +1,3 @@
-import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { getGoogleConfig } from '$lib/config/userConfig';
 import { google, type calendar_v3 } from 'googleapis';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -35,6 +32,13 @@ type GoogleEventLite = {
 	location?: string;
 };
 
+interface CalendarConfig {
+	clientId?: string;
+	clientSecret?: string;
+	maxEvents?: number;
+	calendarColors?: Array<{ calendarName: string; colorClass: string }> | Record<string, string>;
+}
+
 class GoogleCalendarService {
 	private static cache: {
 		data: Array<{ day: string; date: number; month: string; events: SimplifiedEvent[] }>;
@@ -44,7 +48,8 @@ class GoogleCalendarService {
 	} | null = null;
 
 	static async getEvents(
-		origin: string
+		origin: string,
+		config: CalendarConfig
 	): Promise<Array<{ day: string; date: number; month: string; events: SimplifiedEvent[] }>> {
 		// Load tokens from file
 		const tokenData = await TokenStorage.loadTokens();
@@ -52,7 +57,6 @@ class GoogleCalendarService {
 			throw new Error('Not authenticated');
 		}
 
-		const config = await getGoogleConfig();
 		if (!config.clientId || !config.clientSecret) {
 			throw new Error('Google OAuth not configured');
 		}
@@ -292,15 +296,22 @@ class GoogleCalendarService {
 	}
 }
 
-export const GET: RequestHandler = async ({ url }) => {
+export async function GET(
+	config: CalendarConfig,
+	request?: Request
+): Promise<
+	Array<{ day: string; date: number; month: string; events: SimplifiedEvent[] }> | { error: string }
+> {
 	try {
-		const data = await GoogleCalendarService.getEvents(url.origin);
-		return json(data);
+		// Get origin from request URL
+		const origin = request ? new URL(request.url).origin : 'http://localhost:5173';
+		const data = await GoogleCalendarService.getEvents(origin, config);
+		return data;
 	} catch (error) {
 		if ((error as Error).message === 'Not authenticated') {
-			return json({ error: 'Not authenticated' }, { status: 401 });
+			return { error: 'Not authenticated' };
 		}
 		console.error('Failed to fetch Google Calendar events', error);
-		return json({ error: 'Failed to fetch events' }, { status: 500 });
+		return { error: 'Failed to fetch events' };
 	}
-};
+}

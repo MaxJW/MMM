@@ -57,7 +57,7 @@
 				return;
 			}
 
-			const res = await fetch('/api/google/events');
+			const res = await fetch('/api/components/calendar');
 			if (res.status === 401) {
 				days = null;
 				return;
@@ -65,6 +65,16 @@
 			if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
 			const result = await res.json();
+
+			// Handle error response from component API
+			if (result.error) {
+				if (result.error === 'Not authenticated') {
+					days = null;
+					return;
+				}
+				throw new Error(result.error);
+			}
+
 			days = result;
 		} catch (e) {
 			error = 'Failed to load calendar';
