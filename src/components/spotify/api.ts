@@ -105,12 +105,22 @@ async function fetchTrackForAccount(
 	clientSecret: string,
 	account: SpotifyAccount
 ): Promise<SpotifyTrack | null> {
+	const accountId = account.name || 'unknown';
 	try {
 		const token = await getAccessToken(clientId, clientSecret, account.refreshToken);
 		const { track } = await fetchPlayerData(token);
+		if (track) {
+			// Add account name to track for identification
+			track.accountName = account.name;
+			console.log(
+				`[Spotify] Account "${accountId}": Track found - ${track.title} by ${track.artist}, isPlaying: ${track.isPlaying}`
+			);
+		} else {
+			console.log(`[Spotify] Account "${accountId}": No track currently playing`);
+		}
 		return track;
 	} catch (error) {
-		console.error(`Failed to fetch track for account ${account.name || 'unknown'}:`, error);
+		console.error(`[Spotify] Failed to fetch track for account "${accountId}":`, error);
 		return null;
 	}
 }
@@ -144,6 +154,15 @@ export async function GET(config: SpotifyConfig): Promise<SpotifyTrack[] | { err
 		);
 
 		const tracks = await Promise.all(trackPromises);
+
+		// Log results for debugging
+		console.log(`[Spotify] Fetched tracks for ${accounts.length} accounts:`, {
+			totalAccounts: accounts.length,
+			tracksFetched: tracks.length,
+			nullTracks: tracks.filter((t) => t === null).length,
+			playingTracks: tracks.filter((t) => t !== null && t.isPlaying).length,
+			accountNames: accounts.map((a) => a.name || 'unknown')
+		});
 
 		// Filter to only tracks that are currently playing
 		const playingTracks = tracks.filter(

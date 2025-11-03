@@ -6,4 +6,5 @@ export interface SpotifyTrack {
 	progressMs: number;
 	durationMs: number;
 	deviceName: string;
+	accountName?: string;
 }
