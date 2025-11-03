@@ -85,6 +85,7 @@
 			"clientId": "",
 			"clientSecret": "",
 			"refreshToken": ""
+			"albumArtStyle": "vinyl"
 		},
 		"adguard": {
 			"url": "",
@@ -110,17 +111,17 @@
 		"greetings": {
 			"greetings": [
 				{
-					"text": "Good morning",
+					"text": "Good morning!",
 					"startHour": 0,
 					"endHour": 12
 				},
 				{
-					"text": "Good afternoon",
+					"text": "Good afternoon!",
 					"startHour": 12,
 					"endHour": 18
 				},
 				{
-					"text": "Good evening",
+					"text": "Good evening!",
 					"startHour": 18,
 					"endHour": 24
 				}
