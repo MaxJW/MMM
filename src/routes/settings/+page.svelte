@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import type { UserConfig } from '$lib/core/config';
 	import Settings from '@lucide/svelte/icons/settings';
 	import Save from '@lucide/svelte/icons/save';
@@ -23,6 +24,7 @@
 	let tabs: Array<{ id: string; label: string }> = $state([
 		{ id: 'dashboard', label: 'Dashboard Layout' }
 	]);
+	let configComponentMap: Record<string, unknown> = $state({});
 
 	// Area order for grouping components
 	const areaOrder: DashboardArea[] = [
@@ -79,9 +81,10 @@
 
 	onMount(async () => {
 		try {
-			const [configResponse, manifestsResponse] = await Promise.all([
+			const [configResponse, manifestsResponse, configComponentsResponse] = await Promise.all([
 				fetch('/api/config'),
-				fetch('/api/components/manifests')
+				fetch('/api/components/manifests'),
+				import('../../components/config-handlers')
 			]);
 
 			if (configResponse.ok) {
@@ -102,6 +105,11 @@
 						.sort((a, b) => a.label.localeCompare(b.label));
 					tabs = [{ id: 'dashboard', label: 'Dashboard Layout' }, ...componentTabs];
 				}
+			}
+
+			// Load config components map
+			if (configComponentsResponse.configComponentMap) {
+				configComponentMap = configComponentsResponse.configComponentMap;
 			}
 		} catch (error) {
 			console.error('Failed to load configuration:', error);
@@ -298,6 +306,40 @@
 		}
 		goto('/');
 	}
+
+	// Handle OAuth callback messages
+	$effect(() => {
+		if ($page.url.searchParams.has('connected')) {
+			if ($page.url.searchParams.get('connected') === 'spotify') {
+				saveMessage = { type: 'success', text: 'Spotify account connected successfully!' };
+				setTimeout(() => {
+					saveMessage = null;
+					// Clear URL params
+					goto('/settings', { replaceState: true });
+				}, 3000);
+			}
+		}
+		if ($page.url.searchParams.has('spotify_error')) {
+			const error = $page.url.searchParams.get('spotify_error');
+			const errorMessages: Record<string, string> = {
+				missing_code: 'OAuth authorization failed: missing code',
+				not_configured:
+					'Spotify OAuth is not configured. Please set Client ID and Client Secret first.',
+				no_refresh_token: 'Failed to get refresh token. Please try again.',
+				token_exchange_failed: 'Failed to exchange authorization code for tokens.',
+				callback_failed: 'OAuth callback failed. Please try again.'
+			};
+			saveMessage = {
+				type: 'error',
+				text: errorMessages[error || ''] || `Spotify connection failed: ${error}`
+			};
+			setTimeout(() => {
+				saveMessage = null;
+				// Clear URL params
+				goto('/settings', { replaceState: true });
+			}, 5000);
+		}
+	});
 </script>
 
 <div class="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-8">
@@ -482,6 +524,19 @@
 										{manifest.config.title || manifest.name}
 									</h2>
 									<p class="text-sm text-gray-600 sm:text-base">{manifest.config.description}</p>
+
+									{#if manifest.id in configComponentMap}
+										<!-- Custom config component for this component -->
+										{@const ConfigComponent = configComponentMap[manifest.id] as any}
+										{#if ConfigComponent}
+											<ConfigComponent
+												{config}
+												updateComponentConfig={(key: string, value: any) =>
+													updateComponentConfig(manifest.id, key, value)}
+											/>
+										{/if}
+									{/if}
+
 									<div class="space-y-4">
 										{#each manifest.config.fields as field}
 											{@const componentConfig = getComponentConfig(manifest.id)}

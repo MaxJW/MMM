@@ -60,11 +60,20 @@
 			"clientId": "",
 			"clientSecret": "",
 			"maxEvents": 12,
-			"calendarColors": {
-				"Personal": "green-500",
-				"Work": "blue-500",
-				"Family": "purple-500"
-			}
+			"calendarColors": [
+				{
+					"calendarName": "Personal",
+					"colorClass": "green-500"
+				},
+				{
+					"calendarName": "Work",
+					"colorClass": "blue-500"
+				},
+				{
+					"calendarName": "Family",
+					"colorClass": "purple-500"
+				}
+			]
 		},
 		"events": {
 			"events": [
@@ -89,7 +98,7 @@
 		"spotify": {
 			"clientId": "",
 			"clientSecret": "",
-			"refreshToken": ""
+			"accounts": [],
 			"albumArtStyle": "vinyl"
 		},
 		"adguard": {

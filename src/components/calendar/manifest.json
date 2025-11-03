@@ -30,10 +30,25 @@
 			},
 			{
 				"key": "calendarColors",
-				"type": "object",
+				"type": "array",
 				"label": "Calendar Colors",
-				"description": "Map calendar names to color classes (e.g., {\"Personal\": \"green-500\", \"Work\": \"blue-500\", \"Family\": \"purple-500\"})",
-				"default": {}
+				"description": "Map calendar names to color classes. Add entries for each calendar you want to color.",
+				"itemFields": [
+					{
+						"key": "calendarName",
+						"type": "text",
+						"label": "Calendar Name",
+						"description": "The exact name of your calendar (check server logs for available names)",
+						"placeholder": "e.g., Personal, Work, Family"
+					},
+					{
+						"key": "colorClass",
+						"type": "text",
+						"label": "Color Class",
+						"description": "Tailwind color class (e.g., green-500, blue-500, purple-500)",
+						"placeholder": "e.g., green-500"
+					}
+				]
 			}
 		]
 	}

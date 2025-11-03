@@ -3,29 +3,33 @@ import { TIMING_STRATEGIES } from '$lib/core/timing';
 import { getCached, setCache } from '$lib/core/utils';
 import type { CacheEntry } from '$lib/core/utils';
 
-let cache: CacheEntry<SpotifyTrack> | null = null;
+let cache: CacheEntry<SpotifyTrack[]> | null = null;
+
+interface SpotifyAccount {
+	refreshToken: string;
+	name?: string;
+}
 
 interface SpotifyConfig {
 	clientId?: string;
 	clientSecret?: string;
-	refreshToken?: string;
+	accounts?: SpotifyAccount[];
 }
 
-async function getAccessToken(config: SpotifyConfig): Promise<string> {
-	if (!config.clientId || !config.clientSecret || !config.refreshToken) {
-		throw new Error('Missing Spotify credentials');
-	}
-
+async function getAccessToken(
+	clientId: string,
+	clientSecret: string,
+	refreshToken: string
+): Promise<string> {
 	const res = await fetch('https://accounts.spotify.com/api/token', {
 		method: 'POST',
 		headers: {
-			Authorization:
-				'Basic ' + Buffer.from(`${config.clientId}:${config.clientSecret}`).toString('base64'),
+			Authorization: 'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64'),
 			'Content-Type': 'application/x-www-form-urlencoded'
 		},
 		body: new URLSearchParams({
 			grant_type: 'refresh_token',
-			refresh_token: config.refreshToken
+			refresh_token: refreshToken
 		})
 	});
 
@@ -40,10 +44,7 @@ async function getAccessToken(config: SpotifyConfig): Promise<string> {
 	return data.access_token;
 }
 
-async function fetchPlayerData(
-	config: SpotifyConfig,
-	token: string
-): Promise<{
+async function fetchPlayerData(token: string): Promise<{
 	track: SpotifyTrack | null;
 	deviceName: string;
 }> {
@@ -99,46 +100,65 @@ async function fetchPlayerData(
 	return { track, deviceName };
 }
 
-async function fetchTrack(config: SpotifyConfig): Promise<SpotifyTrack | null> {
-	const token = await getAccessToken(config);
-	const { track } = await fetchPlayerData(config, token);
-	return track;
+async function fetchTrackForAccount(
+	clientId: string,
+	clientSecret: string,
+	account: SpotifyAccount
+): Promise<SpotifyTrack | null> {
+	try {
+		const token = await getAccessToken(clientId, clientSecret, account.refreshToken);
+		const { track } = await fetchPlayerData(token);
+		return track;
+	} catch (error) {
+		console.error(`Failed to fetch track for account ${account.name || 'unknown'}:`, error);
+		return null;
+	}
 }
 
-export async function GET(config: SpotifyConfig): Promise<SpotifyTrack | { error: string }> {
+export async function GET(config: SpotifyConfig): Promise<SpotifyTrack[] | { error: string }> {
 	try {
-		// Check cache, but allow shorter cache for progress updates
+		if (!config.clientId || !config.clientSecret) {
+			throw new Error('Missing Spotify credentials');
+		}
+
+		// Check cache
 		const cached = getCached(cache);
 		if (cached) {
 			return cached;
 		}
 
-		const data = await fetchTrack(config);
-
-		// If no track is playing, return a not-playing state
-		if (!data) {
-			const emptyTrack: SpotifyTrack = {
-				title: '',
-				artist: '',
-				albumArt: '',
-				isPlaying: false,
-				progressMs: 0,
-				durationMs: 0,
-				deviceName: 'No active device'
-			};
-			// Cache empty state for UI.FADE interval (10 seconds)
-			cache = setCache(cache, emptyTrack, Date.now() + TIMING_STRATEGIES.UI.FADE);
-			return emptyTrack;
+		// Get accounts list
+		if (!config.accounts || !Array.isArray(config.accounts)) {
+			return [];
 		}
 
-		// Cache for shorter interval to keep progress updated when playing, longer when paused
-		const cacheDuration = data.isPlaying
-			? TIMING_STRATEGIES.UI.FADE // 10 seconds when playing for progress updates
-			: TIMING_STRATEGIES.FREQUENT.interval; // 5 minutes when paused
-		cache = setCache(cache, data, Date.now() + cacheDuration);
-		return data;
+		const accounts = config.accounts.filter((acc) => acc.refreshToken);
+
+		if (accounts.length === 0) {
+			return [];
+		}
+
+		// Fetch tracks for all accounts in parallel
+		const trackPromises = accounts.map((account) =>
+			fetchTrackForAccount(config.clientId as string, config.clientSecret as string, account)
+		);
+
+		const tracks = await Promise.all(trackPromises);
+
+		// Filter to only tracks that are currently playing
+		const playingTracks = tracks.filter(
+			(track): track is SpotifyTrack => track !== null && track.isPlaying
+		);
+
+		// Cache for shorter interval to keep progress updated when playing
+		const cacheDuration =
+			playingTracks.length > 0
+				? TIMING_STRATEGIES.UI.FADE // 10 seconds when playing for progress updates
+				: TIMING_STRATEGIES.FREQUENT.interval; // 5 minutes when no tracks playing
+		cache = setCache(cache, playingTracks, Date.now() + cacheDuration);
+		return playingTracks;
 	} catch (error) {
 		console.error('Spotify API error:', error);
-		return { error: error instanceof Error ? error.message : 'Failed to fetch Spotify track' };
+		return { error: error instanceof Error ? error.message : 'Failed to fetch Spotify tracks' };
 	}
 }

@@ -60,26 +60,43 @@ class GoogleCalendarService {
 		// Get maxEvents from config (default to 12)
 		const maxEvents = typeof config.maxEvents === 'number' ? config.maxEvents : 12;
 
-		// Get calendarColors from config (default to empty object)
-		const calendarColors = config.calendarColors || {};
+		// Get calendarColors from config (default to empty array)
+		// Support both new array format and legacy object format for backward compatibility
+		let calendarColorsArray: Array<{ calendarName: string; colorClass: string }> = [];
+		if (Array.isArray(config.calendarColors)) {
+			calendarColorsArray = config.calendarColors;
+		} else if (config.calendarColors && typeof config.calendarColors === 'object') {
+			// Legacy object format: convert to array format
+			calendarColorsArray = Object.entries(config.calendarColors).map(
+				([calendarName, colorClass]) => ({
+					calendarName,
+					colorClass: String(colorClass)
+				})
+			);
+		}
 
 		// Create a hash of calendarColors for cache invalidation
-		const calendarColorsHash = JSON.stringify(calendarColors);
+		const calendarColorsHash = JSON.stringify(calendarColorsArray);
 
 		// Helper function to get color class for a calendar name
 		const getColorClass = (calendarName?: string): string => {
 			if (!calendarName) return 'gray-400';
+
 			// Check for exact match first
-			if (calendarColors[calendarName]) {
-				return calendarColors[calendarName];
+			const exactMatch = calendarColorsArray.find((entry) => entry.calendarName === calendarName);
+			if (exactMatch) {
+				return exactMatch.colorClass;
 			}
+
 			// Check for case-insensitive match
 			const lowerName = calendarName.toLowerCase();
-			for (const [key, value] of Object.entries(calendarColors)) {
-				if (key.toLowerCase() === lowerName) {
-					return value;
-				}
+			const caseInsensitiveMatch = calendarColorsArray.find(
+				(entry) => entry.calendarName.toLowerCase() === lowerName
+			);
+			if (caseInsensitiveMatch) {
+				return caseInsensitiveMatch.colorClass;
 			}
+
 			// Default fallback colors based on common calendar names
 			if (lowerName.includes('work') || lowerName.includes('business')) {
 				return 'blue-500';

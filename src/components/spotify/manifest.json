@@ -5,7 +5,7 @@
 	"description": "Display currently playing Spotify track",
 	"config": {
 		"title": "Spotify Settings",
-		"description": "Configure OAuth credentials for Spotify integration",
+		"description": "Configure OAuth credentials for Spotify integration. Connect multiple accounts to display all currently playing tracks.",
 		"fields": [
 			{
 				"key": "clientId",
@@ -22,11 +22,24 @@
 				"placeholder": "Enter Spotify Client Secret"
 			},
 			{
-				"key": "refreshToken",
-				"type": "password",
-				"label": "Refresh Token",
-				"description": "Your Spotify OAuth Refresh Token",
-				"placeholder": "Enter Spotify Refresh Token"
+				"key": "accounts",
+				"type": "array",
+				"label": "Connected Accounts",
+				"description": "Spotify accounts that will be checked for currently playing tracks",
+				"itemFields": [
+					{
+						"key": "refreshToken",
+						"type": "password",
+						"label": "Refresh Token",
+						"description": "Auto-populated after OAuth connection"
+					},
+					{
+						"key": "name",
+						"type": "text",
+						"label": "Account Name",
+						"description": "Optional name to identify this account"
+					}
+				]
 			},
 			{
 				"key": "albumArtStyle",

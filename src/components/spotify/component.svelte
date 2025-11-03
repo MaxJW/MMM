@@ -6,7 +6,7 @@
 	import type { SpotifyTrack } from './types';
 	import { TIMING_STRATEGIES } from '$lib/core/timing';
 
-	let track: SpotifyTrack | null = null;
+	let tracks: SpotifyTrack[] = [];
 	let loading = true;
 	let error: string | null = null;
 	let refreshInterval: ReturnType<typeof setInterval> | null = null;
@@ -21,22 +21,27 @@
 
 			if (data.error) {
 				error = data.error;
-				track = null;
+				tracks = [];
 				setupRefreshInterval(false);
 				return;
 			}
 
-			const wasPlaying = track?.isPlaying ?? false;
-			track = data;
+			// Support both array response (new) and single track response (legacy)
+			const newTracks = Array.isArray(data) ? data : data.isPlaying ? [data] : [];
+
+			const wasPlaying = tracks.some((t) => t.isPlaying);
+			const isNowPlaying = newTracks.some((t) => t.isPlaying);
+
+			tracks = newTracks;
 
 			// Update refresh interval if playing state changed
-			if (wasPlaying !== data.isPlaying) {
-				setupRefreshInterval(data.isPlaying);
+			if (wasPlaying !== isNowPlaying) {
+				setupRefreshInterval(isNowPlaying);
 			}
 		} catch (err) {
-			error = 'Failed to load Spotify track';
-			console.error('Error loading Spotify track:', err);
-			track = null;
+			error = 'Failed to load Spotify tracks';
+			console.error('Error loading Spotify tracks:', err);
+			tracks = [];
 			setupRefreshInterval(false);
 		} finally {
 			loading = false;
@@ -90,50 +95,52 @@
 	});
 </script>
 
-{#if track && track.title && track.isPlaying}
+{#if tracks.length > 0}
 	<div class="flex flex-col items-start gap-3 select-none">
 		<div class="flex items-center gap-3 opacity-90">
 			<Music size={24} />
 			<h2 class="text-lg">Spotify</h2>
 		</div>
 
-		<div class="flex flex-col gap-3">
-			<div class="flex items-center gap-4">
-				{#if track.albumArt}
-					{#if albumArtStyle === 'vinyl'}
-						<div class="vinyl-container">
-							<img
-								class="vinyl-image {track.isPlaying ? 'vinyl-spinning' : ''}"
-								src={track.albumArt}
-								alt="Album art"
-							/>
-							<div class="vinyl-overlay {track.isPlaying ? 'vinyl-spinning' : ''}"></div>
-							<div class="vinyl-gloss"></div>
-							<div class="vinyl-center-background"></div>
-							<div class="vinyl-center"></div>
-							<div class="vinyl-center-hole"></div>
-						</div>
-					{:else}
-						<div class="album-art-square">
-							<img class="album-art-image" src={track.albumArt} alt="Album art" />
-						</div>
+		<div class="flex flex-col gap-4">
+			{#each tracks as track}
+				<div class="flex items-center gap-4">
+					{#if track.albumArt}
+						{#if albumArtStyle === 'vinyl'}
+							<div class="vinyl-container">
+								<img
+									class="vinyl-image {track.isPlaying ? 'vinyl-spinning' : ''}"
+									src={track.albumArt}
+									alt="Album art"
+								/>
+								<div class="vinyl-overlay {track.isPlaying ? 'vinyl-spinning' : ''}"></div>
+								<div class="vinyl-gloss"></div>
+								<div class="vinyl-center-background"></div>
+								<div class="vinyl-center"></div>
+								<div class="vinyl-center-hole"></div>
+							</div>
+						{:else}
+							<div class="album-art-square">
+								<img class="album-art-image" src={track.albumArt} alt="Album art" />
+							</div>
+						{/if}
 					{/if}
-				{/if}
-				<div class="flex min-w-0 flex-col">
-					<span class="truncate text-xl font-medium">{track.title}</span>
-					<span class="truncate text-base opacity-80">{track.artist}</span>
-					{#if track.deviceName && track.deviceName !== 'Unknown Device'}
-						<div class="mt-1 flex items-center gap-1.5">
-							{#if track.deviceName.toLowerCase().includes('iphone')}
-								<Smartphone size={14} class="flex-shrink-0 opacity-70" />
-							{:else}
-								<Speaker size={14} class="flex-shrink-0 opacity-70" />
-							{/if}
-							<span class="truncate text-sm opacity-70">Playing on {track.deviceName}</span>
-						</div>
-					{/if}
+					<div class="flex min-w-0 flex-col">
+						<span class="truncate text-xl font-medium">{track.title}</span>
+						<span class="truncate text-base opacity-80">{track.artist}</span>
+						{#if track.deviceName && track.deviceName !== 'Unknown Device'}
+							<div class="mt-1 flex items-center gap-1.5">
+								{#if track.deviceName.toLowerCase().includes('iphone')}
+									<Smartphone size={14} class="flex-shrink-0 opacity-70" />
+								{:else}
+									<Speaker size={14} class="flex-shrink-0 opacity-70" />
+								{/if}
+								<span class="truncate text-sm opacity-70">Playing on {track.deviceName}</span>
+							</div>
+						{/if}
+					</div>
 				</div>
-			</div>
+			{/each}
 		</div>
 	</div>
 {/if}

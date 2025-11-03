@@ -24,7 +24,10 @@ export async function getGoogleConfig() {
 		clientId: config.clientId as string | undefined,
 		clientSecret: config.clientSecret as string | undefined,
 		maxEvents: (config.maxEvents as number | undefined) ?? 12,
-		calendarColors: (config.calendarColors as Record<string, string> | undefined) ?? {}
+		calendarColors: config.calendarColors as
+			| Array<{ calendarName: string; colorClass: string }>
+			| Record<string, string>
+			| undefined
 	};
 }
 
