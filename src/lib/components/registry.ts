@@ -54,8 +54,8 @@ async function loadComponentModule(componentPath: string): Promise<any | null> {
 }
 
 /**
- * Dynamically import a component's API handler
- * Note: This loads at runtime, so the path must be relative to where this code executes
+ * Load a component's API handler using static imports
+ * This is more reliable than dynamic file:// imports and works in both dev and production
  */
 async function loadApiHandler(
 	componentPath: string,
@@ -68,26 +68,16 @@ async function loadApiHandler(
 	}
 
 	try {
-		// Use dynamic import - path relative to project root from where server code runs
-		// In server context (during request), we need absolute path or relative from process.cwd()
-		const apiPath = join(process.cwd(), 'src', 'components', componentDir, 'api.ts');
-		// Convert to URL for import
-		// Use @vite-ignore to suppress Vite warning for dynamic imports
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore - Dynamic import with file:// URL for runtime loading
-		const module = await import(/* @vite-ignore */ `file://${apiPath}`);
+		// Use static imports from the api-handlers module
+		// This ensures handlers are available at runtime in both dev and production
+		const { apiHandlerMap } = await import('../../components/api-handlers');
 
-		// Support both named export (GET) and default export
-		if (typeof module.GET === 'function') {
-			return async (config: any, request?: Request) => {
-				return await module.GET(config, request);
-			};
-		}
+		// Get the component ID from the directory name
+		const componentId = componentDir;
+		const handler = apiHandlerMap[componentId];
 
-		if (typeof module.default === 'function') {
-			return async (config: any, request?: Request) => {
-				return await module.default(config, request);
-			};
+		if (handler && typeof handler === 'function') {
+			return handler;
 		}
 
 		return null;

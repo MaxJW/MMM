@@ -22,9 +22,9 @@
 	};
 
 	function getComponentsForArea(area: DashboardArea) {
-		// Filter by area, preserving the order from config.components array
-		// The order comes from the JSON array position
-		return config.components.filter((comp) => comp.area === area);
+		// Filter by area and enabled state, preserving the order from config.components array
+		// Only render enabled components (disabled ones are in config but not rendered)
+		return config.components.filter((comp) => comp.area === area && comp.enabled);
 	}
 </script>
 

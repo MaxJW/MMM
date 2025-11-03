@@ -30,3 +30,4 @@ export const componentMap: Record<string, unknown> = {
 	energy: EnergyComponent,
 	spotify: SpotifyComponent
 };
+

@@ -12,8 +12,11 @@ function getComponentMap(): Record<string, unknown> {
 
 /**
  * Build dashboard config from user config
- * Filters enabled components and maps IDs to components
- * Preserves the order from the JSON array (components appear in the order they're listed)
+ * Includes all components from componentMap:
+ * - Components in config with enabled: true appear in their configured area
+ * - Components in config with enabled: false appear in top-left (turned off)
+ * - Components not in config appear in top-left (turned off)
+ * Preserves the order from the JSON array for enabled components
  *
  * This function is safe to call client-side (doesn't use Node.js modules)
  */
@@ -23,23 +26,59 @@ export async function buildDashboardConfig(userConfig: {
 	// Get component map from explicit imports (more reliable than glob)
 	const componentMap = getComponentMap();
 
-	// Filter enabled components and preserve array order
-	const enabledComponents = userConfig.components.filter((comp) => comp.enabled);
+	// Create a map of user config components by ID for quick lookup
+	const configMap = new Map<string, DashboardComponentConfig>();
+	for (const comp of userConfig.components) {
+		configMap.set(comp.id, comp);
+	}
 
-	const components = enabledComponents
-		.map((comp) => {
-			const component = componentMap[comp.id];
+	const components: Array<{
+		id: string;
+		component: unknown;
+		area: DashboardArea;
+		enabled: boolean;
+	}> = [];
+
+	// First, add all enabled components from config in their configured areas
+	for (const compConfig of userConfig.components) {
+		if (compConfig.enabled) {
+			const component = componentMap[compConfig.id];
 			if (!component) {
-				console.warn(`Component ${comp.id} not found in componentMap`);
-				return null;
+				console.warn(`Component ${compConfig.id} not found in componentMap`);
+				continue;
 			}
-			return {
-				id: comp.id,
+			components.push({
+				id: compConfig.id,
 				component,
-				area: comp.area as DashboardArea
-			};
-		})
-		.filter((comp): comp is NonNullable<typeof comp> => comp !== null);
+				area: compConfig.area as DashboardArea,
+				enabled: true
+			});
+		}
+	}
+
+	// Then, add all components from componentMap that aren't in config or are disabled
+	for (const [componentId, component] of Object.entries(componentMap)) {
+		const config = configMap.get(componentId);
+
+		// If component is not in config, add it to top-left with enabled: false
+		if (!config) {
+			components.push({
+				id: componentId,
+				component,
+				area: 'top-left',
+				enabled: false
+			});
+		}
+		// If component is in config but disabled, add it to top-left with enabled: false
+		else if (!config.enabled) {
+			components.push({
+				id: componentId,
+				component,
+				area: 'top-left',
+				enabled: false
+			});
+		}
+	}
 
 	return { components };
 }

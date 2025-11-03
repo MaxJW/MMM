@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { callComponentApi } from '$lib/components/api-proxy';
+import { loadComponents } from '$lib/components/registry';
 
 export const GET: RequestHandler = async ({ params, request }) => {
 	const { componentId } = params;
@@ -8,6 +9,9 @@ export const GET: RequestHandler = async ({ params, request }) => {
 	if (!componentId) {
 		return json({ error: 'Component ID required' }, { status: 400 });
 	}
+
+	// Ensure components are loaded before calling the API
+	await loadComponents();
 
 	const result = await callComponentApi(componentId, 'GET', request);
 
