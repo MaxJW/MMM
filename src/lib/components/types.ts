@@ -4,7 +4,7 @@
 
 export interface ComponentConfigField {
 	key: string;
-	type: 'text' | 'password' | 'number' | 'select' | 'array';
+	type: 'text' | 'password' | 'number' | 'select' | 'array' | 'color';
 	label: string;
 	description: string;
 	placeholder?: string;
@@ -13,6 +13,7 @@ export interface ComponentConfigField {
 	options?: Array<{ value: string; label: string }>; // For select type
 	itemSchema?: ComponentConfigField; // For array type - single field schema (legacy)
 	itemFields?: ComponentConfigField[]; // For array type - multiple fields for object items
+	hiddenWithCustomConfig?: boolean; // Hide this field when a custom config component is present
 }
 
 export interface ComponentConfigSchema {

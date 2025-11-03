@@ -15,6 +15,32 @@
 	const isPassword = field.type === 'password';
 	const showPassword = passwordVisibility[fieldId] ?? false;
 
+	// Color options for calendar colorClass field
+	const colorOptions = [
+		{ value: 'gray-400', label: 'Gray 400', bgClass: 'bg-gray-400' },
+		{ value: 'gray-500', label: 'Gray 500', bgClass: 'bg-gray-500' },
+		{ value: 'green-500', label: 'Green 500', bgClass: 'bg-green-500' },
+		{ value: 'green-600', label: 'Green 600', bgClass: 'bg-green-600' },
+		{ value: 'blue-500', label: 'Blue 500', bgClass: 'bg-blue-500' },
+		{ value: 'blue-600', label: 'Blue 600', bgClass: 'bg-blue-600' },
+		{ value: 'purple-500', label: 'Purple 500', bgClass: 'bg-purple-500' },
+		{ value: 'purple-600', label: 'Purple 600', bgClass: 'bg-purple-600' },
+		{ value: 'red-500', label: 'Red 500', bgClass: 'bg-red-500' },
+		{ value: 'red-600', label: 'Red 600', bgClass: 'bg-red-600' },
+		{ value: 'yellow-500', label: 'Yellow 500', bgClass: 'bg-yellow-500' },
+		{ value: 'yellow-600', label: 'Yellow 600', bgClass: 'bg-yellow-600' },
+		{ value: 'orange-500', label: 'Orange 500', bgClass: 'bg-orange-500' },
+		{ value: 'orange-600', label: 'Orange 600', bgClass: 'bg-orange-600' },
+		{ value: 'pink-500', label: 'Pink 500', bgClass: 'bg-pink-500' },
+		{ value: 'pink-600', label: 'Pink 600', bgClass: 'bg-pink-600' },
+		{ value: 'indigo-500', label: 'Indigo 500', bgClass: 'bg-indigo-500' },
+		{ value: 'indigo-600', label: 'Indigo 600', bgClass: 'bg-indigo-600' },
+		{ value: 'teal-500', label: 'Teal 500', bgClass: 'bg-teal-500' },
+		{ value: 'teal-600', label: 'Teal 600', bgClass: 'bg-teal-600' },
+		{ value: 'cyan-500', label: 'Cyan 500', bgClass: 'bg-cyan-500' },
+		{ value: 'cyan-600', label: 'Cyan 600', bgClass: 'bg-cyan-600' }
+	];
+
 	function handleChange(event: Event) {
 		const target = event.target as HTMLInputElement | HTMLSelectElement;
 		let newValue: any = target.value;
@@ -118,6 +144,33 @@
 				{/each}
 			{/if}
 		</select>
+	{:else if field.type === 'color'}
+		<select
+			id={fieldId}
+			value={value ?? field.default ?? ''}
+			onchange={handleChange}
+			class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base sm:py-2"
+		>
+			{#each colorOptions as color}
+				<option value={color.value}>{color.label}</option>
+			{/each}
+		</select>
+		<div class="mt-2 flex flex-wrap gap-2">
+			{#each colorOptions as color}
+				<button
+					type="button"
+					onclick={() => onValueChange(field.key, color.value)}
+					class="flex items-center gap-2 rounded-lg border-2 px-3 py-2 text-sm transition-all {value ===
+					color.value
+						? 'border-blue-500 ring-2 ring-blue-200'
+						: 'border-gray-200 hover:border-gray-300'}"
+					title={color.label}
+				>
+					<div class="h-5 w-5 rounded {color.bgClass}"></div>
+					<span>{color.label}</span>
+				</button>
+			{/each}
+		</div>
 	{:else if field.type === 'array'}
 		<div class="space-y-3">
 			{#if Array.isArray(value)}
@@ -145,20 +198,58 @@
 										{#if subField.description}
 											<p class="mb-1 text-xs text-gray-500">{subField.description}</p>
 										{/if}
-										<input
-											id={fieldItemId}
-											type="text"
-											value={item?.[subField.key] ?? subField.default ?? ''}
-											oninput={(e) => {
-												handleArrayItemFieldChange(
-													index,
-													subField.key,
-													(e.target as HTMLInputElement).value
-												);
-											}}
-											placeholder={subField.placeholder}
-											class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base sm:py-2"
-										/>
+										{#if subField.type === 'color'}
+											<select
+												id={fieldItemId}
+												value={item?.[subField.key] ?? subField.default ?? ''}
+												onchange={(e) => {
+													handleArrayItemFieldChange(
+														index,
+														subField.key,
+														(e.target as HTMLSelectElement).value
+													);
+												}}
+												class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base sm:py-2"
+											>
+												{#each colorOptions as color}
+													<option value={color.value}>{color.label}</option>
+												{/each}
+											</select>
+											<div class="mt-2 flex flex-wrap gap-2">
+												{#each colorOptions as color}
+													<button
+														type="button"
+														onclick={() => {
+															handleArrayItemFieldChange(index, subField.key, color.value);
+														}}
+														class="flex items-center gap-2 rounded-lg border-2 px-3 py-2 text-sm transition-all {item?.[
+															subField.key
+														] === color.value
+															? 'border-blue-500 ring-2 ring-blue-200'
+															: 'border-gray-200 hover:border-gray-300'}"
+														title={color.label}
+													>
+														<div class="h-5 w-5 rounded {color.bgClass}"></div>
+														<span>{color.label}</span>
+													</button>
+												{/each}
+											</div>
+										{:else}
+											<input
+												id={fieldItemId}
+												type={subField.type === 'password' ? 'password' : 'text'}
+												value={item?.[subField.key] ?? subField.default ?? ''}
+												oninput={(e) => {
+													handleArrayItemFieldChange(
+														index,
+														subField.key,
+														(e.target as HTMLInputElement).value
+													);
+												}}
+												placeholder={subField.placeholder}
+												class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base sm:py-2"
+											/>
+										{/if}
 									</div>
 								{/each}
 							</div>

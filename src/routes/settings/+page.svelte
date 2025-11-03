@@ -541,14 +541,18 @@
 										{#each manifest.config.fields as field}
 											{@const componentConfig = getComponentConfig(manifest.id)}
 											{@const fieldValue = componentConfig[field.key] ?? field.default}
-											<ComponentField
-												{field}
-												value={fieldValue}
-												onValueChange={(key, value) =>
-													updateComponentConfig(manifest.id, key, value)}
-												{passwordVisibility}
-												{togglePasswordVisibility}
-											/>
+											{@const hasCustomConfig = manifest.id in configComponentMap}
+											{@const shouldHide = hasCustomConfig && field.hiddenWithCustomConfig}
+											{#if !shouldHide}
+												<ComponentField
+													{field}
+													value={fieldValue}
+													onValueChange={(key, value) =>
+														updateComponentConfig(manifest.id, key, value)}
+													{passwordVisibility}
+													{togglePasswordVisibility}
+												/>
+											{/if}
 										{/each}
 									</div>
 								</div>

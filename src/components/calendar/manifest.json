@@ -43,10 +43,9 @@
 					},
 					{
 						"key": "colorClass",
-						"type": "text",
+						"type": "color",
 						"label": "Color Class",
-						"description": "Tailwind color class (e.g., green-500, blue-500, purple-500)",
-						"placeholder": "e.g., green-500"
+						"description": "Select a color for calendar events"
 					}
 				]
 			}
