@@ -129,8 +129,8 @@ class GoogleCalendarService {
 			return aStart.diff(bStart);
 		});
 
-		// Convert events to simplified format and limit to maxEvents
-		const simplifiedEvents: Array<{ simplified: SimplifiedEvent; key: string }> = [];
+		// Convert all events to simplified format first, grouped by day
+		const allGroupedEvents: Record<string, SimplifiedEvent[]> = {};
 		for (const { event, calendar: cal } of flattenedEvents) {
 			const start = event.start?.dateTime || event.start?.date;
 			if (!start) continue;
@@ -154,39 +154,62 @@ class GoogleCalendarService {
 				isAllDay,
 				category: cal.primary ? 'personal' : 'work'
 			};
-			simplifiedEvents.push({ simplified, key });
-
-			// Stop once we reach maxEvents
-			if (simplifiedEvents.length >= maxEvents) {
-				break;
-			}
+			if (!allGroupedEvents[key]) allGroupedEvents[key] = [];
+			allGroupedEvents[key].push(simplified);
 		}
 
-		// Group simplified events by day
-		const grouped: Record<string, SimplifiedEvent[]> = {};
-		for (const { simplified, key } of simplifiedEvents) {
-			if (!grouped[key]) grouped[key] = [];
-			grouped[key].push(simplified);
-		}
+		// Process days sequentially, counting "No events" days as 1 toward the limit
+		const result: Array<{ day: string; date: number; month: string; events: SimplifiedEvent[] }> =
+			[];
+		let itemsCount = 0;
 
-		const days: Array<{ day: string; date: number; month: string; key: string }> = [];
 		for (let i = 0; i < 5; i++) {
 			const d = dayjs().add(i, 'day');
-			days.push({
-				day: d.format('ddd'),
-				date: parseInt(d.format('D')),
-				month: d.format('MMM').toUpperCase(),
-				key: d.format('YYYY-MM-DD')
-			});
-		}
+			const key = d.format('YYYY-MM-DD');
+			const dayEvents = allGroupedEvents[key] || [];
 
-		const result: Array<{ day: string; date: number; month: string; events: SimplifiedEvent[] }> =
-			days.map(({ day, date, month, key }) => ({
-				day,
-				date,
-				month,
-				events: grouped[key] || []
-			}));
+			if (dayEvents.length > 0) {
+				// Day has events - add them up to the limit
+				const remainingSlots = maxEvents - itemsCount;
+				if (remainingSlots <= 0) {
+					// Already reached limit, don't show this day
+					break;
+				}
+
+				const eventsToShow = dayEvents.slice(0, remainingSlots);
+				result.push({
+					day: d.format('ddd'),
+					date: parseInt(d.format('D')),
+					month: d.format('MMM').toUpperCase(),
+					events: eventsToShow
+				});
+				itemsCount += eventsToShow.length;
+
+				if (itemsCount >= maxEvents) {
+					// Reached limit, stop showing more days
+					break;
+				}
+			} else {
+				// Day has no events - count it as 1 item toward the limit
+				if (itemsCount >= maxEvents) {
+					// Already reached limit, don't show this day
+					break;
+				}
+
+				result.push({
+					day: d.format('ddd'),
+					date: parseInt(d.format('D')),
+					month: d.format('MMM').toUpperCase(),
+					events: []
+				});
+				itemsCount += 1; // "No events" counts as 1
+
+				if (itemsCount >= maxEvents) {
+					// Reached limit, stop showing more days
+					break;
+				}
+			}
+		}
 
 		this.cache = { data: result, expiry: Date.now() + TIMING_STRATEGIES.FREQUENT.interval };
 		return result;
