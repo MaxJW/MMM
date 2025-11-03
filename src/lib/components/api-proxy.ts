@@ -1,4 +1,3 @@
-import type { Component } from './types';
 import { getComponent } from './registry';
 import { getComponentConfig } from '$lib/core/config';
 
@@ -8,9 +7,8 @@ import { getComponentConfig } from '$lib/core/config';
  */
 export async function callComponentApi(
 	componentId: string,
-	method: string = 'GET',
 	request?: Request
-): Promise<{ data?: any; error?: string; status?: number }> {
+): Promise<{ data?: unknown; error?: string; status?: number }> {
 	const component = getComponent(componentId);
 
 	if (!component) {

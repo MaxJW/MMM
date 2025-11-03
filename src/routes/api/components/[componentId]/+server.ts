@@ -18,7 +18,7 @@ export const GET: RequestHandler = async ({ params, request }) => {
 	// Ensure components are loaded before calling the API (idempotent)
 	await ensureComponentsLoaded();
 
-	const result = await callComponentApi(componentId, 'GET', request);
+	const result = await callComponentApi(componentId, request);
 
 	if (result.error) {
 		return json({ error: result.error }, { status: result.status || 500 });
@@ -37,7 +37,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
 	// Ensure components are loaded before calling the API (idempotent)
 	await ensureComponentsLoaded();
 
-	const result = await callComponentApi(componentId, 'POST', request);
+	const result = await callComponentApi(componentId, request);
 
 	if (result.error) {
 		return json({ error: result.error }, { status: result.status || 500 });
@@ -56,7 +56,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 	// Ensure components are loaded before calling the API (idempotent)
 	await ensureComponentsLoaded();
 
-	const result = await callComponentApi(componentId, 'PUT', request);
+	const result = await callComponentApi(componentId, request);
 
 	if (result.error) {
 		return json({ error: result.error }, { status: result.status || 500 });
@@ -75,7 +75,7 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
 	// Ensure components are loaded before calling the API (idempotent)
 	await ensureComponentsLoaded();
 
-	const result = await callComponentApi(componentId, 'DELETE', request);
+	const result = await callComponentApi(componentId, request);
 
 	if (result.error) {
 		return json({ error: result.error }, { status: result.status || 500 });
