@@ -71,7 +71,7 @@
 		// Set new interval based on playing state
 		const interval = isPlaying
 			? TIMING_STRATEGIES.FAST.interval // 10 seconds when playing
-			: TIMING_STRATEGIES.FAST.interval; // 1 minute when paused
+			: TIMING_STRATEGIES.MEDIUM.interval; // 1 minute when paused
 
 		refreshInterval = setInterval(load, interval);
 	}

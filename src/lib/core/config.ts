@@ -2,6 +2,7 @@ import { readFile, writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { join } from 'path';
 import type { DashboardArea } from './types';
+import { loadComponents, getComponentIds } from '$lib/components/registry';
 
 const CONFIG_DIR = join(process.cwd(), 'data');
 const CONFIG_FILE = join(CONFIG_DIR, 'config.json');
@@ -16,7 +17,7 @@ export interface UserConfig {
 	dashboard: {
 		components: DashboardComponentConfig[];
 	};
-	components: Record<string, any>;
+	components: Record<string, Record<string, unknown>>;
 }
 
 let cachedConfig: UserConfig | null = null;
@@ -39,10 +40,10 @@ function getDefaultConfig(): UserConfig {
 			components: [
 				{ id: 'clock', enabled: true, area: 'top-left' },
 				{ id: 'weather', enabled: true, area: 'top-right' },
-			{ id: 'calendar', enabled: true, area: 'top-left' },
-			{ id: 'system-stats', enabled: true, area: 'bottom-right' },
-			{ id: 'wifi-qr-code', enabled: true, area: 'bottom-left' },
-			{ id: 'events', enabled: true, area: 'center' },
+				{ id: 'calendar', enabled: true, area: 'top-left' },
+				{ id: 'system-stats', enabled: true, area: 'bottom-right' },
+				{ id: 'wifi-qr-code', enabled: true, area: 'bottom-left' },
+				{ id: 'events', enabled: true, area: 'center' },
 				{ id: 'greetings', enabled: true, area: 'center' },
 				{ id: 'reminders', enabled: true, area: 'notifications' },
 				{ id: 'rss-feed', enabled: true, area: 'notifications' },
@@ -104,17 +105,72 @@ export async function saveConfig(config: UserConfig): Promise<void> {
 }
 
 /**
- * Get current configuration (loads if not cached)
+ * Ensure all component manifests are represented in the dashboard config
+ * - Removes component IDs that don't match any existing component
+ * - Adds missing components with enabled: false and area: 'top-left'
  */
-export async function getConfig(): Promise<UserConfig> {
-	return await loadConfig();
+export async function ensureAllComponentsInConfig(config: UserConfig): Promise<UserConfig> {
+	try {
+		// Only load components if not already loaded (optimization)
+		await loadComponents();
+		// Use cached component IDs set for better performance
+		const validComponentIds = getComponentIds();
+
+		// Filter out invalid component IDs (components that no longer exist)
+		const validComponents = config.dashboard.components.filter((comp) =>
+			validComponentIds.has(comp.id)
+		);
+
+		// Check if any invalid components were removed
+		const removedComponents = config.dashboard.components.filter(
+			(comp) => !validComponentIds.has(comp.id)
+		);
+		if (removedComponents.length > 0) {
+			console.log(
+				`Removed ${removedComponents.length} invalid component(s) from config:`,
+				removedComponents.map((c) => c.id).join(', ')
+			);
+		}
+
+		// Create a set of existing valid component IDs
+		const existingIds = new Set(validComponents.map((comp) => comp.id));
+
+		// Find missing component IDs
+		const missingIds = Array.from(validComponentIds).filter((id) => !existingIds.has(id));
+
+		// Add missing components with default values
+		const missingComponents: DashboardComponentConfig[] = missingIds.map((id) => ({
+			id,
+			enabled: false,
+			area: 'top-left' as DashboardArea
+		}));
+
+		if (missingIds.length > 0) {
+			console.log(
+				`Added ${missingIds.length} missing component(s) to config:`,
+				missingIds.join(', ')
+			);
+		}
+
+		// Return config with only valid components and all missing ones added
+		return {
+			...config,
+			dashboard: {
+				components: [...validComponents, ...missingComponents]
+			}
+		};
+	} catch (error) {
+		console.error('Error ensuring all components in config:', error);
+		// Return original config if there's an error
+		return config;
+	}
 }
 
 /**
  * Get dashboard configuration
  */
 export async function getDashboardConfig() {
-	const config = await getConfig();
+	const config = await loadConfig();
 	return config.dashboard;
 }
 
@@ -122,7 +178,7 @@ export async function getDashboardConfig() {
  * Get component configuration
  */
 export async function getComponentConfig(componentId: string) {
-	const config = await getConfig();
+	const config = await loadConfig();
 	return config.components[componentId] ?? {};
 }
 

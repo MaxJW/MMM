@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import type { UserConfig } from '$lib/core/config';
 	import Settings from '@lucide/svelte/icons/settings';
 	import Save from '@lucide/svelte/icons/save';
+	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
 	import CheckCircle2 from '@lucide/svelte/icons/check-circle-2';
 	import AlertCircle from '@lucide/svelte/icons/alert-circle';
 	import ChevronUp from '@lucide/svelte/icons/chevron-up';
@@ -12,6 +14,7 @@
 	import type { DashboardArea } from '$lib/core/types';
 
 	let config: UserConfig | null = $state(null);
+	let originalConfig: UserConfig | null = $state(null);
 	let loading = $state(true);
 	let saving = $state(false);
 	let saveMessage: { type: 'success' | 'error'; text: string } | null = $state(null);
@@ -82,7 +85,10 @@
 			]);
 
 			if (configResponse.ok) {
-				config = await configResponse.json();
+				const loadedConfig = await configResponse.json();
+				config = loadedConfig;
+				// Store a deep copy of the original config for comparison
+				originalConfig = JSON.parse(JSON.stringify(loadedConfig));
 			}
 
 			if (manifestsResponse.ok) {
@@ -140,6 +146,8 @@
 			}
 
 			saveMessage = { type: 'success', text: 'Configuration saved successfully!' };
+			// Update original config after successful save
+			originalConfig = JSON.parse(JSON.stringify(config));
 			setTimeout(() => {
 				saveMessage = null;
 			}, 3000);
@@ -273,6 +281,23 @@
 
 		return positionInArea < componentsInArea.length - 1;
 	}
+
+	function hasUnsavedChanges(): boolean {
+		if (!config || !originalConfig) return false;
+		return JSON.stringify(config) !== JSON.stringify(originalConfig);
+	}
+
+	function handleBackToMirror() {
+		if (hasUnsavedChanges()) {
+			const confirmed = confirm(
+				'You have unsaved changes. Are you sure you want to leave? Your changes will be lost.'
+			);
+			if (!confirmed) {
+				return;
+			}
+		}
+		goto('/');
+	}
 </script>
 
 <div class="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-8">
@@ -286,14 +311,26 @@
 					<Settings size={24} class="text-gray-700" />
 					<h1 class="text-xl font-bold text-gray-900 sm:text-2xl">Settings</h1>
 				</div>
-				<button
-					onclick={saveConfig}
-					disabled={saving || !config}
-					class="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:py-2"
-				>
-					<Save size={18} />
-					{saving ? 'Saving...' : 'Save Configuration'}
-				</button>
+				<div class="flex w-full gap-2 sm:w-auto">
+					<button
+						onclick={handleBackToMirror}
+						class="flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-700 hover:bg-gray-50 sm:py-2"
+					>
+						<ArrowLeft size={18} />
+						<span class="hidden sm:inline">Back to Mirror</span>
+						<span class="sm:hidden">Back</span>
+					</button>
+					<button
+						onclick={saveConfig}
+						disabled={saving || !config}
+						class="flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:py-2 {hasUnsavedChanges()
+							? 'bg-orange-600 hover:bg-orange-700'
+							: 'bg-blue-600 hover:bg-blue-700'}"
+					>
+						<Save size={18} />
+						{saving ? 'Saving...' : 'Save Configuration'}
+					</button>
+				</div>
 			</div>
 
 			{#if saveMessage}

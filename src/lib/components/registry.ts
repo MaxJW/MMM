@@ -7,11 +7,13 @@ const COMPONENTS_DIR = join(process.cwd(), 'src', 'components');
 
 interface ComponentRegistry {
 	components: Map<string, Component>;
+	componentIds: Set<string>; // Cached set of component IDs for fast lookups
 	loaded: boolean;
 }
 
 const registry: ComponentRegistry = {
 	components: new Map(),
+	componentIds: new Set(),
 	loaded: false
 };
 
@@ -130,6 +132,7 @@ export async function loadComponents(): Promise<void> {
 						);
 					}
 					registry.components.set(component.id, component);
+					registry.componentIds.add(component.id); // Cache ID for fast lookups
 				}
 			}
 		}
@@ -150,6 +153,13 @@ export function getComponents(): Component[] {
 }
 
 /**
+ * Get all registered component IDs (cached for performance)
+ */
+export function getComponentIds(): Set<string> {
+	return registry.componentIds;
+}
+
+/**
  * Get a component by ID
  */
 export function getComponent(id: string): Component | undefined {
@@ -161,5 +171,6 @@ export function getComponent(id: string): Component | undefined {
  */
 export function clearRegistry() {
 	registry.components.clear();
+	registry.componentIds.clear();
 	registry.loaded = false;
 }

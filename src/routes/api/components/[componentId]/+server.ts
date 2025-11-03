@@ -3,6 +3,11 @@ import type { RequestHandler } from './$types';
 import { callComponentApi } from '$lib/components/api-proxy';
 import { loadComponents } from '$lib/components/registry';
 
+// Helper to ensure components are loaded (idempotent)
+async function ensureComponentsLoaded() {
+	await loadComponents(); // Registry already checks if loaded internally
+}
+
 export const GET: RequestHandler = async ({ params, request }) => {
 	const { componentId } = params;
 
@@ -10,8 +15,8 @@ export const GET: RequestHandler = async ({ params, request }) => {
 		return json({ error: 'Component ID required' }, { status: 400 });
 	}
 
-	// Ensure components are loaded before calling the API
-	await loadComponents();
+	// Ensure components are loaded before calling the API (idempotent)
+	await ensureComponentsLoaded();
 
 	const result = await callComponentApi(componentId, 'GET', request);
 
@@ -29,8 +34,8 @@ export const POST: RequestHandler = async ({ params, request }) => {
 		return json({ error: 'Component ID required' }, { status: 400 });
 	}
 
-	// Ensure components are loaded before calling the API
-	await loadComponents();
+	// Ensure components are loaded before calling the API (idempotent)
+	await ensureComponentsLoaded();
 
 	const result = await callComponentApi(componentId, 'POST', request);
 
@@ -48,8 +53,8 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 		return json({ error: 'Component ID required' }, { status: 400 });
 	}
 
-	// Ensure components are loaded before calling the API
-	await loadComponents();
+	// Ensure components are loaded before calling the API (idempotent)
+	await ensureComponentsLoaded();
 
 	const result = await callComponentApi(componentId, 'PUT', request);
 
@@ -67,8 +72,8 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
 		return json({ error: 'Component ID required' }, { status: 400 });
 	}
 
-	// Ensure components are loaded before calling the API
-	await loadComponents();
+	// Ensure components are loaded before calling the API (idempotent)
+	await ensureComponentsLoaded();
 
 	const result = await callComponentApi(componentId, 'DELETE', request);
 
