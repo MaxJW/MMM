@@ -57,6 +57,9 @@ class GoogleCalendarService {
 			throw new Error('Google OAuth not configured');
 		}
 
+		// Get maxEvents from config (default to 12)
+		const maxEvents = typeof config.maxEvents === 'number' ? config.maxEvents : 12;
+
 		const oauth2Client = new google.auth.OAuth2({
 			clientId: config.clientId,
 			clientSecret: config.clientSecret,
@@ -126,8 +129,8 @@ class GoogleCalendarService {
 			return aStart.diff(bStart);
 		});
 
-		// Grouped is still { key: SimplifiedEvent[] }
-		const grouped: Record<string, SimplifiedEvent[]> = {};
+		// Convert events to simplified format and limit to maxEvents
+		const simplifiedEvents: Array<{ simplified: SimplifiedEvent; key: string }> = [];
 		for (const { event, calendar: cal } of flattenedEvents) {
 			const start = event.start?.dateTime || event.start?.date;
 			if (!start) continue;
@@ -151,6 +154,17 @@ class GoogleCalendarService {
 				isAllDay,
 				category: cal.primary ? 'personal' : 'work'
 			};
+			simplifiedEvents.push({ simplified, key });
+
+			// Stop once we reach maxEvents
+			if (simplifiedEvents.length >= maxEvents) {
+				break;
+			}
+		}
+
+		// Group simplified events by day
+		const grouped: Record<string, SimplifiedEvent[]> = {};
+		for (const { simplified, key } of simplifiedEvents) {
 			if (!grouped[key]) grouped[key] = [];
 			grouped[key].push(simplified);
 		}

@@ -20,6 +20,13 @@
 				"label": "Client Secret",
 				"description": "Your Google OAuth Client Secret",
 				"placeholder": "Enter Google OAuth Client Secret"
+			},
+			{
+				"key": "maxEvents",
+				"type": "number",
+				"label": "Max Events",
+				"description": "Maximum number of events to display (default: 12)",
+				"default": 12
 			}
 		]
 	}

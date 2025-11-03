@@ -58,7 +58,8 @@
 		},
 		"calendar": {
 			"clientId": "",
-			"clientSecret": ""
+			"clientSecret": "",
+			"maxEvents": 12
 		},
 		"events": {
 			"events": [

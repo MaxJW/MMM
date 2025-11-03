@@ -21,8 +21,9 @@ export async function getWeatherConfig() {
 export async function getGoogleConfig() {
 	const config = await getComponentConfig('calendar'); // Google config is used by calendar component
 	return {
-		clientId: config.clientId,
-		clientSecret: config.clientSecret
+		clientId: config.clientId as string | undefined,
+		clientSecret: config.clientSecret as string | undefined,
+		maxEvents: (config.maxEvents as number | undefined) ?? 12
 	};
 }
 
