@@ -40,27 +40,22 @@
 
 			const data = await res.json();
 
-			if (data.error) {
-				error = data.error;
-				binInfo = null;
-				return;
-			}
-
-			// Handle null response (no collection in next day) - not an error
 			if (data === null) {
 				binInfo = null;
-				error = null;
+			} else if (data && typeof data === 'object' && 'error' in data) {
+				error = data.error;
+				binInfo = null;
 			} else {
 				binInfo = data;
 			}
-
-			now = dayjs();
-			milkReminder = updateMilkReminder();
 		} catch (err) {
 			error = 'Failed to load bin data';
 			binInfo = null;
 			console.error('Error loading bin data:', err);
 		} finally {
+			// Always update time and milk reminder regardless of bin data success/failure
+			now = dayjs();
+			milkReminder = updateMilkReminder();
 			loading = false;
 		}
 	}
@@ -76,29 +71,21 @@
 </script>
 
 <div class="flex flex-col items-center gap-4 select-none">
-	{#if loading}
-		<div class="flex flex-col items-center gap-2">
-			<div class="flex items-center gap-2 text-2xl opacity-80">
+	{#if loading || error || binInfo}
+		<div class="flex items-center gap-2 text-2xl {loading || error ? 'opacity-80' : ''}">
+			{#if loading}
 				<Trash2 size={22} />
 				<span>Loading bin info...</span>
-			</div>
-		</div>
-	{:else if error}
-		<div class="flex flex-col items-center gap-2">
-			<div class="flex items-center gap-2 text-2xl opacity-80">
+			{:else if error}
 				<CircleAlert size={22} />
 				<span>Bin info unavailable</span>
-			</div>
-		</div>
-	{:else if binInfo}
-		<div class="flex flex-col items-center gap-2">
-			<div class="flex items-center gap-2 text-2xl">
+			{:else if binInfo}
 				<Trash2 size={28} class="opacity-80" />
 				<span class="opacity-80">{formatDate(binInfo.date)}:</span>
 				<span class="font-medium">
 					{binInfo.bins.join(', ')} bin{binInfo.bins.length > 1 ? 's' : ''}
 				</span>
-			</div>
+			{/if}
 		</div>
 	{/if}
 
