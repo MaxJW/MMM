@@ -1,4 +1,4 @@
-import { readdir, readFile, stat } from 'fs/promises';
+import { readdir, readFile } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
 import type { Component, ComponentManifest } from './types';
@@ -44,27 +44,18 @@ async function loadManifest(componentPath: string): Promise<ComponentManifest | 
 }
 
 /**
- * Load component module - components will be loaded dynamically via import.meta.glob
- * This is handled in dashboard.ts when building the dashboard config
- */
-async function loadComponentModule(componentPath: string): Promise<any | null> {
-	// Component loading is handled dynamically via import.meta.glob in buildDashboardConfig
-	// We'll return null here and handle it during dashboard config building
-	return null;
-}
-
-/**
  * Load a component's API handler using static imports
  * This is more reliable than dynamic file:// imports and works in both dev and production
  */
 async function loadApiHandler(
 	componentPath: string,
-	componentDir: string
-): Promise<((config: any, request?: Request) => Promise<any>) | null> {
+	componentId: string
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<((config: any, request?: Request) => Promise<any>) | undefined> {
 	const apiFile = join(componentPath, 'api.ts');
 
 	if (!existsSync(apiFile)) {
-		return null;
+		return undefined;
 	}
 
 	try {
@@ -72,19 +63,18 @@ async function loadApiHandler(
 		// This ensures handlers are available at runtime in both dev and production
 		const { apiHandlerMap } = await import('../../components/api-handlers');
 
-		// Get the component ID from the directory name
-		const componentId = componentDir;
+		// Use the manifest ID to look up the handler (not the directory name)
 		const handler = apiHandlerMap[componentId];
 
 		if (handler && typeof handler === 'function') {
 			return handler;
 		}
 
-		return null;
+		return undefined;
 	} catch (error) {
 		console.error(`Error loading API handler from ${apiFile}:`, error);
-		// Return null to indicate no API handler, component can still work without it
-		return null;
+		// Return undefined to indicate no API handler, component can still work without it
+		return undefined;
 	}
 }
 
@@ -106,7 +96,7 @@ async function loadComponent(componentDir: string): Promise<Component | null> {
 	const component: Component = {
 		id: manifest.id,
 		manifest,
-		apiHandler: await loadApiHandler(componentPath, componentDir)
+		apiHandler: await loadApiHandler(componentPath, manifest.id)
 	};
 
 	return component;
@@ -133,6 +123,12 @@ export async function loadComponents(): Promise<void> {
 			if (entry.isDirectory()) {
 				const component = await loadComponent(entry.name);
 				if (component) {
+					// Warn if component ID already exists (duplicate IDs)
+					if (registry.components.has(component.id)) {
+						console.warn(
+							`Component ID "${component.id}" already exists in registry. Overwriting with component from ${entry.name}`
+						);
+					}
 					registry.components.set(component.id, component);
 				}
 			}

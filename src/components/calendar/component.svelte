@@ -3,6 +3,7 @@
 	import Circle from '@lucide/svelte/icons/circle';
 	import Clock from '@lucide/svelte/icons/clock';
 	import MapPin from '@lucide/svelte/icons/map-pin';
+	import CircleAlert from '@lucide/svelte/icons/circle-alert';
 	import type { CalendarDay, CalendarEvent } from './types';
 	import { TIMING_STRATEGIES } from '$lib/core/timing';
 	import CalendarDays from '@lucide/svelte/icons/calendar-days';
@@ -61,7 +62,10 @@
 	{#if firstLoad && loading}
 		<p class="text-lg">Loading calendar…</p>
 	{:else if error}
-		<p class="text-lg text-red-400 opacity-80">{error}</p>
+		<div class="flex items-center gap-2 text-lg text-red-400 opacity-80">
+			<CircleAlert size={22} />
+			<span>{error}</span>
+		</div>
 	{:else if !days}
 		<button class="rounded bg-green-600 px-3 py-2 text-white" on:click={connectGoogle}>
 			Connect Google Calendar

@@ -2,6 +2,7 @@
 	import Shield from '@lucide/svelte/icons/shield';
 	import Globe from '@lucide/svelte/icons/globe';
 	import Ban from '@lucide/svelte/icons/ban';
+	import CircleAlert from '@lucide/svelte/icons/circle-alert';
 	import { onMount } from 'svelte';
 	import type { AdguardStats } from './types';
 	import { TIMING_STRATEGIES } from '$lib/core/timing';
@@ -56,7 +57,10 @@
 	{#if loading}
 		<p class="text-lg opacity-80">Loading…</p>
 	{:else if error}
-		<p class="text-red-400 opacity-80">{error}</p>
+		<div class="flex items-center gap-2 text-lg text-red-400 opacity-80">
+			<CircleAlert size={22} />
+			<span>{error}</span>
+		</div>
 	{:else if stats}
 		<div class="flex flex-col gap-2 text-lg">
 			<div class="flex items-center gap-3">

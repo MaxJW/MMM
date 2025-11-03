@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
+	import CircleAlert from '@lucide/svelte/icons/circle-alert';
 	import type { Article } from './types';
 	import dayjs from 'dayjs';
 	import { TIMING_STRATEGIES } from '$lib/core/timing';
@@ -75,6 +76,7 @@
 		</div>
 	{:else if error}
 		<div class="flex items-center gap-2 text-2xl opacity-80">
+			<CircleAlert size={22} />
 			<span>Feed unavailable</span>
 		</div>
 	{:else if currentArticle}

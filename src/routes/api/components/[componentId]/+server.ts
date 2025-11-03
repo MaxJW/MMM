@@ -29,6 +29,9 @@ export const POST: RequestHandler = async ({ params, request }) => {
 		return json({ error: 'Component ID required' }, { status: 400 });
 	}
 
+	// Ensure components are loaded before calling the API
+	await loadComponents();
+
 	const result = await callComponentApi(componentId, 'POST', request);
 
 	if (result.error) {
@@ -45,6 +48,9 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 		return json({ error: 'Component ID required' }, { status: 400 });
 	}
 
+	// Ensure components are loaded before calling the API
+	await loadComponents();
+
 	const result = await callComponentApi(componentId, 'PUT', request);
 
 	if (result.error) {
@@ -60,6 +66,9 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
 	if (!componentId) {
 		return json({ error: 'Component ID required' }, { status: 400 });
 	}
+
+	// Ensure components are loaded before calling the API
+	await loadComponents();
 
 	const result = await callComponentApi(componentId, 'DELETE', request);
 
