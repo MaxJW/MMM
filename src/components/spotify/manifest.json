@@ -26,7 +26,6 @@
 				"type": "array",
 				"label": "Connected Accounts",
 				"description": "Spotify accounts that will be checked for currently playing tracks",
-				"hiddenWithCustomConfig": true,
 				"itemFields": [
 					{
 						"key": "refreshToken",

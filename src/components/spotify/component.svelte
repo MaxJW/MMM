@@ -2,6 +2,7 @@
 	import Music from '@lucide/svelte/icons/music';
 	import Smartphone from '@lucide/svelte/icons/smartphone';
 	import Speaker from '@lucide/svelte/icons/speaker';
+	import User from '@lucide/svelte/icons/user';
 	import { onMount, onDestroy } from 'svelte';
 	import type { SpotifyTrack } from './types';
 	import { TIMING_STRATEGIES } from '$lib/core/timing';
@@ -128,6 +129,12 @@
 					<div class="flex min-w-0 flex-col">
 						<span class="truncate text-xl font-medium">{track.title}</span>
 						<span class="truncate text-base opacity-80">{track.artist}</span>
+						{#if track.accountName}
+							<div class="mt-1 flex items-center gap-1.5">
+								<User size={14} class="flex-shrink-0 opacity-70" />
+								<span class="truncate text-sm opacity-70">{track.accountName}</span>
+							</div>
+						{/if}
 						{#if track.deviceName && track.deviceName !== 'Unknown Device'}
 							<div class="mt-1 flex items-center gap-1.5">
 								{#if track.deviceName.toLowerCase().includes('iphone')}
