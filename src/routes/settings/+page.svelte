@@ -97,10 +97,10 @@
 					componentManifests = data.components.map(
 						(c: { manifest: ComponentManifest }) => c.manifest
 					);
-					tabs = [
-						{ id: 'dashboard', label: 'Dashboard Layout' },
-						...componentManifests.map((m) => ({ id: m.id, label: m.name }))
-					];
+					const componentTabs = componentManifests
+						.map((m) => ({ id: m.id, label: m.name }))
+						.sort((a, b) => a.label.localeCompare(b.label));
+					tabs = [{ id: 'dashboard', label: 'Dashboard Layout' }, ...componentTabs];
 				}
 			}
 		} catch (error) {
