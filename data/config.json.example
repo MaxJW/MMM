@@ -106,6 +106,25 @@
 			"networkName": "",
 			"password": "",
 			"securityType": "WPA"
+		},
+		"greetings": {
+			"greetings": [
+				{
+					"text": "Good morning",
+					"startHour": 0,
+					"endHour": 12
+				},
+				{
+					"text": "Good afternoon",
+					"startHour": 12,
+					"endHour": 18
+				},
+				{
+					"text": "Good evening",
+					"startHour": 18,
+					"endHour": 24
+				}
+			]
 		}
 	}
 }

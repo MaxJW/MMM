@@ -5,7 +5,37 @@
 	"description": "Display time-based or event-based greetings",
 	"config": {
 		"title": "Greetings Settings",
-		"description": "Greetings component displays personalized greetings based on time of day or active events. No configuration required.",
-		"fields": []
+		"description": "Configure time-based greetings. Greetings are displayed based on the current hour. Custom greetings can override defaults for specific time ranges.",
+		"fields": [
+			{
+				"key": "greetings",
+				"type": "array",
+				"label": "Greetings",
+				"description": "Configure greetings for different times of day. Greetings are checked in order, and the first matching time range is used.",
+				"itemFields": [
+					{
+						"key": "text",
+						"type": "text",
+						"label": "Greeting Text",
+						"description": "The greeting message to display",
+						"placeholder": "Good morning"
+					},
+					{
+						"key": "startHour",
+						"type": "number",
+						"label": "Start Hour",
+						"description": "Hour of day to start showing this greeting (0-23)",
+						"default": 0
+					},
+					{
+						"key": "endHour",
+						"type": "number",
+						"label": "End Hour",
+						"description": "Hour of day to stop showing this greeting (0-23, exclusive)",
+						"default": 12
+					}
+				]
+			}
+		]
 	}
 }

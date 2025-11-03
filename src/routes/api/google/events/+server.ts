@@ -37,15 +37,12 @@ class GoogleCalendarService {
 	private static cache: {
 		data: Array<{ day: string; date: number; month: string; events: SimplifiedEvent[] }>;
 		expiry: number;
+		maxEvents: number;
 	} | null = null;
 
 	static async getEvents(
 		origin: string
 	): Promise<Array<{ day: string; date: number; month: string; events: SimplifiedEvent[] }>> {
-		if (this.cache && Date.now() < this.cache.expiry) {
-			return this.cache.data;
-		}
-
 		// Load tokens from file
 		const tokenData = await TokenStorage.loadTokens();
 		if (!tokenData) {
@@ -59,6 +56,11 @@ class GoogleCalendarService {
 
 		// Get maxEvents from config (default to 12)
 		const maxEvents = typeof config.maxEvents === 'number' ? config.maxEvents : 12;
+
+		// Check cache - but only use it if maxEvents matches (invalidate if config changed)
+		if (this.cache && Date.now() < this.cache.expiry && this.cache.maxEvents === maxEvents) {
+			return this.cache.data;
+		}
 
 		const oauth2Client = new google.auth.OAuth2({
 			clientId: config.clientId,
@@ -211,7 +213,11 @@ class GoogleCalendarService {
 			}
 		}
 
-		this.cache = { data: result, expiry: Date.now() + TIMING_STRATEGIES.FREQUENT.interval };
+		this.cache = {
+			data: result,
+			expiry: Date.now() + TIMING_STRATEGIES.FREQUENT.interval,
+			maxEvents
+		};
 		return result;
 	}
 }
