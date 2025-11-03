@@ -9,22 +9,8 @@
 	let track: SpotifyTrack | null = null;
 	let loading = true;
 	let error: string | null = null;
-	let progressMs = 0;
-	let progressUpdateInterval: ReturnType<typeof setInterval> | null = null;
 	let refreshInterval: ReturnType<typeof setInterval> | null = null;
-	let lastUpdateTime = Date.now();
-
-	function formatTime(ms: number): string {
-		const seconds = Math.floor(ms / 1000);
-		const minutes = Math.floor(seconds / 60);
-		const remainingSeconds = seconds % 60;
-		return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-	}
-
-	function getProgressPercentage(): number {
-		if (!track || track.durationMs === 0) return 0;
-		return Math.min((progressMs / track.durationMs) * 100, 100);
-	}
+	let albumArtStyle: 'vinyl' | 'square' = 'vinyl';
 
 	async function load() {
 		try {
@@ -36,15 +22,12 @@
 			if (data.error) {
 				error = data.error;
 				track = null;
-				progressMs = 0;
 				setupRefreshInterval(false);
 				return;
 			}
 
 			const wasPlaying = track?.isPlaying ?? false;
 			track = data;
-			progressMs = data.progressMs || 0;
-			lastUpdateTime = Date.now();
 
 			// Update refresh interval if playing state changed
 			if (wasPlaying !== data.isPlaying) {
@@ -54,7 +37,6 @@
 			error = 'Failed to load Spotify track';
 			console.error('Error loading Spotify track:', err);
 			track = null;
-			progressMs = 0;
 			setupRefreshInterval(false);
 		} finally {
 			loading = false;
@@ -76,36 +58,35 @@
 		refreshInterval = setInterval(load, interval);
 	}
 
-	function updateProgress() {
-		if (track && track.isPlaying && track.durationMs > 0) {
-			const now = Date.now();
-			const elapsed = now - lastUpdateTime;
-			progressMs = Math.min(progressMs + elapsed, track.durationMs);
-			lastUpdateTime = now;
+	async function loadConfig() {
+		try {
+			const res = await fetch('/api/config');
+			if (res.ok) {
+				const config = await res.json();
+				albumArtStyle = config.components?.spotify?.albumArtStyle || 'vinyl';
+			}
+		} catch (err) {
+			console.error('Error loading config:', err);
+			// Default to vinyl if config fails to load
+			albumArtStyle = 'vinyl';
 		}
 	}
 
 	onMount(() => {
+		loadConfig();
 		load();
 
 		// Initial refresh interval will be set after first load based on track state
 		// Setup with a default (will update after first load)
 		setupRefreshInterval(false);
 
-		// Update progress bar in real-time when playing
-		progressUpdateInterval = setInterval(() => {
-			updateProgress();
-		}, TIMING_STRATEGIES.REALTIME.interval);
-
 		return () => {
 			if (refreshInterval) clearInterval(refreshInterval);
-			if (progressUpdateInterval) clearInterval(progressUpdateInterval);
 		};
 	});
 
 	onDestroy(() => {
 		if (refreshInterval) clearInterval(refreshInterval);
-		if (progressUpdateInterval) clearInterval(progressUpdateInterval);
 	});
 </script>
 
@@ -119,11 +100,24 @@
 		<div class="flex flex-col gap-3">
 			<div class="flex items-center gap-4">
 				{#if track.albumArt}
-					<img
-						class="h-20 w-20 flex-shrink-0 rounded-lg shadow-lg"
-						src={track.albumArt}
-						alt="Album art"
-					/>
+					{#if albumArtStyle === 'vinyl'}
+						<div class="vinyl-container">
+							<img
+								class="vinyl-image {track.isPlaying ? 'vinyl-spinning' : ''}"
+								src={track.albumArt}
+								alt="Album art"
+							/>
+							<div class="vinyl-overlay {track.isPlaying ? 'vinyl-spinning' : ''}"></div>
+							<div class="vinyl-gloss"></div>
+							<div class="vinyl-center-background"></div>
+							<div class="vinyl-center"></div>
+							<div class="vinyl-center-hole"></div>
+						</div>
+					{:else}
+						<div class="album-art-square">
+							<img class="album-art-image" src={track.albumArt} alt="Album art" />
+						</div>
+					{/if}
 				{/if}
 				<div class="flex min-w-0 flex-col">
 					<span class="truncate text-xl font-medium">{track.title}</span>
@@ -140,23 +134,174 @@
 					{/if}
 				</div>
 			</div>
-
-			{#if track.durationMs > 0}
-				<div class="flex flex-col gap-1">
-					<!-- Progress bar -->
-					<div class="relative h-1 overflow-hidden rounded-full bg-neutral-800">
-						<div
-							class="h-full rounded-full bg-neutral-100 transition-all duration-1000 ease-linear"
-							style="width: {getProgressPercentage()}%"
-						></div>
-					</div>
-					<!-- Time display -->
-					<div class="flex justify-between text-sm tabular-nums opacity-70">
-						<span>{formatTime(progressMs)}</span>
-						<span>{formatTime(track.durationMs)}</span>
-					</div>
-				</div>
-			{/if}
 		</div>
 	</div>
 {/if}
+
+<style>
+	@keyframes spin {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.vinyl-container {
+		position: relative;
+		width: 128px;
+		height: 128px;
+		flex-shrink: 0;
+	}
+
+	.vinyl-image {
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		object-fit: cover;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+	}
+
+	.vinyl-overlay {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		background: repeating-radial-gradient(
+			transparent 0,
+			transparent 18%,
+			rgba(0, 0, 0, 0.04) 18.5%,
+			rgba(0, 0, 0, 0.04) 19%,
+			transparent 19%,
+			transparent 24%,
+			rgba(0, 0, 0, 0.05) 24.5%,
+			transparent 25%,
+			transparent 29%,
+			rgba(0, 0, 0, 0.06) 29.5%,
+			rgba(0, 0, 0, 0.06) 30%,
+			transparent 30%,
+			transparent 34%,
+			rgba(0, 0, 0, 0.07) 34.5%,
+			rgba(0, 0, 0, 0.07) 35%,
+			transparent 35%,
+			transparent 39%,
+			rgba(0, 0, 0, 0.08) 39.5%,
+			rgba(0, 0, 0, 0.08) 40%,
+			transparent 40%,
+			transparent 44%,
+			rgba(0, 0, 0, 0.09) 44.5%,
+			rgba(0, 0, 0, 0.09) 45%,
+			transparent 45%,
+			transparent 49%,
+			rgba(0, 0, 0, 0.1) 49.5%,
+			rgba(0, 0, 0, 0.1) 50%,
+			transparent 50%,
+			transparent 54%,
+			rgba(0, 0, 0, 0.11) 54.5%,
+			rgba(0, 0, 0, 0.11) 55%,
+			transparent 55%,
+			transparent 60%,
+			rgba(0, 0, 0, 0.12) 60.5%,
+			rgba(0, 0, 0, 0.12) 61%,
+			transparent 61%,
+			transparent 65%,
+			rgba(0, 0, 0, 0.13) 65.5%,
+			rgba(0, 0, 0, 0.13) 66%,
+			transparent 66%,
+			transparent 70%,
+			rgba(0, 0, 0, 0.14) 70.5%,
+			rgba(0, 0, 0, 0.14) 71%,
+			transparent 71%,
+			transparent 75%,
+			rgba(0, 0, 0, 0.15) 75.5%,
+			rgba(0, 0, 0, 0.15) 76%,
+			transparent 76%,
+			rgba(0, 0, 0, 0.18) 85%,
+			rgba(0, 0, 0, 0.2) 100%
+		);
+		pointer-events: none;
+		z-index: 1;
+	}
+
+	.vinyl-center-background {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 22px;
+		height: 22px;
+		border-radius: 50%;
+		background: radial-gradient(
+			circle,
+			rgba(40, 40, 40, 0.8) 0%,
+			rgba(20, 20, 20, 0.9) 70%,
+			rgba(10, 10, 10, 1) 100%
+		);
+		box-shadow:
+			inset 0 1px 2px rgba(255, 255, 255, 0.1),
+			inset 0 -1px 2px rgba(0, 0, 0, 0.8),
+			0 0 4px rgba(0, 0, 0, 0.6);
+		pointer-events: none;
+		z-index: 3;
+	}
+
+	.vinyl-center {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 18px;
+		height: 18px;
+		border-radius: 50%;
+		background: radial-gradient(
+			circle,
+			rgba(30, 30, 30, 0.9) 0%,
+			rgba(15, 15, 15, 1) 50%,
+			rgba(5, 5, 5, 1) 100%
+		);
+		box-shadow:
+			inset 0 1px 3px rgba(255, 255, 255, 0.15),
+			inset 0 -1px 4px rgba(0, 0, 0, 0.9),
+			0 0 2px rgba(0, 0, 0, 0.8);
+		pointer-events: none;
+		z-index: 4;
+	}
+
+	.vinyl-center-hole {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: rgba(0, 0, 0, 0.95);
+		box-shadow:
+			inset 0 0 3px rgba(0, 0, 0, 1),
+			0 0 1px rgba(255, 255, 255, 0.05);
+		pointer-events: none;
+		z-index: 5;
+	}
+
+	.vinyl-spinning {
+		animation: spin 14s linear infinite;
+	}
+
+	.album-art-square {
+		position: relative;
+		width: 128px;
+		height: 128px;
+		flex-shrink: 0;
+	}
+
+	.album-art-image {
+		width: 100%;
+		height: 100%;
+		border-radius: 12px;
+		object-fit: cover;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+	}
+</style>

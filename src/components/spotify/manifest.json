@@ -27,6 +27,23 @@
 				"label": "Refresh Token",
 				"description": "Your Spotify OAuth Refresh Token",
 				"placeholder": "Enter Spotify Refresh Token"
+			},
+			{
+				"key": "albumArtStyle",
+				"type": "select",
+				"label": "Album Art Style",
+				"description": "Choose between vinyl record style or simple rounded square",
+				"default": "vinyl",
+				"options": [
+					{
+						"value": "vinyl",
+						"label": "Vinyl Record"
+					},
+					{
+						"value": "square",
+						"label": "Rounded Square"
+					}
+				]
 			}
 		]
 	}

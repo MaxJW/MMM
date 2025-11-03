@@ -107,6 +107,7 @@ export async function saveConfig(config: UserConfig): Promise<void> {
  * Ensure all component manifests are represented in the dashboard config
  * - Removes component IDs that don't match any existing component
  * - Adds missing components with enabled: false and area: 'top-left'
+ * - Automatically saves the cleaned config to file if invalid components were removed
  */
 export async function ensureAllComponentsInConfig(config: UserConfig): Promise<UserConfig> {
 	try {
@@ -124,12 +125,6 @@ export async function ensureAllComponentsInConfig(config: UserConfig): Promise<U
 		const removedComponents = config.dashboard.components.filter(
 			(comp) => !validComponentIds.has(comp.id)
 		);
-		if (removedComponents.length > 0) {
-			console.log(
-				`Removed ${removedComponents.length} invalid component(s) from config:`,
-				removedComponents.map((c) => c.id).join(', ')
-			);
-		}
 
 		// Create a set of existing valid component IDs
 		const existingIds = new Set(validComponents.map((comp) => comp.id));
@@ -144,20 +139,47 @@ export async function ensureAllComponentsInConfig(config: UserConfig): Promise<U
 			area: 'top-left' as DashboardArea
 		}));
 
-		if (missingIds.length > 0) {
-			console.log(
-				`Added ${missingIds.length} missing component(s) to config:`,
-				missingIds.join(', ')
-			);
-		}
-
-		// Return config with only valid components and all missing ones added
-		return {
+		// Build the cleaned config
+		const cleanedConfig: UserConfig = {
 			...config,
 			dashboard: {
 				components: [...validComponents, ...missingComponents]
 			}
 		};
+
+		// If invalid components were removed, save the cleaned config to file
+		if (removedComponents.length > 0) {
+			console.log(
+				`Removed ${removedComponents.length} invalid component(s) from config:`,
+				removedComponents.map((c) => c.id).join(', ')
+			);
+			try {
+				await saveConfig(cleanedConfig);
+				console.log('Config file updated with cleaned configuration');
+			} catch (saveError) {
+				console.error('Error saving cleaned config:', saveError);
+				// Continue even if save fails
+			}
+		}
+
+		if (missingIds.length > 0) {
+			console.log(
+				`Added ${missingIds.length} missing component(s) to config:`,
+				missingIds.join(', ')
+			);
+			// Save when missing components are added too, but only if we haven't already saved
+			if (removedComponents.length === 0) {
+				try {
+					await saveConfig(cleanedConfig);
+					console.log('Config file updated with missing components');
+				} catch (saveError) {
+					console.error('Error saving config with missing components:', saveError);
+					// Continue even if save fails
+				}
+			}
+		}
+
+		return cleanedConfig;
 	} catch (error) {
 		console.error('Error ensuring all components in config:', error);
 		// Return original config if there's an error
