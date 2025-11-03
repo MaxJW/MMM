@@ -7,7 +7,6 @@ import { GET as remindersApiHandler } from './reminders/api';
 import { GET as adguardApiHandler } from './adguard/api';
 import { GET as weatherApiHandler } from './weather/api';
 import { GET as rssFeedApiHandler } from './rss-feed/api';
-import { GET as energyApiHandler } from './energy/api';
 import { GET as spotifyApiHandler } from './spotify/api';
 import { GET as eventsApiHandler } from './events/api';
 import { GET as wifiQrCodeApiHandler } from './wifi-qr-code/api';
@@ -20,7 +19,6 @@ export const apiHandlerMap: Record<string, (config: any, request?: Request) => P
 	adguard: adguardApiHandler,
 	weather: weatherApiHandler,
 	'rss-feed': rssFeedApiHandler,
-	energy: energyApiHandler,
 	spotify: spotifyApiHandler,
 	events: eventsApiHandler,
 	'wifi-qr-code': wifiQrCodeApiHandler

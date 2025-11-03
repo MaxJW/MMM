@@ -9,7 +9,6 @@ import GreetingsComponent from './greetings/component.svelte';
 import RemindersComponent from './reminders/component.svelte';
 import RssFeedComponent from './rss-feed/component.svelte';
 import AdguardComponent from './adguard/component.svelte';
-import EnergyComponent from './energy/component.svelte';
 import SpotifyComponent from './spotify/component.svelte';
 
 /**
@@ -27,7 +26,5 @@ export const componentMap: Record<string, unknown> = {
 	reminders: RemindersComponent,
 	'rss-feed': RssFeedComponent,
 	adguard: AdguardComponent,
-	energy: EnergyComponent,
 	spotify: SpotifyComponent
 };
-
