@@ -59,7 +59,12 @@
 		"calendar": {
 			"clientId": "",
 			"clientSecret": "",
-			"maxEvents": 12
+			"maxEvents": 12,
+			"calendarColors": {
+				"Personal": "green-500",
+				"Work": "blue-500",
+				"Family": "purple-500"
+			}
 		},
 		"events": {
 			"events": [

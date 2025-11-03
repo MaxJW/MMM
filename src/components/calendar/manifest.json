@@ -27,6 +27,13 @@
 				"label": "Max Events",
 				"description": "Maximum number of events to display (default: 12)",
 				"default": 12
+			},
+			{
+				"key": "calendarColors",
+				"type": "object",
+				"label": "Calendar Colors",
+				"description": "Map calendar names to color classes (e.g., {\"Personal\": \"green-500\", \"Work\": \"blue-500\", \"Family\": \"purple-500\"})",
+				"default": {}
 			}
 		]
 	}

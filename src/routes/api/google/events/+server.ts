@@ -16,7 +16,8 @@ type SimplifiedEvent = {
 	time: string;
 	location?: string;
 	isAllDay: boolean;
-	category?: 'work' | 'personal';
+	calendarName?: string;
+	colorClass?: string;
 };
 
 type CalendarListEntryLite = {
@@ -24,6 +25,7 @@ type CalendarListEntryLite = {
 	deleted?: boolean;
 	selected?: boolean;
 	primary?: boolean;
+	summary?: string;
 };
 
 type GoogleEventLite = {
@@ -38,6 +40,7 @@ class GoogleCalendarService {
 		data: Array<{ day: string; date: number; month: string; events: SimplifiedEvent[] }>;
 		expiry: number;
 		maxEvents: number;
+		calendarColorsHash: string;
 	} | null = null;
 
 	static async getEvents(
@@ -57,8 +60,46 @@ class GoogleCalendarService {
 		// Get maxEvents from config (default to 12)
 		const maxEvents = typeof config.maxEvents === 'number' ? config.maxEvents : 12;
 
-		// Check cache - but only use it if maxEvents matches (invalidate if config changed)
-		if (this.cache && Date.now() < this.cache.expiry && this.cache.maxEvents === maxEvents) {
+		// Get calendarColors from config (default to empty object)
+		const calendarColors = config.calendarColors || {};
+
+		// Create a hash of calendarColors for cache invalidation
+		const calendarColorsHash = JSON.stringify(calendarColors);
+
+		// Helper function to get color class for a calendar name
+		const getColorClass = (calendarName?: string): string => {
+			if (!calendarName) return 'gray-400';
+			// Check for exact match first
+			if (calendarColors[calendarName]) {
+				return calendarColors[calendarName];
+			}
+			// Check for case-insensitive match
+			const lowerName = calendarName.toLowerCase();
+			for (const [key, value] of Object.entries(calendarColors)) {
+				if (key.toLowerCase() === lowerName) {
+					return value;
+				}
+			}
+			// Default fallback colors based on common calendar names
+			if (lowerName.includes('work') || lowerName.includes('business')) {
+				return 'blue-500';
+			}
+			if (lowerName.includes('personal') || lowerName.includes('private')) {
+				return 'green-500';
+			}
+			if (lowerName.includes('family')) {
+				return 'purple-500';
+			}
+			return 'gray-400';
+		};
+
+		// Check cache - invalidate if maxEvents or calendarColors changed
+		if (
+			this.cache &&
+			Date.now() < this.cache.expiry &&
+			this.cache.maxEvents === maxEvents &&
+			this.cache.calendarColorsHash === calendarColorsHash
+		) {
 			return this.cache.data;
 		}
 
@@ -99,6 +140,15 @@ class GoogleCalendarService {
 		const calendars: CalendarListEntryLite[] = itemsUnknown
 			.map((c) => c as CalendarListEntryLite)
 			.filter((c) => !c.deleted && c.selected !== false && !!c.id);
+
+		// Log calendar names to help with configuration
+		const calendarNames = calendars
+			.map((cal) => cal.summary || cal.id || 'Unknown')
+			.filter((name) => name !== 'Unknown');
+		console.log(
+			'[Calendar] Available calendars for color mapping:',
+			JSON.stringify(calendarNames, null, 2)
+		);
 
 		const now = dayjs();
 		const end = now.add(3, 'day');
@@ -146,6 +196,7 @@ class GoogleCalendarService {
 					: `${startTime.format('H:mm')} - ${endTime.format('H:mm')}`;
 			const key = d.format('YYYY-MM-DD');
 			const month = d.format('MMM').toUpperCase();
+			const calendarName = cal.summary || undefined;
 			const simplified: SimplifiedEvent = {
 				day: d.format('ddd'),
 				date: parseInt(d.format('D')),
@@ -154,7 +205,8 @@ class GoogleCalendarService {
 				time,
 				location: event.location ? event.location.split(',')[0] : undefined,
 				isAllDay,
-				category: cal.primary ? 'personal' : 'work'
+				calendarName,
+				colorClass: getColorClass(calendarName)
 			};
 			if (!allGroupedEvents[key]) allGroupedEvents[key] = [];
 			allGroupedEvents[key].push(simplified);
@@ -216,7 +268,8 @@ class GoogleCalendarService {
 		this.cache = {
 			data: result,
 			expiry: Date.now() + TIMING_STRATEGIES.FREQUENT.interval,
-			maxEvents
+			maxEvents,
+			calendarColorsHash
 		};
 		return result;
 	}

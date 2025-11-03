@@ -10,5 +10,6 @@ export type CalendarEvent = {
 	time: string;
 	location?: string;
 	isAllDay: boolean;
-	category?: 'work' | 'personal';
+	calendarName?: string;
+	colorClass?: string;
 };

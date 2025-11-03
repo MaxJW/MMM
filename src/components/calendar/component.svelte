@@ -9,6 +9,38 @@
 	import CalendarDays from '@lucide/svelte/icons/calendar-days';
 	import { dev } from '$app/environment';
 
+	// Color mapping for Tailwind classes
+	// Tailwind requires full class names to be present in the source code
+	const colorClassMap: Record<string, string> = {
+		'gray-400': 'bg-gray-400',
+		'gray-500': 'bg-gray-500',
+		'green-500': 'bg-green-500',
+		'green-600': 'bg-green-600',
+		'blue-500': 'bg-blue-500',
+		'blue-600': 'bg-blue-600',
+		'purple-500': 'bg-purple-500',
+		'purple-600': 'bg-purple-600',
+		'red-500': 'bg-red-500',
+		'red-600': 'bg-red-600',
+		'yellow-500': 'bg-yellow-500',
+		'yellow-600': 'bg-yellow-600',
+		'orange-500': 'bg-orange-500',
+		'orange-600': 'bg-orange-600',
+		'pink-500': 'bg-pink-500',
+		'pink-600': 'bg-pink-600',
+		'indigo-500': 'bg-indigo-500',
+		'indigo-600': 'bg-indigo-600',
+		'teal-500': 'bg-teal-500',
+		'teal-600': 'bg-teal-600',
+		'cyan-500': 'bg-cyan-500',
+		'cyan-600': 'bg-cyan-600'
+	};
+
+	function getBgClass(colorClass?: string): string {
+		if (!colorClass) return colorClassMap['gray-400'];
+		return colorClassMap[colorClass] || colorClassMap['gray-400'];
+	}
+
 	let days: CalendarDay[] | null = null;
 	let loading = true;
 	let error: string | null = null;
@@ -96,10 +128,7 @@
 								<div class="relative">
 									<!-- Event-specific timeline bar -->
 									<div
-										class="absolute top-0 bottom-0 left-0 w-0.5"
-										class:bg-green-500={event.category === 'personal'}
-										class:bg-blue-500={event.category === 'work'}
-										class:bg-gray-400={!event.category}
+										class="absolute top-0 bottom-0 left-0 w-0.5 {getBgClass(event.colorClass)}"
 										class:rounded-t={i === 0}
 										class:rounded-b={i === dayObj.events.length - 1}
 									></div>
