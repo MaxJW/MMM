@@ -48,7 +48,7 @@
 	});
 </script>
 
-<div class="flex flex-col items-start gap-3 select-none">
+<div class="flex flex-col items-end gap-3 select-none">
 	<div class="flex items-center gap-3 opacity-90">
 		<Shield size={24} />
 		<h2 class="text-lg">AdGuard</h2>
