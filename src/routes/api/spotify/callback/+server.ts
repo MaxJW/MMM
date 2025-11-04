@@ -63,7 +63,6 @@ export const GET: RequestHandler = async ({ url }) => {
 				headers: { Location: `${url.origin}/settings?spotify_error=no_refresh_token` }
 			});
 		}
-
 		// Fetch user profile to get display name
 		let userName: string | undefined;
 		if (tokens.access_token) {

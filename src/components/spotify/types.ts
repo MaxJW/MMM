@@ -7,4 +7,5 @@ export interface SpotifyTrack {
 	durationMs: number;
 	deviceName: string;
 	accountName?: string;
+	isEpisode?: boolean;
 }

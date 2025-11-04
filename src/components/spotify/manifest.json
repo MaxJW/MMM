@@ -42,10 +42,10 @@
 				]
 			},
 			{
-				"key": "albumArtStyle",
+				"key": "trackStyle",
 				"type": "select",
-				"label": "Album Art Style",
-				"description": "Choose between vinyl record style or simple rounded square",
+				"label": "Track Album Art Style",
+				"description": "Choose album art style for music tracks (vinyl record, rounded square, or cassette tape)",
 				"default": "vinyl",
 				"options": [
 					{
@@ -55,6 +55,31 @@
 					{
 						"value": "square",
 						"label": "Rounded Square"
+					},
+					{
+						"value": "cassette",
+						"label": "Cassette Tape"
+					}
+				]
+			},
+			{
+				"key": "episodeStyle",
+				"type": "select",
+				"label": "Episode Album Art Style",
+				"description": "Choose album art style for podcast episodes (vinyl record, rounded square, or cassette tape)",
+				"default": "cassette",
+				"options": [
+					{
+						"value": "vinyl",
+						"label": "Vinyl Record"
+					},
+					{
+						"value": "square",
+						"label": "Rounded Square"
+					},
+					{
+						"value": "cassette",
+						"label": "Cassette Tape"
 					}
 				]
 			}

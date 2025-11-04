@@ -48,53 +48,61 @@ async function fetchPlayerData(token: string): Promise<{
 	track: SpotifyTrack | null;
 	deviceName: string;
 }> {
-	// Fetch currently playing track and device info in parallel
-	const [currentPlayingRes, playerRes] = await Promise.all([
-		fetch('https://api.spotify.com/v1/me/player/currently-playing', {
-			headers: { Authorization: `Bearer ${token}` }
-		}),
-		fetch('https://api.spotify.com/v1/me/player', {
-			headers: { Authorization: `Bearer ${token}` }
-		})
-	]);
+	// Fetch player state (includes item, device, and playback info)
+	// Include additional_types=episode to get podcast episodes
+	const playerRes = await fetch('https://api.spotify.com/v1/me/player?additional_types=episode', {
+		headers: { Authorization: `Bearer ${token}` }
+	});
 
 	let track: SpotifyTrack | null = null;
 	let deviceName = 'Unknown Device';
 
-	// Get device name
-	if (playerRes.ok) {
-		const playerData = await playerRes.json();
-		if (playerData.device) {
-			deviceName = playerData.device.name || 'Unknown Device';
-		}
-	}
-
-	// Get currently playing track
-	if (currentPlayingRes.status === 204) {
+	// Handle no content or not found
+	if (playerRes.status === 204 || playerRes.status === 404) {
 		return { track: null, deviceName };
 	}
 
-	if (!currentPlayingRes.ok) {
-		if (currentPlayingRes.status === 404) {
-			return { track: null, deviceName };
-		}
-		throw new Error(`HTTP ${currentPlayingRes.status}`);
+	if (!playerRes.ok) {
+		throw new Error(`HTTP ${playerRes.status}`);
 	}
 
-	const data = await currentPlayingRes.json();
+	const data = await playerRes.json();
+
+	// Get device name from the same response
+	if (data.device) {
+		deviceName = data.device.name || 'Unknown Device';
+	}
 
 	if (!data.item) {
 		return { track: null, deviceName };
 	}
 
+	// Handle both tracks and podcast episodes
+	const isEpisode = data.item.type === 'episode';
+
+	let artist: string;
+	let albumArt: string;
+
+	if (isEpisode) {
+		// For podcast episodes: use show name as artist
+		artist = data.item.show?.name || '';
+		// Episodes can have their own images, fallback to show images
+		albumArt = data.item.images?.[0]?.url || data.item.show?.images?.[0]?.url || '';
+	} else {
+		// For tracks: use artists array
+		artist = data.item.artists?.map((a: { name: string }) => a.name).join(', ') || '';
+		albumArt = data.item.album?.images?.[0]?.url || '';
+	}
+
 	track = {
 		title: data.item.name || '',
-		artist: data.item.artists?.map((a: { name: string }) => a.name).join(', ') || '',
-		albumArt: data.item.album?.images?.[0]?.url || '',
+		artist,
+		albumArt,
 		isPlaying: data.is_playing || false,
 		progressMs: data.progress_ms || 0,
 		durationMs: data.item.duration_ms || 0,
-		deviceName
+		deviceName,
+		isEpisode
 	};
 
 	return { track, deviceName };
@@ -112,11 +120,6 @@ async function fetchTrackForAccount(
 		if (track) {
 			// Add account name to track for identification
 			track.accountName = account.name;
-			console.log(
-				`[Spotify] Account "${accountId}": Track found - ${track.title} by ${track.artist}, isPlaying: ${track.isPlaying}`
-			);
-		} else {
-			console.log(`[Spotify] Account "${accountId}": No track currently playing`);
 		}
 		return track;
 	} catch (error) {
@@ -154,15 +157,6 @@ export async function GET(config: SpotifyConfig): Promise<SpotifyTrack[] | { err
 		);
 
 		const tracks = await Promise.all(trackPromises);
-
-		// Log results for debugging
-		console.log(`[Spotify] Fetched tracks for ${accounts.length} accounts:`, {
-			totalAccounts: accounts.length,
-			tracksFetched: tracks.length,
-			nullTracks: tracks.filter((t) => t === null).length,
-			playingTracks: tracks.filter((t) => t !== null && t.isPlaying).length,
-			accountNames: accounts.map((a) => a.name || 'unknown')
-		});
 
 		// Filter to only tracks that are currently playing
 		const playingTracks = tracks.filter(

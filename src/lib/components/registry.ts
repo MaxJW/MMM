@@ -9,12 +9,14 @@ interface ComponentRegistry {
 	components: Map<string, Component>;
 	componentIds: Set<string>; // Cached set of component IDs for fast lookups
 	loaded: boolean;
+	loadingPromise: Promise<void> | null; // Promise for concurrent calls to await
 }
 
 const registry: ComponentRegistry = {
 	components: new Map(),
 	componentIds: new Set(),
-	loaded: false
+	loaded: false,
+	loadingPromise: null
 };
 
 /**
@@ -106,43 +108,59 @@ async function loadComponent(componentDir: string): Promise<Component | null> {
 
 /**
  * Discover and load all components
+ * This function is idempotent and safe to call concurrently - multiple calls will await the same loading promise
  */
 export async function loadComponents(): Promise<void> {
+	// If already loaded, return immediately
 	if (registry.loaded) {
 		return;
 	}
 
-	if (!existsSync(COMPONENTS_DIR)) {
-		console.warn(`Components directory not found: ${COMPONENTS_DIR}`);
-		registry.loaded = true;
-		return;
+	// If loading is in progress, await the existing promise
+	if (registry.loadingPromise) {
+		return registry.loadingPromise;
 	}
 
-	try {
-		const entries = await readdir(COMPONENTS_DIR, { withFileTypes: true });
-
-		for (const entry of entries) {
-			if (entry.isDirectory()) {
-				const component = await loadComponent(entry.name);
-				if (component) {
-					// Warn if component ID already exists (duplicate IDs)
-					if (registry.components.has(component.id)) {
-						console.warn(
-							`Component ID "${component.id}" already exists in registry. Overwriting with component from ${entry.name}`
-						);
-					}
-					registry.components.set(component.id, component);
-					registry.componentIds.add(component.id); // Cache ID for fast lookups
-				}
-			}
+	// Start loading and store the promise for concurrent calls
+	registry.loadingPromise = (async () => {
+		if (!existsSync(COMPONENTS_DIR)) {
+			console.warn(`Components directory not found: ${COMPONENTS_DIR}`);
+			registry.loaded = true;
+			registry.loadingPromise = null;
+			return;
 		}
 
-		registry.loaded = true;
-		console.log(`Loaded ${registry.components.size} components`);
-	} catch (error) {
-		console.error('Error loading components:', error);
-		registry.loaded = true;
-	}
+		try {
+			const entries = await readdir(COMPONENTS_DIR, { withFileTypes: true });
+
+			for (const entry of entries) {
+				if (entry.isDirectory()) {
+					const component = await loadComponent(entry.name);
+					if (component) {
+						// Warn if component ID already exists (duplicate IDs)
+						if (registry.components.has(component.id)) {
+							console.warn(
+								`Component ID "${component.id}" already exists in registry. Overwriting with component from ${entry.name}`
+							);
+						}
+						registry.components.set(component.id, component);
+						registry.componentIds.add(component.id); // Cache ID for fast lookups
+					}
+				}
+			}
+
+			registry.loaded = true;
+			console.log(`Loaded ${registry.components.size} components`);
+		} catch (error) {
+			console.error('Error loading components:', error);
+			registry.loaded = true;
+		} finally {
+			// Clear the loading promise so future calls can start fresh if needed
+			registry.loadingPromise = null;
+		}
+	})();
+
+	return registry.loadingPromise;
 }
 
 /**
@@ -173,4 +191,5 @@ export function clearRegistry() {
 	registry.components.clear();
 	registry.componentIds.clear();
 	registry.loaded = false;
+	registry.loadingPromise = null;
 }
