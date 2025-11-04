@@ -2,10 +2,10 @@
 	"id": "reminders",
 	"name": "Reminders",
 	"version": "1.0.0",
-	"description": "Display bin collection reminders and milk bottle reminders",
+	"description": "Display bin collection reminders and custom reminders",
 	"config": {
-		"title": "Bin Collections Settings",
-		"description": "Configure your bin collection service details",
+		"title": "Reminders Settings",
+		"description": "Configure your bin collection service details and custom reminders",
 		"fields": [
 			{
 				"key": "uprn",
@@ -20,6 +20,49 @@
 				"label": "API Endpoint",
 				"description": "The API endpoint for your council's bin collection service",
 				"placeholder": "e.g., https://www.fife.gov.uk"
+			},
+			{
+				"key": "reminders",
+				"type": "array",
+				"label": "Custom Reminders",
+				"description": "Configure custom reminders with specific times, days, text, and icons",
+				"itemFields": [
+					{
+						"key": "text",
+						"type": "text",
+						"label": "Reminder Text",
+						"description": "The text to display for this reminder",
+						"placeholder": "e.g., Take bottles out"
+					},
+					{
+						"key": "icon",
+						"type": "text",
+						"label": "Icon",
+						"description": "Icon name (available: milk, bell, calendar, clock, home, shopping-cart, utensils, package, heart, star, check-circle, alert-circle, trash)",
+						"placeholder": "e.g., milk"
+					},
+					{
+						"key": "days",
+						"type": "text",
+						"label": "Days of Week",
+						"description": "Comma-separated days (0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday). Leave empty for all days.",
+						"placeholder": "e.g., 1,4 for Monday and Thursday"
+					},
+					{
+						"key": "startHour",
+						"type": "number",
+						"label": "Start Hour",
+						"description": "Hour to start showing reminder (0-23). Leave empty for start of day.",
+						"default": null
+					},
+					{
+						"key": "endHour",
+						"type": "number",
+						"label": "End Hour",
+						"description": "Hour to stop showing reminder (0-23, exclusive). Leave empty for end of day.",
+						"default": null
+					}
+				]
 			}
 		]
 	}
