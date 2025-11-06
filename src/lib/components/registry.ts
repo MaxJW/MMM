@@ -4,6 +4,7 @@ import { existsSync } from 'fs';
 import type { Component, ComponentManifest } from './types';
 
 const COMPONENTS_DIR = join(process.cwd(), 'src', 'components');
+const PLUGINS_DIR = join(process.cwd(), 'plugins');
 
 interface ComponentRegistry {
 	components: Map<string, Component>;
@@ -48,35 +49,55 @@ async function loadManifest(componentPath: string): Promise<ComponentManifest | 
 }
 
 /**
- * Load a component's API handler using static imports
- * This is more reliable than dynamic file:// imports and works in both dev and production
+ * Load a component's API handler
+ * For built-in components: uses static imports
+ * For external plugins: uses dynamic imports
  */
 async function loadApiHandler(
 	componentPath: string,
-	componentId: string
+	componentId: string,
+	isExternal: boolean = false
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<((config: any, request?: Request) => Promise<any>) | undefined> {
 	const apiFile = join(componentPath, 'api.ts');
+	const apiJsFile = join(componentPath, 'api.js');
 
-	if (!existsSync(apiFile)) {
+	// Check for TypeScript or JavaScript API file
+	const apiFilePath = existsSync(apiFile) ? apiFile : existsSync(apiJsFile) ? apiJsFile : null;
+
+	if (!apiFilePath) {
 		return undefined;
 	}
 
 	try {
-		// Use static imports from the api-handlers module
-		// This ensures handlers are available at runtime in both dev and production
-		const { apiHandlerMap } = await import('../../components/api-handlers');
+		if (isExternal) {
+			// For external plugins, use dynamic import
+			// Bun supports direct file path imports
+			const module = await import(apiFilePath);
 
-		// Use the manifest ID to look up the handler (not the directory name)
-		const handler = apiHandlerMap[componentId];
+			// Support both default export and named GET export
+			const handler = module.default || module.GET;
 
-		if (handler && typeof handler === 'function') {
-			return handler;
+			if (handler && typeof handler === 'function') {
+				return handler;
+			}
+
+			return undefined;
+		} else {
+			// For built-in components, use static imports from the api-handlers module
+			const { apiHandlerMap } = await import('../../components/api-handlers');
+
+			// Use the manifest ID to look up the handler (not the directory name)
+			const handler = apiHandlerMap[componentId];
+
+			if (handler && typeof handler === 'function') {
+				return handler;
+			}
+
+			return undefined;
 		}
-
-		return undefined;
 	} catch (error) {
-		console.error(`Error loading API handler from ${apiFile}:`, error);
+		console.error(`Error loading API handler from ${apiFilePath}:`, error);
 		// Return undefined to indicate no API handler, component can still work without it
 		return undefined;
 	}
@@ -85,8 +106,12 @@ async function loadApiHandler(
 /**
  * Load a single component
  */
-async function loadComponent(componentDir: string): Promise<Component | null> {
-	const componentPath = join(COMPONENTS_DIR, componentDir);
+async function loadComponent(
+	componentDir: string,
+	baseDir: string,
+	isExternal: boolean = false
+): Promise<Component | null> {
+	const componentPath = join(baseDir, componentDir);
 
 	if (!existsSync(componentPath)) {
 		return null;
@@ -100,7 +125,7 @@ async function loadComponent(componentDir: string): Promise<Component | null> {
 	const component: Component = {
 		id: manifest.id,
 		manifest,
-		apiHandler: await loadApiHandler(componentPath, manifest.id)
+		apiHandler: await loadApiHandler(componentPath, manifest.id, isExternal)
 	};
 
 	return component;
@@ -123,34 +148,60 @@ export async function loadComponents(): Promise<void> {
 
 	// Start loading and store the promise for concurrent calls
 	registry.loadingPromise = (async () => {
-		if (!existsSync(COMPONENTS_DIR)) {
-			console.warn(`Components directory not found: ${COMPONENTS_DIR}`);
-			registry.loaded = true;
-			registry.loadingPromise = null;
-			return;
-		}
-
 		try {
-			const entries = await readdir(COMPONENTS_DIR, { withFileTypes: true });
+			// Load built-in components first
+			if (existsSync(COMPONENTS_DIR)) {
+				const entries = await readdir(COMPONENTS_DIR, { withFileTypes: true });
 
-			for (const entry of entries) {
-				if (entry.isDirectory()) {
-					const component = await loadComponent(entry.name);
-					if (component) {
-						// Warn if component ID already exists (duplicate IDs)
-						if (registry.components.has(component.id)) {
-							console.warn(
-								`Component ID "${component.id}" already exists in registry. Overwriting with component from ${entry.name}`
-							);
+				for (const entry of entries) {
+					if (entry.isDirectory()) {
+						const component = await loadComponent(entry.name, COMPONENTS_DIR, false);
+						if (component) {
+							// Built-in components take precedence
+							if (registry.components.has(component.id)) {
+								console.warn(
+									`Component ID "${component.id}" already exists in registry. Overwriting with built-in component from ${entry.name}`
+								);
+							}
+							registry.components.set(component.id, component);
+							registry.componentIds.add(component.id); // Cache ID for fast lookups
 						}
-						registry.components.set(component.id, component);
-						registry.componentIds.add(component.id); // Cache ID for fast lookups
 					}
 				}
+			} else {
+				console.warn(`Components directory not found: ${COMPONENTS_DIR}`);
+			}
+
+			// Load external plugins (these won't overwrite built-in components)
+			if (existsSync(PLUGINS_DIR)) {
+				const pluginEntries = await readdir(PLUGINS_DIR, { withFileTypes: true });
+
+				for (const entry of pluginEntries) {
+					if (entry.isDirectory()) {
+						const component = await loadComponent(entry.name, PLUGINS_DIR, true);
+						if (component) {
+							// External plugins won't overwrite built-in components
+							if (registry.components.has(component.id)) {
+								console.warn(
+									`Plugin component ID "${component.id}" conflicts with built-in component. Skipping plugin from ${entry.name}`
+								);
+								continue;
+							}
+							registry.components.set(component.id, component);
+							registry.componentIds.add(component.id);
+							console.log(`Loaded external plugin: ${component.id}`);
+						}
+					}
+				}
+			} else {
+				// Plugins directory doesn't exist yet, that's okay
+				console.log(
+					`Plugins directory not found: ${PLUGINS_DIR} (external plugins will be loaded from here if added)`
+				);
 			}
 
 			registry.loaded = true;
-			console.log(`Loaded ${registry.components.size} components`);
+			console.log(`Loaded ${registry.components.size} components total`);
 		} catch (error) {
 			console.error('Error loading components:', error);
 			registry.loaded = true;

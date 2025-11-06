@@ -9,3 +9,4 @@ services:
       NODE_ENV: production
     volumes:
       - ./data:/app/data     # Persist config and other data
+      - ./plugins:/app/plugins     # External plugins directory for user-provided components

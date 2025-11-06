@@ -16,6 +16,9 @@ COPY . .
 # Build the SvelteKit app
 RUN bun run build
 
+# Create plugins and data directories
+RUN mkdir -p /app/plugins /app/data
+
 # Expose the port the app will run on
 EXPOSE 4000
 
