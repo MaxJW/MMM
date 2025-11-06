@@ -162,15 +162,6 @@ class GoogleCalendarService {
 			.map((c) => c as CalendarListEntryLite)
 			.filter((c) => !c.deleted && c.selected !== false && !!c.id);
 
-		// Log calendar names to help with configuration
-		const calendarNames = calendars
-			.map((cal) => cal.summary || cal.id || 'Unknown')
-			.filter((name) => name !== 'Unknown');
-		console.log(
-			'[Calendar] Available calendars for color mapping:',
-			JSON.stringify(calendarNames, null, 2)
-		);
-
 		const now = dayjs();
 		const end = now.add(3, 'day');
 
