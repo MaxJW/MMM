@@ -10,6 +10,8 @@ COPY package.json bun.lock ./
 # Install dependencies
 RUN bun install
 
+RUN bun prepare
+
 # Copy the rest of the project
 COPY . .
 
@@ -20,7 +22,7 @@ RUN bun run build
 RUN mkdir -p /app/plugins /app/data
 
 # Expose the port the app will run on
-EXPOSE 4000
+EXPOSE 3000
 
 # Run the app in production
 CMD ["bun", "build/index.js"]
