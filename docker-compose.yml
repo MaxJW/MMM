@@ -4,10 +4,9 @@ services:
     container_name: mirror
     restart: unless-stopped
     ports:
-      - "4000:4000"          # Expose the app to localhost:4000
+      - "4000:3000"          # Expose the app to localhost:4000
     environment:
       NODE_ENV: production
-      PORT: 4000
     volumes:
       - ./data:/app/data     # Persist config and other data
       - ./plugins:/app/plugins     # External plugins directory for user-provided components
