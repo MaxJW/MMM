@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  dashboard-webapp:
+    build: .
+    container_name: dashboard-webapp
+    restart: unless-stopped
+    ports:
+      - "4000:4000"          # Expose the app to localhost:4000
+    environment:
+      NODE_ENV: production
+    volumes:
+      - ./data:/app/data     # Persist config and other data
