@@ -20,4 +20,4 @@ RUN bun run build
 EXPOSE 4000
 
 # Run the app in production
-CMD ["bun", "run", "start"]
+CMD ["bun", "build/index.js"]
