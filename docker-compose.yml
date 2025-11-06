@@ -1,6 +1,6 @@
 services:
   dashboard-webapp:
-    build: .
+    image: ghcr.io/maxjw/mmm:latest
     container_name: dashboard-webapp
     restart: unless-stopped
     ports:
