@@ -10,10 +10,11 @@ COPY package.json bun.lock ./
 # Install dependencies
 RUN bun install
 
-RUN bun prepare
-
 # Copy the rest of the project
 COPY . .
+
+# Run prepare scripts with full source available
+RUN bun prepare
 
 # Build the SvelteKit app
 RUN bun run build
