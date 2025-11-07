@@ -95,10 +95,10 @@
 </script>
 
 <div class="space-y-2">
-	<label for={fieldId} class="block text-sm font-medium text-gray-700">
+	<label for={fieldId} class="block text-sm font-medium text-gray-700 dark:text-gray-300">
 		{field.label}
 	</label>
-	<p class="mb-2 text-xs text-gray-500">{field.description}</p>
+	<p class="mb-2 text-xs text-gray-500 dark:text-gray-400">{field.description}</p>
 
 	{#if field.type === 'text' || field.type === 'password'}
 		<div class="relative">
@@ -108,7 +108,7 @@
 				value={value ?? field.default ?? ''}
 				oninput={handleChange}
 				placeholder={field.placeholder}
-				class="w-full rounded-lg border border-gray-300 px-4 py-3 pr-12 text-base sm:py-2 {isPassword
+				class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 pr-12 text-base text-gray-900 sm:py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 {isPassword
 					? 'sm:pr-10'
 					: ''}"
 			/>
@@ -116,7 +116,7 @@
 				<button
 					type="button"
 					onclick={() => togglePasswordVisibility(fieldId)}
-					class="absolute top-1/2 right-3 -translate-y-1/2 p-2 text-gray-500 hover:text-gray-700 sm:p-0"
+					class="absolute top-1/2 right-3 -translate-y-1/2 p-2 text-gray-500 hover:text-gray-700 sm:p-0 dark:text-gray-400 dark:hover:text-gray-300"
 				>
 					{#if showPassword}
 						<EyeOff size={20} />
@@ -133,14 +133,14 @@
 			value={value ?? field.default ?? ''}
 			oninput={handleChange}
 			placeholder={field.placeholder}
-			class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base sm:py-2"
+			class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 sm:py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
 		/>
 	{:else if field.type === 'select'}
 		<select
 			id={fieldId}
 			value={value ?? field.default ?? ''}
 			onchange={handleChange}
-			class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base sm:py-2"
+			class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 sm:py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
 		>
 			{#if field.options}
 				{#each field.options as option}
@@ -153,7 +153,7 @@
 			id={fieldId}
 			value={value ?? field.default ?? ''}
 			onchange={handleChange}
-			class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base sm:py-2"
+			class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 sm:py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
 		>
 			{#each colorOptions as color}
 				<option value={color.value}>{color.label}</option>
@@ -164,14 +164,14 @@
 				<button
 					type="button"
 					onclick={() => onValueChange(field.key, color.value)}
-					class="flex items-center gap-2 rounded-lg border-2 px-3 py-2 text-sm transition-all {value ===
+					class="flex items-center gap-2 rounded-lg border-2 bg-white px-3 py-2 text-sm transition-all dark:bg-gray-800 {value ===
 					color.value
-						? 'border-blue-500 ring-2 ring-blue-200'
-						: 'border-gray-200 hover:border-gray-300'}"
+						? 'border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800'
+						: 'border-gray-200 hover:border-gray-300 dark:border-gray-600 dark:hover:border-gray-500'}"
 					title={color.label}
 				>
 					<div class="h-5 w-5 rounded {color.bgClass}"></div>
-					<span>{color.label}</span>
+					<span class="text-gray-900 dark:text-gray-100">{color.label}</span>
 				</button>
 			{/each}
 		</div>
@@ -179,13 +179,17 @@
 		<div class="space-y-3">
 			{#if Array.isArray(value)}
 				{#each value as item, index}
-					<div class="flex flex-col gap-3 rounded-lg border border-gray-200 p-4">
+					<div
+						class="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800"
+					>
 						<div class="flex items-center justify-between">
-							<span class="text-sm font-medium text-gray-700">Item {index + 1}</span>
+							<span class="text-sm font-medium text-gray-700 dark:text-gray-300"
+								>Item {index + 1}</span
+							>
 							<button
 								type="button"
 								onclick={() => handleArrayRemove(index)}
-								class="p-2 text-red-600 hover:text-red-700 sm:p-0"
+								class="p-2 text-red-600 hover:text-red-700 sm:p-0 dark:text-red-400 dark:hover:text-red-300"
 							>
 								<Trash2 size={18} />
 							</button>
@@ -196,11 +200,16 @@
 								{#each field.itemFields as subField}
 									{@const fieldItemId = `${fieldId}-${index}-${subField.key}`}
 									<div>
-										<label for={fieldItemId} class="mb-1 block text-sm font-medium text-gray-700">
+										<label
+											for={fieldItemId}
+											class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+										>
 											{subField.label}
 										</label>
 										{#if subField.description}
-											<p class="mb-1 text-xs text-gray-500">{subField.description}</p>
+											<p class="mb-1 text-xs text-gray-500 dark:text-gray-400">
+												{subField.description}
+											</p>
 										{/if}
 										{#if subField.type === 'color'}
 											<select
@@ -226,11 +235,11 @@
 														onclick={() => {
 															handleArrayItemFieldChange(index, subField.key, color.value);
 														}}
-														class="flex items-center gap-2 rounded-lg border-2 px-3 py-2 text-sm transition-all {item?.[
+														class="flex items-center gap-2 rounded-lg border-2 bg-white px-3 py-2 text-sm transition-all dark:bg-gray-800 {item?.[
 															subField.key
 														] === color.value
-															? 'border-blue-500 ring-2 ring-blue-200'
-															: 'border-gray-200 hover:border-gray-300'}"
+															? 'border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800'
+															: 'border-gray-200 hover:border-gray-300 dark:border-gray-600 dark:hover:border-gray-500'}"
 														title={color.label}
 													>
 														<div class="h-5 w-5 rounded {color.bgClass}"></div>
@@ -251,7 +260,7 @@
 													);
 												}}
 												placeholder={subField.placeholder}
-												class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base sm:py-2"
+												class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 sm:py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
 											/>
 										{/if}
 									</div>
@@ -271,7 +280,7 @@
 									}
 									onValueChange(field.key, newArray);
 								}}
-								class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base sm:py-2"
+								class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 sm:py-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
 							/>
 						{/if}
 					</div>
@@ -280,7 +289,7 @@
 			<button
 				type="button"
 				onclick={handleArrayAdd}
-				class="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-white hover:bg-blue-700 sm:w-auto sm:py-2"
+				class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-white hover:bg-blue-700 sm:w-auto sm:py-2 dark:bg-blue-500 dark:hover:bg-blue-600"
 			>
 				<Plus size={18} />
 				Add Item
