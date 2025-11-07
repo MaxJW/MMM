@@ -59,7 +59,6 @@ async function fetchAlerts(config: WeatherConfig): Promise<MeteoAlert[]> {
 		const data = parser.parse(xml);
 
 		if (!data?.feed?.entry) {
-			console.warn('No feed entries found in MeteoAlarm response');
 			return [];
 		}
 
@@ -109,7 +108,10 @@ async function fetchAlerts(config: WeatherConfig): Promise<MeteoAlert[]> {
 	}
 }
 
-export async function GET(config: WeatherConfig, request?: Request): Promise<{
+export async function GET(
+	config: WeatherConfig,
+	request?: Request
+): Promise<{
 	weather?: WeatherData;
 	alerts?: MeteoAlert[];
 	error?: string;
@@ -126,7 +128,11 @@ export async function GET(config: WeatherConfig, request?: Request): Promise<{
 			}
 
 			const weather = await fetchWeather(config);
-			weatherCache = setCache(weatherCache, weather, Date.now() + TIMING_STRATEGIES.STANDARD.interval);
+			weatherCache = setCache(
+				weatherCache,
+				weather,
+				Date.now() + TIMING_STRATEGIES.STANDARD.interval
+			);
 			return { weather };
 		} else if (endpoint === 'alerts') {
 			// Check cache

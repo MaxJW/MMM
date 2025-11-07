@@ -6,7 +6,9 @@ interface WiFiConfig {
 	securityType?: 'WPA' | 'WEP' | 'nopass';
 }
 
-export async function GET(config: WiFiConfig): Promise<{ qrCode?: string; networkName?: string; error?: string }> {
+export async function GET(
+	config: WiFiConfig
+): Promise<{ qrCode?: string; networkName?: string; error?: string }> {
 	try {
 		if (!config.networkName) {
 			return { error: 'WiFi network name not configured' };

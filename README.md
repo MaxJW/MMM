@@ -46,6 +46,7 @@ The app will be available at `http://localhost:5173` (or the port shown in the t
 ## Configuration
 
 1. Copy the example config file:
+
    ```sh
    cp data/config.json.example data/config.json
    ```
@@ -86,6 +87,7 @@ docker-compose up -d
 The app will be available at `http://localhost:4000`.
 
 Make sure to mount the `data` directory to persist your configuration:
+
 - `./data:/app/data` - Configuration files
 - `./plugins:/app/plugins` - External plugins (optional)
 
@@ -111,30 +113,30 @@ The manifest file defines the plugin's metadata and configuration schema:
 
 ```json
 {
-  "id": "my-plugin",
-  "name": "My Custom Plugin",
-  "version": "1.0.0",
-  "description": "Description of what this plugin does",
-  "config": {
-    "title": "My Plugin Configuration",
-    "description": "Configure your plugin settings",
-    "fields": [
-      {
-        "key": "apiKey",
-        "type": "text",
-        "label": "API Key",
-        "description": "Your API key for the service",
-        "placeholder": "Enter your API key"
-      },
-      {
-        "key": "refreshInterval",
-        "type": "number",
-        "label": "Refresh Interval (seconds)",
-        "description": "How often to refresh the data",
-        "default": 60
-      }
-    ]
-  }
+	"id": "my-plugin",
+	"name": "My Custom Plugin",
+	"version": "1.0.0",
+	"description": "Description of what this plugin does",
+	"config": {
+		"title": "My Plugin Configuration",
+		"description": "Configure your plugin settings",
+		"fields": [
+			{
+				"key": "apiKey",
+				"type": "text",
+				"label": "API Key",
+				"description": "Your API key for the service",
+				"placeholder": "Enter your API key"
+			},
+			{
+				"key": "refreshInterval",
+				"type": "number",
+				"label": "Refresh Interval (seconds)",
+				"description": "How often to refresh the data",
+				"default": 60
+			}
+		]
+	}
 }
 ```
 
@@ -145,20 +147,17 @@ The API handler is a function that processes requests for your plugin. It should
 ```typescript
 import type { Request } from '@sveltejs/kit';
 
-export async function GET(
-  config: Record<string, unknown>,
-  request?: Request
-): Promise<Response> {
-  // Your plugin logic here
-  const apiKey = config.apiKey as string;
-  const refreshInterval = config.refreshInterval as number;
+export async function GET(config: Record<string, unknown>, request?: Request): Promise<Response> {
+	// Your plugin logic here
+	const apiKey = config.apiKey as string;
+	const refreshInterval = config.refreshInterval as number;
 
-  // Fetch data, process, etc.
-  const data = await fetchSomeData(apiKey);
+	// Fetch data, process, etc.
+	const data = await fetchSomeData(apiKey);
 
-  return new Response(JSON.stringify(data), {
-    headers: { 'Content-Type': 'application/json' }
-  });
+	return new Response(JSON.stringify(data), {
+		headers: { 'Content-Type': 'application/json' }
+	});
 }
 ```
 
@@ -166,10 +165,10 @@ Or as a default export:
 
 ```typescript
 export default async function handler(
-  config: Record<string, unknown>,
-  request?: Request
+	config: Record<string, unknown>,
+	request?: Request
 ): Promise<Response> {
-  // Your plugin logic
+	// Your plugin logic
 }
 ```
 
@@ -186,14 +185,14 @@ export default async function handler(
 
 ```json
 {
-  "key": "theme",
-  "type": "select",
-  "label": "Theme",
-  "description": "Choose a theme",
-  "options": [
-    { "value": "light", "label": "Light" },
-    { "value": "dark", "label": "Dark" }
-  ]
+	"key": "theme",
+	"type": "select",
+	"label": "Theme",
+	"description": "Choose a theme",
+	"options": [
+		{ "value": "light", "label": "Light" },
+		{ "value": "dark", "label": "Dark" }
+	]
 }
 ```
 
@@ -214,110 +213,114 @@ export default async function handler(
 Here's a complete example of a simple plugin:
 
 **plugins/example-plugin/manifest.json:**
+
 ```json
 {
-  "id": "example-plugin",
-  "name": "Example Plugin",
-  "version": "1.0.0",
-  "description": "An example plugin that demonstrates the plugin system",
-  "config": {
-    "title": "Example Plugin Configuration",
-    "description": "Configure the example plugin",
-    "fields": [
-      {
-        "key": "message",
-        "type": "text",
-        "label": "Message",
-        "description": "A message to display",
-        "default": "Hello from plugin!"
-      }
-    ]
-  }
+	"id": "example-plugin",
+	"name": "Example Plugin",
+	"version": "1.0.0",
+	"description": "An example plugin that demonstrates the plugin system",
+	"config": {
+		"title": "Example Plugin Configuration",
+		"description": "Configure the example plugin",
+		"fields": [
+			{
+				"key": "message",
+				"type": "text",
+				"label": "Message",
+				"description": "A message to display",
+				"default": "Hello from plugin!"
+			}
+		]
+	}
 }
 ```
 
 **plugins/example-plugin/api.ts:**
-```typescript
-export async function GET(
-  config: Record<string, unknown>
-): Promise<Response> {
-  const message = (config.message as string) || 'Hello from plugin!';
 
-  return new Response(JSON.stringify({
-    message,
-    timestamp: new Date().toISOString()
-  }), {
-    headers: { 'Content-Type': 'application/json' }
-  });
+```typescript
+export async function GET(config: Record<string, unknown>): Promise<Response> {
+	const message = (config.message as string) || 'Hello from plugin!';
+
+	return new Response(
+		JSON.stringify({
+			message,
+			timestamp: new Date().toISOString()
+		}),
+		{
+			headers: { 'Content-Type': 'application/json' }
+		}
+	);
 }
 ```
 
 **src/components/example-plugin/component.svelte:**
+
 ```svelte
 <script lang="ts">
-  import { onMount } from 'svelte';
+	import { onMount } from 'svelte';
 
-  interface ExamplePluginConfig {
-    message?: string;
-  }
+	interface ExamplePluginConfig {
+		message?: string;
+	}
 
-  interface ExamplePluginData {
-    message: string;
-    timestamp: string;
-  }
+	interface ExamplePluginData {
+		message: string;
+		timestamp: string;
+	}
 
-  let message = 'Loading…';
-  let lastUpdated: string | null = null;
-  let error: string | null = null;
+	let message = 'Loading…';
+	let lastUpdated: string | null = null;
+	let error: string | null = null;
 
-  async function loadConfig() {
-    const res = await fetch('/api/config');
-    if (!res.ok) throw new Error('Failed to load config');
-    const config = await res.json();
-    const pluginConfig = (config.components?.['example-plugin'] ?? {}) as ExamplePluginConfig;
-    return pluginConfig.message ?? 'Hello from plugin!';
-  }
+	async function loadConfig() {
+		const res = await fetch('/api/config');
+		if (!res.ok) throw new Error('Failed to load config');
+		const config = await res.json();
+		const pluginConfig = (config.components?.['example-plugin'] ?? {}) as ExamplePluginConfig;
+		return pluginConfig.message ?? 'Hello from plugin!';
+	}
 
-  async function loadData() {
-    const res = await fetch('/api/components/example-plugin');
-    if (!res.ok) throw new Error(`Failed to load API data (${res.status})`);
-    return (await res.json()) as ExamplePluginData;
-  }
+	async function loadData() {
+		const res = await fetch('/api/components/example-plugin');
+		if (!res.ok) throw new Error(`Failed to load API data (${res.status})`);
+		return (await res.json()) as ExamplePluginData;
+	}
 
-  async function initialise() {
-    try {
-      error = null;
-      const [configMessage, data] = await Promise.all([loadConfig(), loadData()]);
-      message = configMessage;
-      lastUpdated = new Date(data.timestamp).toLocaleTimeString();
-    } catch (err) {
-      console.error('Example plugin failed to load:', err);
-      error = 'Example plugin unavailable';
-      message = 'Hello from plugin!';
-    }
-  }
+	async function initialise() {
+		try {
+			error = null;
+			const [configMessage, data] = await Promise.all([loadConfig(), loadData()]);
+			message = configMessage;
+			lastUpdated = new Date(data.timestamp).toLocaleTimeString();
+		} catch (err) {
+			console.error('Example plugin failed to load:', err);
+			error = 'Example plugin unavailable';
+			message = 'Hello from plugin!';
+		}
+	}
 
-  onMount(initialise);
+	onMount(initialise);
 </script>
 
 <div class="example-plugin">
-  {#if error}
-    <p class="error text-red-400">{error}</p>
-  {:else}
-    <h2>{message}</h2>
-    {#if lastUpdated}
-      <p class="timestamp">Last updated {lastUpdated}</p>
-    {/if}
-  {/if}
+	{#if error}
+		<p class="error text-red-400">{error}</p>
+	{:else}
+		<h2>{message}</h2>
+		{#if lastUpdated}
+			<p class="timestamp">Last updated {lastUpdated}</p>
+		{/if}
+	{/if}
 </div>
 
 <style>
-  .example-plugin {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    text-align: center;
-  }
+	.example-plugin {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		text-align: center;
+	}
 </style>
 ```
 
