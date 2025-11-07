@@ -161,18 +161,14 @@ export async function GET(config: SpotifyConfig): Promise<SpotifyTrack[] | { err
 
 		const tracks = await Promise.all(trackPromises);
 
-		// Filter to only tracks that are currently playing
-		const playingTracks = tracks.filter(
-			(track): track is SpotifyTrack => track !== null && track.isPlaying
-		);
+		const activeTracks = tracks.filter((track): track is SpotifyTrack => track !== null);
+		const isAnyPlaying = activeTracks.some((track) => track.isPlaying);
 
-		// Cache durations mirror component polling intervals to prevent stale responses
-		const cacheDuration =
-			playingTracks.length > 0
-				? TIMING_STRATEGIES.VERY_FAST.interval // 5 seconds when playing for progress updates
-				: TIMING_STRATEGIES.MEDIUM_FAST.interval; // 30 seconds when no tracks playing
-		cache = setCache(cache, playingTracks, Date.now() + cacheDuration);
-		return playingTracks;
+		const cacheDuration = isAnyPlaying
+			? TIMING_STRATEGIES.VERY_FAST.interval // 5 seconds when playing for progress updates
+			: TIMING_STRATEGIES.MEDIUM_FAST.interval; // 30 seconds when no tracks playing
+		cache = setCache(cache, activeTracks, Date.now() + cacheDuration);
+		return activeTracks;
 	} catch (error) {
 		console.error('Spotify API error:', error);
 		return { error: error instanceof Error ? error.message : 'Failed to fetch Spotify tracks' };
