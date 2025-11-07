@@ -356,7 +356,7 @@
 				<div class="flex w-full gap-2 sm:w-auto">
 					<button
 						onclick={handleBackToMirror}
-						class="flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-700 hover:bg-gray-50 sm:py-2"
+						class="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-700 hover:bg-gray-50 sm:py-2"
 					>
 						<ArrowLeft size={18} />
 						<span class="hidden sm:inline">Back to Mirror</span>
@@ -365,7 +365,7 @@
 					<button
 						onclick={saveConfig}
 						disabled={saving || !config}
-						class="flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:py-2 {hasUnsavedChanges()
+						class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:py-2 {hasUnsavedChanges()
 							? 'bg-orange-600 hover:bg-orange-700'
 							: 'bg-blue-600 hover:bg-blue-700'}"
 					>
@@ -413,7 +413,7 @@
 							{#each tabs as tab}
 								<button
 									onclick={() => (activeTab = tab.id)}
-									class="w-full rounded-lg px-4 py-2 text-left transition-colors {activeTab ===
+									class="w-full cursor-pointer rounded-lg px-4 py-2 text-left transition-colors {activeTab ===
 									tab.id
 										? 'bg-blue-100 font-medium text-blue-700'
 										: 'text-gray-700 hover:bg-gray-100'}"
@@ -468,7 +468,7 @@
 																		onclick={() => moveComponentUp(globalIndex)}
 																		disabled={!canMoveUp(globalIndex)}
 																		class="p-0.5 transition-colors {canMoveUp(globalIndex)
-																			? 'text-gray-600 hover:text-blue-600'
+																			? 'cursor-pointer text-gray-600 hover:text-blue-600'
 																			: 'cursor-not-allowed text-gray-300'}"
 																		aria-label="Move up"
 																	>
@@ -479,7 +479,7 @@
 																		onclick={() => moveComponentDown(globalIndex)}
 																		disabled={!canMoveDown(globalIndex)}
 																		class="p-0.5 transition-colors {canMoveDown(globalIndex)
-																			? 'text-gray-600 hover:text-blue-600'
+																			? 'cursor-pointer text-gray-600 hover:text-blue-600'
 																			: 'cursor-not-allowed text-gray-300'}"
 																		aria-label="Move down"
 																	>
