@@ -13,14 +13,24 @@ export const TIMING_STRATEGIES = {
 		description: 'Real-time updates (clock, seconds)'
 	},
 
+	VERY_FAST: {
+		interval: 5_000, // 5 seconds
+		description: 'Very fast updates (spotify playing)'
+	},
+
 	FAST: {
 		interval: 10_000, // 10 seconds
 		description: 'Fast updates (spotify playing)'
 	},
 
+	MEDIUM_FAST: {
+		interval: 30_000, // 30 seconds
+		description: 'Medium-fast updates (spotify playing)'
+	},
+
 	MEDIUM: {
 		interval: 60_000, // 1 minute
-		description: 'Medium-frequency updates (spotify paused)'
+		description: 'Medium-frequency updates'
 	},
 
 	// Medium-frequency updates (time-sensitive data)

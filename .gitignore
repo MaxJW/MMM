@@ -22,9 +22,6 @@ Thumbs.db
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# Custom
-WiFiQRCode.png
-
 # User configuration
 data/config.json
 data/events.json

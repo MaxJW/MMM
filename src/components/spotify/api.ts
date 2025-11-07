@@ -50,9 +50,12 @@ async function fetchPlayerData(token: string): Promise<{
 }> {
 	// Fetch player state (includes item, device, and playback info)
 	// Include additional_types=episode to get podcast episodes
-	const playerRes = await fetch('https://api.spotify.com/v1/me/player?additional_types=episode', {
-		headers: { Authorization: `Bearer ${token}` }
-	});
+	const playerRes = await fetch(
+		'https://api.spotify.com/v1/me/player?additional_types=track,episode',
+		{
+			headers: { Authorization: `Bearer ${token}` }
+		}
+	);
 
 	let track: SpotifyTrack | null = null;
 	let deviceName = 'Unknown Device';
@@ -166,8 +169,8 @@ export async function GET(config: SpotifyConfig): Promise<SpotifyTrack[] | { err
 		// Cache for shorter interval to keep progress updated when playing
 		const cacheDuration =
 			playingTracks.length > 0
-				? TIMING_STRATEGIES.UI.FADE // 10 seconds when playing for progress updates
-				: TIMING_STRATEGIES.FREQUENT.interval; // 5 minutes when no tracks playing
+				? TIMING_STRATEGIES.VERY_FAST.interval // 10 seconds when playing for progress updates
+				: TIMING_STRATEGIES.MEDIUM_FAST.interval; // 30 seconds when no tracks playing
 		cache = setCache(cache, playingTracks, Date.now() + cacheDuration);
 		return playingTracks;
 	} catch (error) {
