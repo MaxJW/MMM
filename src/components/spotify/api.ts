@@ -166,10 +166,10 @@ export async function GET(config: SpotifyConfig): Promise<SpotifyTrack[] | { err
 			(track): track is SpotifyTrack => track !== null && track.isPlaying
 		);
 
-		// Cache for shorter interval to keep progress updated when playing
+		// Cache durations mirror component polling intervals to prevent stale responses
 		const cacheDuration =
 			playingTracks.length > 0
-				? TIMING_STRATEGIES.VERY_FAST.interval // 10 seconds when playing for progress updates
+				? TIMING_STRATEGIES.VERY_FAST.interval // 5 seconds when playing for progress updates
 				: TIMING_STRATEGIES.MEDIUM_FAST.interval; // 30 seconds when no tracks playing
 		cache = setCache(cache, playingTracks, Date.now() + cacheDuration);
 		return playingTracks;
