@@ -252,6 +252,75 @@ export async function GET(
 }
 ```
 
+**src/components/example-plugin/component.svelte:**
+```svelte
+<script lang="ts">
+  import { onMount } from 'svelte';
+
+  interface ExamplePluginConfig {
+    message?: string;
+  }
+
+  interface ExamplePluginData {
+    message: string;
+    timestamp: string;
+  }
+
+  let message = 'Loading…';
+  let lastUpdated: string | null = null;
+  let error: string | null = null;
+
+  async function loadConfig() {
+    const res = await fetch('/api/config');
+    if (!res.ok) throw new Error('Failed to load config');
+    const config = await res.json();
+    const pluginConfig = (config.components?.['example-plugin'] ?? {}) as ExamplePluginConfig;
+    return pluginConfig.message ?? 'Hello from plugin!';
+  }
+
+  async function loadData() {
+    const res = await fetch('/api/components/example-plugin');
+    if (!res.ok) throw new Error(`Failed to load API data (${res.status})`);
+    return (await res.json()) as ExamplePluginData;
+  }
+
+  async function initialise() {
+    try {
+      error = null;
+      const [configMessage, data] = await Promise.all([loadConfig(), loadData()]);
+      message = configMessage;
+      lastUpdated = new Date(data.timestamp).toLocaleTimeString();
+    } catch (err) {
+      console.error('Example plugin failed to load:', err);
+      error = 'Example plugin unavailable';
+      message = 'Hello from plugin!';
+    }
+  }
+
+  onMount(initialise);
+</script>
+
+<div class="example-plugin">
+  {#if error}
+    <p class="error text-red-400">{error}</p>
+  {:else}
+    <h2>{message}</h2>
+    {#if lastUpdated}
+      <p class="timestamp">Last updated {lastUpdated}</p>
+    {/if}
+  {/if}
+</div>
+
+<style>
+  .example-plugin {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+</style>
+```
+
 ### Troubleshooting
 
 - **Plugin not loading**: Check that the `manifest.json` file is valid JSON and contains all required fields (`id`, `name`, `config`).

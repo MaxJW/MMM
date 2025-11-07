@@ -5,13 +5,13 @@
 	"description": "Display news articles from RSS feeds",
 	"config": {
 		"title": "RSS Feeds Settings",
-		"description": "Manage your RSS feed sources for the news widget",
+		"description": "Add any public RSS/Atom feed URLs from your favourite news providers. You can usually find these on the publisher's \"RSS\" or \"Feeds\" page.",
 		"fields": [
 			{
 				"key": "rssFeeds",
 				"type": "array",
 				"label": "RSS Feeds",
-				"description": "List of RSS feed sources",
+				"description": "Each entry defines one source. Use https links when available to avoid mixed-content issues.",
 				"itemFields": [
 					{
 						"key": "sourceName",

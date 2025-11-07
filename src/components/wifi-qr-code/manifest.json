@@ -5,27 +5,27 @@
 	"description": "Display WiFi network QR code for easy connection",
 	"config": {
 		"title": "WiFi Settings",
-		"description": "Configure your WiFi network details. A QR code will be generated automatically.",
+		"description": "Enter the WiFi credentials exactly as broadcast by your router. MMM generates a QR code that mobile devices can scan to join instantly.",
 		"fields": [
 			{
 				"key": "networkName",
 				"type": "text",
 				"label": "Network Name (SSID)",
-				"description": "The name of the WiFi endpoint you want users to be able to connect to",
+				"description": "SSID as shown in your WiFi settings (case-sensitive).",
 				"placeholder": "Enter network name"
 			},
 			{
 				"key": "password",
 				"type": "password",
 				"label": "Password",
-				"description": "WiFi network password",
+				"description": "WiFi passphrase. Leave blank only if the network is open.",
 				"placeholder": "Enter WiFi password"
 			},
 			{
 				"key": "securityType",
 				"type": "select",
 				"label": "Security Type",
-				"description": "WiFi security protocol",
+				"description": "Select the security protocol that matches your router configuration.",
 				"default": "WPA",
 				"options": [
 					{ "value": "WPA", "label": "WPA/WPA2" },

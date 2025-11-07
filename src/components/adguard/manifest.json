@@ -5,20 +5,20 @@
 	"description": "Display AdGuard Home DNS statistics",
 	"config": {
 		"title": "AdGuard Home Settings",
-		"description": "Configure your AdGuard Home instance connection details",
+		"description": "Point MMM at your self-hosted AdGuard Home instance. Provide the base URL and credentials encoded for HTTP Basic auth (Base64 of username:password, as required by the AdGuard Home dashboard).",
 		"fields": [
 			{
 				"key": "url",
 				"type": "text",
 				"label": "AdGuard Home URL",
-				"description": "URL of your AdGuard Home instance",
+				"description": "Base URL to the AdGuard Home dashboard accessible from MMM (e.g., http://192.168.1.100:3000). Include protocol and port.",
 				"placeholder": "e.g., http://192.168.1.100:3000"
 			},
 			{
 				"key": "token",
 				"type": "password",
 				"label": "API Token",
-				"description": "AdGuard Home API token",
+				"description": "Base64-encoded string of `USERNAME:PASSWORD` used for AdGuard dashboard login. For example, echo -n 'admin:secret' | base64.",
 				"placeholder": "Enter AdGuard Home API token"
 			}
 		]

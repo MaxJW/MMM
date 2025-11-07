@@ -5,27 +5,27 @@
 	"description": "Display currently playing Spotify track",
 	"config": {
 		"title": "Spotify Settings",
-		"description": "Configure OAuth credentials for Spotify integration. Connect multiple accounts to display all currently playing tracks.",
+		"description": "Create a Web API application in the Spotify Developer Dashboard (https://developer.spotify.com/dashboard/applications), add your MMM redirect URL (e.g., http://localhost:5173/api/spotify/callback) and paste the generated credentials here. You can connect multiple accounts and monitor all currently playing tracks.",
 		"fields": [
 			{
 				"key": "clientId",
 				"type": "text",
 				"label": "Client ID",
-				"description": "Your Spotify OAuth Client ID",
+				"description": "Copy the Client ID from your Spotify app in https://developer.spotify.com/dashboard after creating the application.",
 				"placeholder": "Enter Spotify Client ID"
 			},
 			{
 				"key": "clientSecret",
 				"type": "password",
 				"label": "Client Secret",
-				"description": "Your Spotify OAuth Client Secret",
+				"description": "Copy the Client Secret from the same Spotify app. Regenerate it in the dashboard if you lose access.",
 				"placeholder": "Enter Spotify Client Secret"
 			},
 			{
 				"key": "accounts",
 				"type": "array",
 				"label": "Connected Accounts",
-				"description": "Spotify accounts that will be checked for currently playing tracks",
+				"description": "Spotify users linked through the MMM OAuth flow. Use the \"Connect Spotify\" button in the UI to populate this list.",
 				"itemFields": [
 					{
 						"key": "refreshToken",

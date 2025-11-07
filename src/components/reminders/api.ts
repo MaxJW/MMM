@@ -4,7 +4,7 @@ import { TIMING_STRATEGIES } from '$lib/core/timing';
 import { getCached, setCache } from '$lib/core/utils';
 import type { CacheEntry } from '$lib/core/utils';
 
-let cache: CacheEntry<BinCollection[]> | null = null;
+let cache: CacheEntry<BinCollectionRaw[]> | null = null;
 let authToken: string | null = null;
 let tokenExpiry: number = 0;
 

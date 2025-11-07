@@ -5,20 +5,20 @@
 	"description": "Display bin collection reminders and custom reminders",
 	"config": {
 		"title": "Reminders Settings",
-		"description": "Configure your bin collection service details and custom reminders",
+		"description": "Supports Scottish Fife Council bin data out of the box and any other council with a compatible JSON endpoint. Look up your Unique Property Reference Number (UPRN) via your local authority or national property database and provide the endpoint MMM should query for collection schedules.",
 		"fields": [
 			{
 				"key": "uprn",
 				"type": "text",
 				"label": "UPRN (Unique Property Reference Number)",
-				"description": "Your property's unique reference number",
+				"description": "Property identifier required by the council API. For UK addresses you can search at https://www.findmyaddress.co.uk/ or your council portal.",
 				"placeholder": "Enter your UPRN"
 			},
 			{
 				"key": "apiEndpoint",
 				"type": "text",
 				"label": "API Endpoint",
-				"description": "The API endpoint for your council's bin collection service",
+				"description": "Full URL to the council collection API (e.g., https://www.fife.gov.uk/api/sitecore/BinCollection/GetBinData). Must return JSON in the expected format.",
 				"placeholder": "e.g., https://www.fife.gov.uk"
 			},
 			{

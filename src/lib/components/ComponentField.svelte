@@ -11,9 +11,13 @@
 	export let passwordVisibility: Record<string, boolean> = {};
 	export let togglePasswordVisibility: (key: string) => void = () => {};
 
-	const fieldId = `field-${field.key}`;
-	const isPassword = field.type === 'password';
-	const showPassword = passwordVisibility[fieldId] ?? false;
+	let fieldId: string;
+	let isPassword: boolean;
+	let showPassword: boolean;
+
+	$: fieldId = `field-${field.key}`;
+	$: isPassword = field.type === 'password';
+	$: showPassword = passwordVisibility[fieldId] ?? false;
 
 	// Color options for calendar colorClass field
 	const colorOptions = [

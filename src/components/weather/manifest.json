@@ -5,20 +5,20 @@
 	"description": "Display current weather and forecasts",
 	"config": {
 		"title": "Weather Settings",
-		"description": "Configure your weather widget with API credentials and location",
+		"description": "Sign up for a Pirate Weather API key at https://pirateweather.net/en/latest/ and set the latitude/longitude to the location you want to monitor. Weather alerts come from Meteoalarm; choose the country feed from https://feeds.meteoalarm.org and use its area descriptors for optional regional filtering.",
 		"fields": [
 			{
 				"key": "apiKey",
 				"type": "password",
 				"label": "API Key",
-				"description": "Your Pirate Weather API key",
+				"description": "Token from your Pirate Weather dashboard (https://pirate-weather.apiable.io/login).",
 				"placeholder": "Enter API key"
 			},
 			{
 				"key": "latitude",
 				"type": "text",
 				"label": "Latitude",
-				"description": "Your location's latitude",
+				"description": "Latitude for the location you want to display (decimal format, e.g., 56.0).",
 				"placeholder": "e.g., 56.0",
 				"default": ""
 			},
@@ -26,7 +26,7 @@
 				"key": "longitude",
 				"type": "text",
 				"label": "Longitude",
-				"description": "Your location's longitude",
+				"description": "Longitude for the same location (decimal format, e.g., -3.2).",
 				"placeholder": "e.g., -3.2",
 				"default": ""
 			},
@@ -34,7 +34,7 @@
 				"key": "alertsCountry",
 				"type": "text",
 				"label": "Alerts Country",
-				"description": "Country code for weather alerts (e.g., united-kingdom)",
+				"description": "Country segment from the Meteoalarm feed URL (e.g., united-kingdom for https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-rss-united-kingdom).",
 				"placeholder": "e.g., united-kingdom",
 				"default": "united-kingdom"
 			},
@@ -42,7 +42,7 @@
 				"key": "alertsProvince",
 				"type": "text",
 				"label": "Alerts Province/Region",
-				"description": "Province or region name for filtering alerts",
+				"description": "Optional regional filter using the Meteoalarm alert's area.areaDesc value (e.g., Central, Tayside & Fife). Leave blank to show all alerts for the selected country.",
 				"placeholder": "e.g., Central, Tayside & Fife",
 				"default": ""
 			}

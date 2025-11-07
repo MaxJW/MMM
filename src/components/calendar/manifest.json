@@ -5,20 +5,20 @@
 	"description": "Display upcoming calendar events from Google Calendar",
 	"config": {
 		"title": "Google Calendar Settings",
-		"description": "Configure OAuth credentials for Google Calendar integration",
+		"description": "Create OAuth 2.0 credentials in Google Cloud Console (https://console.cloud.google.com/apis/credentials), enable the Google Calendar API and set the authorized redirect URI to http://localhost:5173/api/google/callback (or your deployed URL). Paste the resulting Client ID and Client Secret here.",
 		"fields": [
 			{
 				"key": "clientId",
 				"type": "text",
 				"label": "Client ID",
-				"description": "Your Google OAuth Client ID",
+				"description": "The OAuth Client ID from Google Cloud Console → APIs & Services → Credentials.",
 				"placeholder": "Enter Google OAuth Client ID"
 			},
 			{
 				"key": "clientSecret",
 				"type": "password",
 				"label": "Client Secret",
-				"description": "Your Google OAuth Client Secret",
+				"description": "The OAuth Client Secret generated alongside the Client ID. Store securely; you can regenerate it in the console if needed.",
 				"placeholder": "Enter Google OAuth Client Secret"
 			},
 			{
@@ -32,7 +32,7 @@
 				"key": "calendarColors",
 				"type": "array",
 				"label": "Calendar Colors",
-				"description": "Map calendar names to color classes. Add entries for each calendar you want to color.",
+				"description": "Optional color overrides for specific calendars. Use the exact calendar summary shown in Google Calendar or in the MMM server logs when events are fetched.",
 				"itemFields": [
 					{
 						"key": "calendarName",
