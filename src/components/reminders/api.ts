@@ -27,7 +27,7 @@ async function getAuthToken(apiEndpoint?: string): Promise<string | null> {
 
 	const authUrl = apiEndpoint
 		? `${apiEndpoint}/api/citizen?preview=false&locale=en`
-		: 'https://www.fife.gov.uk/api/citizen?preview=false&locale=en';
+		: 'https://fife.form.uk.empro.verintcloudservices.com/api/citizen?preview=false&locale=en';
 
 	try {
 		const response = await fetch(authUrl);
@@ -60,7 +60,7 @@ async function fetchBinCollections(config: RemindersConfig): Promise<BinCollecti
 
 	const endpoint = apiEndpoint
 		? `${apiEndpoint}/api/custom?action=powersuite_bin_calendar_collections&actionedby=bin_calendar&loadform=true&access=citizen&locale=en`
-		: 'https://www.fife.gov.uk/api/custom?action=powersuite_bin_calendar_collections&actionedby=bin_calendar&loadform=true&access=citizen&locale=en';
+		: 'https://fife.form.uk.empro.verintcloudservices.com/api/custom?action=powersuite_bin_calendar_collections&actionedby=bin_calendar&loadform=true&access=citizen&locale=en';
 
 	const response = await fetch(endpoint, {
 		method: 'POST',
