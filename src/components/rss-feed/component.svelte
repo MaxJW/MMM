@@ -6,11 +6,16 @@
 	import dayjs from 'dayjs';
 	import { TIMING_STRATEGIES } from '$lib/core/timing';
 
+	interface RSSFeedComponentConfig {
+		rotationSpeed?: number;
+	}
+
 	let articles: Article[] = [];
 	let currentArticle: Article | null = null;
 	let loading = true;
 	let error: string | null = null;
 	let currentIndex = 0;
+	let rotationSpeed = 10; // Default: 10 seconds
 
 	let timer: ReturnType<typeof setInterval> | undefined;
 	let feedTimer: ReturnType<typeof setInterval> | undefined;
@@ -48,16 +53,39 @@
 		return date ? dayjs(date).format('HH:mm DD/MM') : '';
 	}
 
-	onMount(() => {
-		loadArticles();
+	async function loadConfig() {
+		try {
+			const res = await fetch('/api/config');
+			if (res.ok) {
+				const config = await res.json();
+				const rssConfig = (config.components?.['rss-feed'] as RSSFeedComponentConfig) ?? {};
+				rotationSpeed = rssConfig.rotationSpeed ?? 10;
+			}
+		} catch (error) {
+			console.error('Failed to load RSS feed config:', error);
+			// Will use default rotationSpeed if config fails to load
+		}
+	}
 
-		// Rotate articles every 10 seconds
+	function startRotationTimer() {
+		if (timer) clearInterval(timer);
+		// Convert seconds to milliseconds
+		const intervalMs = rotationSpeed * 1000;
 		timer = setInterval(() => {
 			if (articles.length > 0) {
 				currentIndex = (currentIndex + 1) % articles.length;
 				currentArticle = articles[currentIndex];
 			}
-		}, TIMING_STRATEGIES.UI.FADE);
+		}, intervalMs);
+	}
+
+	onMount(() => {
+		// Load config first to get rotation speed, then start timers
+		loadConfig().then(() => {
+			loadArticles();
+			// Start rotation timer with configured speed
+			startRotationTimer();
+		});
 
 		// Refresh feed every 30 minutes
 		feedTimer = setInterval(loadArticles, TIMING_STRATEGIES.STANDARD.interval);

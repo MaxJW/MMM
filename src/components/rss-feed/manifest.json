@@ -28,6 +28,15 @@
 						"placeholder": "https://example.com/feed.xml"
 					}
 				]
+			},
+			{
+				"key": "rotationSpeed",
+				"type": "number",
+				"label": "Rotation Speed (seconds)",
+				"description": "How quickly articles rotate. Default is 10 seconds.",
+				"default": 10,
+				"min": 1,
+				"max": 300
 			}
 		]
 	}
