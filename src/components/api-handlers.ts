@@ -11,6 +11,7 @@ import { GET as spotifyApiHandler } from './spotify/api';
 import { GET as calendarApiHandler } from './calendar/api';
 import { GET as eventsApiHandler } from './events/api';
 import { GET as wifiQrCodeApiHandler } from './wifi-qr-code/api';
+import { GET as polestarApiHandler } from './polestar/api';
 
 // Map component IDs to their API handlers
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -23,5 +24,6 @@ export const apiHandlerMap: Record<string, (config: any, request?: Request) => P
 	spotify: spotifyApiHandler,
 	calendar: calendarApiHandler,
 	events: eventsApiHandler,
-	'wifi-qr-code': wifiQrCodeApiHandler
+	'wifi-qr-code': wifiQrCodeApiHandler,
+	polestar: polestarApiHandler
 };

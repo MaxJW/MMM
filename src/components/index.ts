@@ -10,6 +10,7 @@ import RemindersComponent from './reminders/component.svelte';
 import RssFeedComponent from './rss-feed/component.svelte';
 import AdguardComponent from './adguard/component.svelte';
 import SpotifyComponent from './spotify/component.svelte';
+import PolestarComponent from './polestar/component.svelte';
 
 /**
  * Component registry - maps component IDs to their Svelte components
@@ -26,5 +27,6 @@ export const componentMap: Record<string, unknown> = {
 	reminders: RemindersComponent,
 	'rss-feed': RssFeedComponent,
 	adguard: AdguardComponent,
-	spotify: SpotifyComponent
+	spotify: SpotifyComponent,
+	polestar: PolestarComponent
 };
