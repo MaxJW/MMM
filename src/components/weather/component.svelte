@@ -161,7 +161,7 @@
 				style="width: 350px;"
 			>
 				<!-- Title with exclamation icon -->
-				<div class="mb-2 flex items-center gap-4">
+				<div class="flex items-center gap-4">
 					<CircleAlert size={30} class="flex-shrink-0" />
 					<div class="flex-1 text-xl leading-tight font-semibold">
 						{alert.event}
@@ -172,9 +172,11 @@
 				</div>
 
 				<!-- Full description -->
-				<div class="mb-2 text-base leading-snug break-words">
-					{alert.description ?? alert.instruction}
-				</div>
+				{#if alert.description || alert.instruction}
+					<div class="mt-2 text-base leading-snug break-words">
+						{alert.description ?? alert.instruction}
+					</div>
+				{/if}
 			</div>
 		{/each}
 	</div>
