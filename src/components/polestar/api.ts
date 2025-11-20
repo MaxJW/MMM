@@ -323,7 +323,7 @@ export async function GET(config: PolestarConfig): Promise<PolestarData | { erro
 			odometer: Array.isArray(carData.odometer) ? carData.odometer[0] : carData.odometer
 		};
 
-		dataCache = setCache(dataCache, data, Date.now() + TIMING_STRATEGIES.FREQUENT.interval);
+		dataCache = setCache(dataCache, data, Date.now() + TIMING_STRATEGIES.INFREQUENT.interval);
 		return data;
 	} catch (error) {
 		console.error('Polestar API error:', error);

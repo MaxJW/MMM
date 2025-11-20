@@ -7,6 +7,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import type { PolestarData } from './types';
 	import { TIMING_STRATEGIES } from '$lib/core/timing';
+	import PolestarNose from './assets/polestar_nose.png';
 
 	let data: PolestarData | null = null;
 	let loading = true;
@@ -50,10 +51,10 @@
 		if (refreshInterval) clearInterval(refreshInterval);
 	});
 
-	function getBatteryColor(level: number): string {
-		if (level > 50) return 'text-green-400';
-		if (level > 20) return 'text-yellow-400';
-		return 'text-red-400';
+	function getBatteryColor(level: number, status: string): string {
+		if (status === 'CHARGING_STATUS_CHARGING' || status === 'CHARGING') return 'text-green-400';
+		if (level <= 20) return 'text-yellow-400';
+		return 'text-white';
 	}
 </script>
 
@@ -74,31 +75,44 @@
 			<span>{error}</span>
 		</div>
 	{:else if data}
-		<div class="flex flex-col gap-3">
-			<!-- Battery & Range -->
-			<div class="grid grid-cols-2 gap-4">
-				<div class="flex flex-col gap-1 rounded-lg bg-white/5 p-3">
+		<div class="flex min-h-0 flex-1 items-center gap-4">
+			<!-- Left: Car Image (Peaking in) -->
+			<div class="relative w-32 flex-shrink-0 overflow-visible">
+				<img
+					src={PolestarNose}
+					alt="Polestar"
+					class="h-auto w-full -translate-x-4 scale-125 object-contain"
+					style="max-width: none;"
+				/>
+			</div>
+
+			<!-- Right: Stats Stack -->
+			<div class="flex flex-1 flex-col justify-center gap-4 py-2 pr-2">
+				<!-- Battery -->
+				<div class="flex flex-col gap-0.5">
 					<div class="flex items-center gap-2 text-sm opacity-70">
-						<Battery size={16} />
+						<Battery size={14} />
 						<span>Battery</span>
 					</div>
-					<div class="flex items-baseline gap-1">
+					<div class="flex items-baseline gap-2">
+						{#if data.battery.chargingStatus === 'CHARGING_STATUS_CHARGING' || data.battery.chargingStatus === 'CHARGING'}
+							<Zap size={16} class="animate-pulse text-yellow-400" />
+						{/if}
 						<span
 							class="text-2xl font-bold {getBatteryColor(
-								data.battery.batteryChargeLevelPercentage
+								data.battery.batteryChargeLevelPercentage,
+								data.battery.chargingStatus
 							)}"
 						>
 							{data.battery.batteryChargeLevelPercentage}%
 						</span>
-						{#if data.battery.chargingStatus === 'CHARGING'}
-							<Zap size={16} class="animate-pulse text-yellow-400" />
-						{/if}
 					</div>
 				</div>
 
-				<div class="flex flex-col gap-1 rounded-lg bg-white/5 p-3">
+				<!-- Range -->
+				<div class="flex flex-col gap-0.5">
 					<div class="flex items-center gap-2 text-sm opacity-70">
-						<Gauge size={16} />
+						<Gauge size={14} />
 						<span>Range</span>
 					</div>
 					<div class="text-2xl font-bold">
@@ -106,14 +120,17 @@
 						<span class="text-base font-normal opacity-70">mi</span>
 					</div>
 				</div>
-			</div>
 
-			<!-- Odometer -->
-			<div class="flex items-center justify-between px-1 text-sm opacity-70">
-				<span>Odometer</span>
-				<span
-					>{Math.round((data.odometer.odometerMeters / 1000) * 0.621371).toLocaleString()} mi</span
-				>
+				<!-- Odometer -->
+				<div class="flex flex-col gap-0.5">
+					<div class="flex items-center gap-2 text-sm opacity-70">
+						<span>Odometer</span>
+					</div>
+					<div class="text-lg font-medium opacity-90">
+						{Math.round((data.odometer.odometerMeters / 1000) * 0.621371).toLocaleString()}
+						<span class="text-sm font-normal opacity-70">mi</span>
+					</div>
+				</div>
 			</div>
 		</div>
 	{/if}
