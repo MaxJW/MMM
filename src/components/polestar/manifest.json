@@ -1,0 +1,26 @@
+{
+	"id": "polestar",
+	"name": "Polestar",
+	"description": "Displays Polestar vehicle information and telematics",
+	"width": 2,
+	"height": 2,
+	"config": {
+		"username": {
+			"type": "string",
+			"label": "Username",
+			"required": true
+		},
+		"password": {
+			"type": "string",
+			"label": "Password",
+			"required": true,
+			"sensitive": true
+		},
+		"vin": {
+			"type": "string",
+			"label": "VIN",
+			"required": true
+		}
+	}
+}
+
