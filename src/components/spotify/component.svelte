@@ -3,9 +3,43 @@
 	import Smartphone from '@lucide/svelte/icons/smartphone';
 	import Speaker from '@lucide/svelte/icons/speaker';
 	import User from '@lucide/svelte/icons/user';
+	import Car from '@lucide/svelte/icons/car';
 	import { onMount, onDestroy } from 'svelte';
 	import type { SpotifyTrack } from './types';
 	import { TIMING_STRATEGIES } from '$lib/core/timing';
+
+	type DeviceIconType = 'car' | 'smartphone' | 'speaker';
+
+	interface DeviceInfo {
+		icon: DeviceIconType;
+		displayName: string;
+	}
+
+	/**
+	 * Determines the appropriate icon and display name for a Spotify device
+	 * @param deviceName - The raw device name from Spotify API
+	 * @returns Object containing the icon type and formatted display name
+	 */
+	function getDeviceInfo(deviceName: string): DeviceInfo {
+		if (deviceName === 'PS2') {
+			return {
+				icon: 'car',
+				displayName: 'Polestar 2'
+			};
+		}
+
+		if (deviceName.toLowerCase().includes('iphone')) {
+			return {
+				icon: 'smartphone',
+				displayName: deviceName
+			};
+		}
+
+		return {
+			icon: 'speaker',
+			displayName: deviceName
+		};
+	}
 
 	let tracks: SpotifyTrack[] = [];
 	let loading = true;
@@ -173,13 +207,18 @@
 							</div>
 						{/if}
 						{#if track.deviceName && track.deviceName !== 'Unknown Device'}
+							{@const deviceInfo = getDeviceInfo(track.deviceName)}
 							<div class="mt-1 flex items-center gap-1.5">
-								{#if track.deviceName.toLowerCase().includes('iphone')}
+								{#if deviceInfo.icon === 'car'}
+									<Car size={14} class="flex-shrink-0 opacity-70" />
+								{:else if deviceInfo.icon === 'smartphone'}
 									<Smartphone size={14} class="flex-shrink-0 opacity-70" />
 								{:else}
 									<Speaker size={14} class="flex-shrink-0 opacity-70" />
 								{/if}
-								<span class="truncate text-sm opacity-70">Playing on {track.deviceName}</span>
+								<span class="truncate text-sm opacity-70">
+									Playing on {deviceInfo.displayName}
+								</span>
 							</div>
 						{/if}
 					</div>
