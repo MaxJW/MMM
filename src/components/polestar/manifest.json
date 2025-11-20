@@ -1,26 +1,33 @@
 {
 	"id": "polestar",
 	"name": "Polestar",
+	"version": "1.0.0",
 	"description": "Displays Polestar vehicle information and telematics",
-	"width": 2,
-	"height": 2,
 	"config": {
-		"username": {
-			"type": "string",
-			"label": "Username",
-			"required": true
-		},
-		"password": {
-			"type": "string",
-			"label": "Password",
-			"required": true,
-			"sensitive": true
-		},
-		"vin": {
-			"type": "string",
-			"label": "VIN",
-			"required": true
-		}
+		"title": "Polestar Settings",
+		"description": "Configure your Polestar account credentials to fetch vehicle data.",
+		"fields": [
+			{
+				"key": "username",
+				"type": "text",
+				"label": "Username",
+				"description": "Your Polestar ID (email)",
+				"placeholder": "email@example.com"
+			},
+			{
+				"key": "password",
+				"type": "password",
+				"label": "Password",
+				"description": "Your Polestar account password",
+				"placeholder": "Password"
+			},
+			{
+				"key": "vin",
+				"type": "text",
+				"label": "VIN",
+				"description": "Vehicle Identification Number",
+				"placeholder": "VIN"
+			}
+		]
 	}
 }
-
