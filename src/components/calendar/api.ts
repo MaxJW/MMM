@@ -82,6 +82,32 @@ class GoogleCalendarService {
 		// Create a hash of calendarColors for cache invalidation
 		const calendarColorsHash = JSON.stringify(calendarColorsArray);
 
+		// Helper function to extract base URL from location if it's a URL
+		const extractBaseUrl = (location: string): string => {
+			const trimmed = location.trim();
+			
+			// Remove protocol if present (http://, https://)
+			let cleaned = trimmed.replace(/^https?:\/\//i, '');
+			
+			// Check if it looks like a URL (contains a domain pattern)
+			// Pattern: starts with a domain (word characters, dots, and TLD)
+			// Must start with the domain pattern, not contain it in the middle
+			const urlPattern = /^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}(\:\d+)?(\/|\?|#|$)/i;
+			
+			if (urlPattern.test(cleaned)) {
+				// Extract just the domain (before first /, ?, or #)
+				const domainMatch = cleaned.match(/^([^\/\?\#]+)/);
+				if (domainMatch) {
+					// Remove port number if present
+					const domain = domainMatch[1].split(':')[0];
+					return domain;
+				}
+			}
+			
+			// Not a URL, return original location unchanged
+			return trimmed;
+		};
+
 		// Helper function to get color class for a calendar name
 		const getColorClass = (calendarName?: string): string => {
 			if (!calendarName) return 'gray-400';
@@ -209,13 +235,16 @@ class GoogleCalendarService {
 			const key = d.format('YYYY-MM-DD');
 			const month = d.format('MMM').toUpperCase();
 			const calendarName = cal.summary || undefined;
+			// Process location: if it's a URL, extract base domain; otherwise keep full address
+			const processedLocation = event.location ? extractBaseUrl(event.location) : undefined;
+			
 			const simplified: SimplifiedEvent = {
 				day: d.format('ddd'),
 				date: parseInt(d.format('D')),
 				month,
 				title: event.summary || '(No title)',
 				time,
-				location: event.location ? event.location.split(',')[0] : undefined,
+				location: processedLocation,
 				isAllDay,
 				calendarName,
 				colorClass: getColorClass(calendarName)
