@@ -104,8 +104,8 @@ class GoogleCalendarService {
 				}
 			}
 			
-			// Not a URL, return original location unchanged
-			return trimmed;
+			// Not a URL, return first part of address (split by comma)
+			return trimmed.split(',')[0];
 		};
 
 		// Helper function to get color class for a calendar name
