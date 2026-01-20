@@ -3,7 +3,7 @@ import { TIMING_STRATEGIES } from '$lib/core/timing';
 import { getCached, setCache } from '$lib/core/utils';
 import type { CacheEntry } from '$lib/core/utils';
 import crypto from 'node:crypto';
-import { Buffer } from 'node:buffer';
+import type { Buffer } from 'node:buffer';
 
 // Module-level caches
 let dataCache: CacheEntry<PolestarData> | null = null;
