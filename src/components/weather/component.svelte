@@ -82,17 +82,24 @@
 		}
 	}
 
-	// Map severity to tailwind bg/text colors
-	function getAlertColor(severity: string) {
-		switch (severity.toLowerCase()) {
-			case 'green':
-				return 'bg-green-200 text-black';
-			case 'yellow':
-				return 'bg-yellow-400 text-black';
-			case 'amber':
-				return 'bg-orange-500 text-white';
-			case 'red':
+	// Map severity to tailwind bg/text colors (event/title first for UK-style feeds, then CAP severity)
+	function getAlertColor(alert: MeteoAlert): string {
+		const text = `${alert.event} ${alert.title}`.toLowerCase();
+		if (/\bred\b/.test(text)) return 'bg-red-600 text-white';
+		if (/\b(amber|orange)\b/.test(text)) return 'bg-amber-500 text-black';
+		if (/\byellow\b/.test(text)) return 'bg-yellow-400 text-black';
+		if (/\bgreen\b/.test(text)) return 'bg-green-200 text-black';
+
+		const s = alert.severity.toLowerCase();
+		switch (s) {
+			case 'extreme':
 				return 'bg-red-600 text-white';
+			case 'severe':
+				return 'bg-amber-500 text-black';
+			case 'moderate':
+				return 'bg-yellow-400 text-black';
+			case 'minor':
+				return 'bg-green-200 text-black';
 			default:
 				return 'bg-gray-300 text-black';
 		}
@@ -157,7 +164,7 @@
 	<div class="flex flex-col items-end gap-4 select-none">
 		{#each alerts as alert}
 			<div
-				class={`rounded-lg p-4 shadow-md ${getAlertColor(alert.severity)}`}
+				class={`rounded-lg p-4 shadow-md ${getAlertColor(alert)}`}
 				style="width: 350px;"
 			>
 				<!-- Title with exclamation icon -->
