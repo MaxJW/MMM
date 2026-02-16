@@ -48,7 +48,8 @@ function getDefaultConfig(): UserConfig {
 				{ id: 'reminders', enabled: true, area: 'notifications' },
 				{ id: 'rss-feed', enabled: true, area: 'notifications' },
 				{ id: 'adguard', enabled: true, area: 'middle-right' },
-				{ id: 'spotify', enabled: false, area: 'middle-right' }
+				{ id: 'spotify', enabled: false, area: 'middle-right' },
+				{ id: 'google-tasks', enabled: false, area: 'top-left' }
 			]
 		},
 		components: {}

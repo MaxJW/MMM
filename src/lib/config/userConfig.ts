@@ -16,18 +16,54 @@ export async function getWeatherConfig() {
 }
 
 /**
+ * Get Google OAuth credentials from calendar or google-tasks config.
+ * Either component can supply credentials so users only need to configure once.
+ */
+export async function getGoogleOAuthConfig(): Promise<{
+	clientId?: string;
+	clientSecret?: string;
+}> {
+	const [calendarConfig, tasksConfig] = await Promise.all([
+		getComponentConfig('calendar'),
+		getComponentConfig('google-tasks')
+	]);
+
+	const config = calendarConfig.clientId
+		? calendarConfig
+		: (tasksConfig.clientId ? tasksConfig : calendarConfig);
+
+	return {
+		clientId: config.clientId as string | undefined,
+		clientSecret: config.clientSecret as string | undefined
+	};
+}
+
+/**
  * Get Google OAuth configuration (legacy compatibility)
  */
 export async function getGoogleConfig() {
-	const config = await getComponentConfig('calendar'); // Google config is used by calendar component
+	const oauthConfig = await getGoogleOAuthConfig();
+	const calendarConfig = await getComponentConfig('calendar');
 	return {
-		clientId: config.clientId as string | undefined,
-		clientSecret: config.clientSecret as string | undefined,
-		maxEvents: (config.maxEvents as number | undefined) ?? 12,
-		calendarColors: config.calendarColors as
+		...oauthConfig,
+		maxEvents: (calendarConfig.maxEvents as number | undefined) ?? 12,
+		calendarColors: calendarConfig.calendarColors as
 			| Array<{ calendarName: string; colorClass: string }>
 			| Record<string, string>
 			| undefined
+	};
+}
+
+/**
+ * Get Google Tasks configuration
+ */
+export async function getTasksConfig() {
+	const oauthConfig = await getGoogleOAuthConfig();
+	const tasksConfig = await getComponentConfig('google-tasks');
+	return {
+		clientId: oauthConfig.clientId,
+		clientSecret: oauthConfig.clientSecret,
+		maxTasks: (tasksConfig.maxTasks as number | undefined) ?? 20
 	};
 }
 

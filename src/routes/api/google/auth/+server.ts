@@ -18,7 +18,10 @@ export const GET: RequestHandler = async (event) => {
 		redirectUri
 	});
 
-	const scope = ['https://www.googleapis.com/auth/calendar.readonly'];
+	const scope = [
+		'https://www.googleapis.com/auth/calendar.readonly',
+		'https://www.googleapis.com/auth/tasks.readonly'
+	];
 	const authUrl = oauth2Client.generateAuthUrl({
 		access_type: 'offline',
 		prompt: 'consent',
