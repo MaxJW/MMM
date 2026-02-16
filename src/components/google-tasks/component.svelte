@@ -83,9 +83,15 @@
 			<span>{error}</span>
 		</div>
 	{:else if tasks === null}
-		<button class="rounded bg-green-600 px-3 py-2 text-white" on:click={connectGoogle}>
-			Connect Google Tasks
-		</button>
+		<div class="flex flex-col gap-2">
+			<p class="text-base opacity-80">
+				Connect or reconnect Google to show tasks. If you already use Calendar, click to grant
+				Tasks access.
+			</p>
+			<button class="rounded bg-green-600 px-3 py-2 text-white" on:click={connectGoogle}>
+				Connect Google Tasks
+			</button>
+		</div>
 	{:else if tasks.length === 0}
 		<p class="text-lg opacity-70">No tasks due today</p>
 	{:else}

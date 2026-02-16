@@ -118,7 +118,21 @@ export async function GET(
 		const data = await GoogleTasksService.getTasksToday(origin, resolvedConfig);
 		return data;
 	} catch (error) {
-		if ((error as Error).message === 'Not authenticated') {
+		const err = error as Error & {
+			status?: number;
+			code?: number;
+			response?: { status?: number };
+		};
+		if (err.message === 'Not authenticated') {
+			return { error: 'Not authenticated' };
+		}
+		// 403 insufficient_scope: user's tokens lack tasks.readonly (need to re-auth)
+		const status = err.status ?? err.code ?? err.response?.status;
+		const isInsufficientScope =
+			status === 403 &&
+			(err.message?.toLowerCase().includes('insufficient') ||
+				err.message?.toLowerCase().includes('scope'));
+		if (isInsufficientScope) {
 			return { error: 'Not authenticated' };
 		}
 		console.error('Failed to fetch Google Tasks', error);
