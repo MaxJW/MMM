@@ -63,7 +63,9 @@ export async function getTasksConfig() {
 	return {
 		clientId: oauthConfig.clientId,
 		clientSecret: oauthConfig.clientSecret,
-		maxTasks: (tasksConfig.maxTasks as number | undefined) ?? 20
+		maxTasks: (tasksConfig.maxTasks as number | undefined) ?? 20,
+		timezone: tasksConfig.timezone as string | undefined,
+		includeTasksWithoutDue: tasksConfig.includeTasksWithoutDue as boolean | undefined
 	};
 }
 

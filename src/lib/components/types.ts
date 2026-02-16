@@ -4,7 +4,7 @@
 
 export interface ComponentConfigField {
 	key: string;
-	type: 'text' | 'password' | 'number' | 'select' | 'array' | 'color';
+	type: 'text' | 'password' | 'number' | 'select' | 'array' | 'color' | 'checkbox';
 	label: string;
 	description: string;
 	placeholder?: string;

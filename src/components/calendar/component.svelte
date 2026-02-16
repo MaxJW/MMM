@@ -7,7 +7,6 @@
 	import type { CalendarDay, CalendarEvent } from './types';
 	import { TIMING_STRATEGIES } from '$lib/core/timing';
 	import CalendarDays from '@lucide/svelte/icons/calendar-days';
-	import { dev } from '$app/environment';
 
 	// Color mapping for Tailwind classes
 	// Tailwind requires full class names to be present in the source code
@@ -50,12 +49,6 @@
 		try {
 			loading = true;
 			error = null;
-
-			if (dev) {
-				// Return empty calendar in dev mode - use real Google Calendar for testing
-				days = [];
-				return;
-			}
 
 			const res = await fetch('/api/components/calendar');
 			if (res.status === 401) {

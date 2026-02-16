@@ -3,5 +3,4 @@ export type GoogleTask = {
 	title: string;
 	due?: string;
 	completed: boolean;
-	listName?: string;
 };

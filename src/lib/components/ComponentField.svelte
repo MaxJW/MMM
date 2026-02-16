@@ -95,10 +95,12 @@
 </script>
 
 <div class="space-y-2">
-	<label for={fieldId} class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-		{field.label}
-	</label>
-	<p class="mb-2 text-xs text-gray-500 dark:text-gray-400">{field.description}</p>
+	{#if field.type !== 'checkbox'}
+		<label for={fieldId} class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+			{field.label}
+		</label>
+		<p class="mb-2 text-xs text-gray-500 dark:text-gray-400">{field.description}</p>
+	{/if}
 
 	{#if field.type === 'text' || field.type === 'password'}
 		<div class="relative">
@@ -126,6 +128,20 @@
 				</button>
 			{/if}
 		</div>
+	{:else if field.type === 'checkbox'}
+		<label class="flex cursor-pointer items-center gap-3">
+			<input
+				id={fieldId}
+				type="checkbox"
+				checked={value ?? field.default ?? false}
+				onchange={(e) => onValueChange(field.key, (e.target as HTMLInputElement).checked)}
+				class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+			/>
+			<span class="text-sm text-gray-700 dark:text-gray-300">{field.label}</span>
+		</label>
+		{#if field.description}
+			<p class="text-xs text-gray-500 dark:text-gray-400">{field.description}</p>
+		{/if}
 	{:else if field.type === 'number'}
 		<input
 			id={fieldId}

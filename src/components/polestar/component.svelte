@@ -6,8 +6,14 @@
 	import AlertTriangle from '@lucide/svelte/icons/triangle-alert';
 	import { onMount, onDestroy } from 'svelte';
 	import type { PolestarData } from './types';
+	import type { DashboardArea } from '$lib/core/types';
 	import { TIMING_STRATEGIES } from '$lib/core/timing';
 	import PolestarNose from './assets/polestar_nose.png';
+
+	const rightSideAreas: DashboardArea[] = ['top-right', 'middle-right', 'bottom-right'];
+
+	export let area: DashboardArea | undefined = undefined;
+	const isRightSide = area && rightSideAreas.includes(area);
 
 	let data: PolestarData | null = null;
 	let loading = true;
@@ -75,9 +81,12 @@
 			<span>{error}</span>
 		</div>
 	{:else if data}
-		<div class="flex min-h-0 flex-1 items-center gap-4">
-			<!-- Left: Car Image (Peaking in) -->
-			<div class="relative w-32 flex-shrink-0 overflow-visible">
+		<div class="flex min-h-0 flex-1 items-center gap-4 {isRightSide ? 'flex-row-reverse' : ''}">
+			<!-- Car Image (peeking in from left or right depending on area) -->
+			<div
+				class="relative w-32 flex-shrink-0 overflow-visible"
+				style={isRightSide ? 'transform: scaleX(-1)' : ''}
+			>
 				<img
 					src={PolestarNose}
 					alt="Polestar"
@@ -86,7 +95,7 @@
 				/>
 			</div>
 
-			<!-- Right: Stats Stack -->
+			<!-- Stats Stack -->
 			<div class="flex flex-1 flex-col justify-center gap-4 py-2 pr-2">
 				<!-- Battery -->
 				<div class="flex flex-col gap-0.5">

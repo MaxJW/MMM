@@ -6,7 +6,6 @@
 	import Clock from '@lucide/svelte/icons/clock';
 	import { TIMING_STRATEGIES } from '$lib/core/timing';
 	import type { GoogleTask } from './types';
-	import { dev } from '$app/environment';
 	import dayjs from 'dayjs';
 
 	let tasks: GoogleTask[] | null = null;
@@ -14,11 +13,13 @@
 	let error: string | null = null;
 	let firstLoad = true;
 
+	/** Returns formatted time, or empty string if date-only (API always returns midnight for date-only tasks) */
 	function formatDueTime(due?: string): string {
 		if (!due) return '';
 		const d = dayjs(due);
 		if (!d.isValid()) return '';
-		if (d.hour() === 0 && d.minute() === 0) return 'All day';
+		// API doesn't store time - always returns midnight; don't show misleading "All day" or "00:00"
+		if (d.hour() === 0 && d.minute() === 0) return '';
 		return d.format('H:mm');
 	}
 
@@ -26,11 +27,6 @@
 		try {
 			loading = true;
 			error = null;
-
-			if (dev) {
-				tasks = [];
-				return;
-			}
 
 			const res = await fetch('/api/components/google-tasks');
 			if (res.status === 401) {
@@ -101,7 +97,7 @@
 					<CheckSquare size={20} class="flex-shrink-0 opacity-70" />
 					<div class="flex-1 min-w-0">
 						<div class="text-lg truncate">{task.title}</div>
-						{#if task.due}
+						{#if task.due && formatDueTime(task.due)}
 							<div class="flex items-center gap-2 text-base opacity-70">
 								<Clock size={14} class="flex-shrink-0" />
 								{formatDueTime(task.due)}

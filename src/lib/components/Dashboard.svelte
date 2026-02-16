@@ -36,7 +36,7 @@
 			{#each Object.keys(areaGridClasses) as area (area)}
 				<div class={areaGridClasses[area as DashboardArea]}>
 					{#each getComponentsForArea(area as DashboardArea) as comp}
-						<svelte:component this={comp.component} {...comp.props} />
+						<svelte:component this={comp.component} area={area} {...comp.props} />
 					{/each}
 				</div>
 			{/each}
