@@ -8,7 +8,8 @@ export type DashboardArea =
 	| 'bottom-left'
 	| 'bottom-center'
 	| 'bottom-right'
-	| 'notifications';
+	| 'notifications'
+	| 'overlay';
 
 export interface DashboardComponent {
 	id: string;

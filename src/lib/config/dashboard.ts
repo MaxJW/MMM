@@ -20,9 +20,10 @@ function getComponentMap(): Record<string, unknown> {
  *
  * This function is safe to call client-side (doesn't use Node.js modules)
  */
-export async function buildDashboardConfig(userConfig: {
-	components: DashboardComponentConfig[];
-}): Promise<DashboardConfig> {
+export async function buildDashboardConfig(
+	userConfig: { components: DashboardComponentConfig[] },
+	componentConfigs: Record<string, Record<string, unknown>> = {}
+): Promise<DashboardConfig> {
 	// Get component map from explicit imports (more reliable than glob)
 	const componentMap = getComponentMap();
 
@@ -37,7 +38,13 @@ export async function buildDashboardConfig(userConfig: {
 		component: unknown;
 		area: DashboardArea;
 		enabled: boolean;
+		props?: Record<string, unknown>;
 	}> = [];
+
+	const getProps = (compId: string) => {
+		const cfg = componentConfigs[compId];
+		return cfg ? { config: cfg } : {};
+	};
 
 	// First, add all enabled components from config in their configured areas
 	for (const compConfig of userConfig.components) {
@@ -51,7 +58,8 @@ export async function buildDashboardConfig(userConfig: {
 				id: compConfig.id,
 				component,
 				area: compConfig.area as DashboardArea,
-				enabled: true
+				enabled: true,
+				props: getProps(compConfig.id)
 			});
 		}
 	}
@@ -66,7 +74,8 @@ export async function buildDashboardConfig(userConfig: {
 				id: componentId,
 				component,
 				area: 'top-left',
-				enabled: false
+				enabled: false,
+				props: getProps(componentId)
 			});
 		}
 		// If component is in config but disabled, add it to top-left with enabled: false
@@ -74,8 +83,9 @@ export async function buildDashboardConfig(userConfig: {
 			components.push({
 				id: componentId,
 				component,
-				area: 'top-left',
-				enabled: false
+				area: (config.area as DashboardArea) ?? 'top-left',
+				enabled: false,
+				props: getProps(componentId)
 			});
 		}
 	}

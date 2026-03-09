@@ -18,7 +18,9 @@
 		'bottom-right': 'absolute bottom-20 right-0 flex items-end gap-6 flex-col',
 
 		notifications:
-			'absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-6 w-2/3'
+			'absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-6 w-2/3',
+
+		overlay: 'fixed inset-0 z-[9999] pointer-events-none flex items-center justify-center'
 	};
 
 	function getComponentsForArea(area: DashboardArea) {
@@ -33,12 +35,18 @@
 >
 	<div class="relative inset-0 h-full w-full">
 		<div class="grid h-screen w-full grid-cols-[1fr_1fr_1fr] grid-rows-[auto_1fr_auto_auto]">
-			{#each Object.keys(areaGridClasses) as area (area)}
+			{#each Object.keys(areaGridClasses).filter((a) => a !== 'overlay') as area (area)}
 				<div class={areaGridClasses[area as DashboardArea]}>
 					{#each getComponentsForArea(area as DashboardArea) as comp}
 						<svelte:component this={comp.component} area={area} {...comp.props} />
 					{/each}
 				</div>
+			{/each}
+		</div>
+		<!-- Overlay area: full-screen, rendered on top -->
+		<div class={areaGridClasses.overlay}>
+			{#each getComponentsForArea('overlay') as comp}
+				<svelte:component this={comp.component} area="overlay" {...comp.props} />
 			{/each}
 		</div>
 	</div>

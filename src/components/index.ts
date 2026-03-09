@@ -12,6 +12,7 @@ import AdguardComponent from './adguard/component.svelte';
 import SpotifyComponent from './spotify/component.svelte';
 import PolestarComponent from './polestar/component.svelte';
 import GoogleTasksComponent from './google-tasks/component.svelte';
+import EffectsOverlay from './effects-overlay/component.svelte';
 
 /**
  * Component registry - maps component IDs to their Svelte components
@@ -30,5 +31,6 @@ export const componentMap: Record<string, unknown> = {
 	adguard: AdguardComponent,
 	spotify: SpotifyComponent,
 	polestar: PolestarComponent,
-	'google-tasks': GoogleTasksComponent
+	'google-tasks': GoogleTasksComponent,
+	'effects-overlay': EffectsOverlay
 };

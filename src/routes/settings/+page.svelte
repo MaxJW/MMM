@@ -37,7 +37,8 @@
 		'bottom-left',
 		'bottom-center',
 		'bottom-right',
-		'notifications'
+		'notifications',
+		'overlay'
 	];
 
 	const areaLabels: Record<DashboardArea, string> = {
@@ -50,7 +51,8 @@
 		'bottom-left': 'Bottom Left',
 		'bottom-center': 'Bottom Center',
 		'bottom-right': 'Bottom Right',
-		notifications: 'Notifications'
+		notifications: 'Notifications',
+		overlay: 'Overlay'
 	};
 
 	function getComponentsByArea() {
@@ -103,7 +105,10 @@
 					const componentTabs = componentManifests
 						.map((m) => ({ id: m.id, label: m.name }))
 						.sort((a, b) => a.label.localeCompare(b.label));
-					tabs = [{ id: 'dashboard', label: 'Dashboard Layout' }, ...componentTabs];
+					tabs = [
+						{ id: 'dashboard', label: 'Dashboard Layout' },
+						...componentTabs
+					];
 				}
 			}
 

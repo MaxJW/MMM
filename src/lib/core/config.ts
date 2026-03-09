@@ -49,7 +49,8 @@ function getDefaultConfig(): UserConfig {
 				{ id: 'rss-feed', enabled: true, area: 'notifications' },
 				{ id: 'adguard', enabled: true, area: 'middle-right' },
 				{ id: 'spotify', enabled: false, area: 'middle-right' },
-				{ id: 'google-tasks', enabled: false, area: 'top-left' }
+				{ id: 'google-tasks', enabled: false, area: 'top-left' },
+				{ id: 'effects-overlay', enabled: false, area: 'overlay' }
 			]
 		},
 		components: {}
@@ -74,9 +75,8 @@ export async function loadConfig(): Promise<UserConfig> {
 
 		const data = await readFile(CONFIG_FILE, 'utf8');
 		const parsed = JSON.parse(data) as Partial<UserConfig>;
-
-		// Merge with defaults
 		const defaults = getDefaultConfig();
+
 		cachedConfig = {
 			dashboard: parsed.dashboard ?? defaults.dashboard,
 			components: parsed.components ?? defaults.components

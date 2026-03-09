@@ -13,7 +13,7 @@
 
 	// Load dashboard config asynchronously on client
 	if (browser) {
-		buildDashboardConfig(data.dashboardUserConfig).then((config) => {
+		buildDashboardConfig(data.dashboardUserConfig, data.componentConfigs).then((config) => {
 			dashboardConfig = config;
 		});
 	}

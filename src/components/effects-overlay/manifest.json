@@ -1,0 +1,24 @@
+{
+	"id": "effects-overlay",
+	"name": "Effects Overlay",
+	"version": "1.0.0",
+	"description": "Full-screen overlay effects that appear on top of the smart mirror display",
+	"config": {
+		"title": "Effects Overlay",
+		"description": "Configure overlay effects for the display. These effects appear on top of the smart mirror.",
+		"fields": [
+			{
+				"key": "overlay",
+				"type": "select",
+				"label": "Overlay Effect",
+				"description": "Choose which effect to display. Broken Monitor: cracked screen with flickering RGB lines. Eyes: watching eyes in corners.",
+				"default": "none",
+				"options": [
+					{ "value": "none", "label": "None" },
+					{ "value": "broken-monitor", "label": "Broken Monitor" },
+					{ "value": "eyes", "label": "Eyes" }
+				]
+			}
+		]
+	}
+}
