@@ -5,7 +5,7 @@ import timezone from 'dayjs/plugin/timezone';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
-import { TokenStorage } from '$lib/services/tokenStorage';
+import { getAuthenticatedClient } from '$lib/services/googleAuth';
 import { getTasksConfig } from '$lib/config/userConfig';
 import type { GoogleTask } from './types';
 
@@ -21,8 +21,6 @@ async function getTasksToday(
 	origin: string,
 	config: TasksConfig
 ): Promise<GoogleTask[]> {
-	const tokenData = await TokenStorage.loadTokens();
-	if (!tokenData) throw new Error('Not authenticated');
 	if (!config.clientId || !config.clientSecret) throw new Error('Google OAuth not configured');
 
 	const maxTasks = typeof config.maxTasks === 'number' ? config.maxTasks : 20;
@@ -31,30 +29,11 @@ async function getTasksToday(
 		config.includeTasksWithoutDue === true ||
 		String(config.includeTasksWithoutDue) === 'true';
 
-	const oauth2Client = new google.auth.OAuth2({
+	const oauth2Client = await getAuthenticatedClient({
 		clientId: config.clientId,
 		clientSecret: config.clientSecret,
 		redirectUri: `${origin}/api/google/callback`
 	});
-	oauth2Client.setCredentials({
-		refresh_token: tokenData.refreshToken,
-		access_token: tokenData.accessToken,
-		expiry_date: tokenData.expiryDate
-	});
-
-	try {
-		const { token } = await oauth2Client.getAccessToken();
-		if (token !== tokenData.accessToken) {
-			await TokenStorage.saveTokens({
-				...tokenData,
-				accessToken: token || undefined,
-				expiryDate: oauth2Client.credentials.expiry_date || undefined
-			});
-		}
-	} catch (err) {
-		console.error('Failed to refresh Google access token', err);
-		throw new Error('Authentication failed');
-	}
 
 	const tasksApi = google.tasks({ version: 'v1', auth: oauth2Client });
 	const now = config.timezone ? dayjs().tz(config.timezone) : dayjs();

@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 import { TIMING_STRATEGIES } from '$lib/core/timing';
-import { TokenStorage } from '$lib/services/tokenStorage';
+import { getAuthenticatedClient } from '$lib/services/googleAuth';
 
 type SimplifiedEvent = {
 	day: string;
@@ -51,12 +51,6 @@ class GoogleCalendarService {
 		origin: string,
 		config: CalendarConfig
 	): Promise<Array<{ day: string; date: number; month: string; events: SimplifiedEvent[] }>> {
-		// Load tokens from file
-		const tokenData = await TokenStorage.loadTokens();
-		if (!tokenData) {
-			throw new Error('Not authenticated');
-		}
-
 		if (!config.clientId || !config.clientSecret) {
 			throw new Error('Google OAuth not configured');
 		}
@@ -150,35 +144,11 @@ class GoogleCalendarService {
 			return this.cache.data;
 		}
 
-		const oauth2Client = new google.auth.OAuth2({
+		const oauth2Client = await getAuthenticatedClient({
 			clientId: config.clientId,
 			clientSecret: config.clientSecret,
 			redirectUri: `${origin}/api/google/callback`
 		});
-
-		// Set credentials
-		oauth2Client.setCredentials({
-			refresh_token: tokenData.refreshToken,
-			access_token: tokenData.accessToken,
-			expiry_date: tokenData.expiryDate
-		});
-
-		try {
-			// This will automatically refresh the access token if needed
-			const { token } = await oauth2Client.getAccessToken();
-
-			// Save updated tokens if they changed
-			if (token !== tokenData.accessToken) {
-				await TokenStorage.saveTokens({
-					...tokenData,
-					accessToken: token || undefined,
-					expiryDate: oauth2Client.credentials.expiry_date || undefined
-				});
-			}
-		} catch (err) {
-			console.error('Failed to refresh Google access token', err);
-			throw new Error('Authentication failed');
-		}
 
 		const calendar: calendar_v3.Calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
