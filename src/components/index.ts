@@ -13,6 +13,7 @@ import SpotifyComponent from './spotify/component.svelte';
 import PolestarComponent from './polestar/component.svelte';
 import GoogleTasksComponent from './google-tasks/component.svelte';
 import EffectsOverlay from './effects-overlay/component.svelte';
+import MigraineRiskComponent from './migraine-risk/component.svelte';
 
 /**
  * Component registry - maps component IDs to their Svelte components
@@ -32,5 +33,6 @@ export const componentMap: Record<string, unknown> = {
 	spotify: SpotifyComponent,
 	polestar: PolestarComponent,
 	'google-tasks': GoogleTasksComponent,
-	'effects-overlay': EffectsOverlay
+	'effects-overlay': EffectsOverlay,
+	'migraine-risk': MigraineRiskComponent
 };

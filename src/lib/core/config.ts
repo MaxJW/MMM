@@ -50,7 +50,8 @@ function getDefaultConfig(): UserConfig {
 				{ id: 'adguard', enabled: true, area: 'middle-right' },
 				{ id: 'spotify', enabled: false, area: 'middle-right' },
 				{ id: 'google-tasks', enabled: false, area: 'top-left' },
-				{ id: 'effects-overlay', enabled: false, area: 'overlay' }
+				{ id: 'effects-overlay', enabled: false, area: 'overlay' },
+				{ id: 'migraine-risk', enabled: false, area: 'middle-right' }
 			]
 		},
 		components: {}

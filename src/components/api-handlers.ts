@@ -13,6 +13,7 @@ import { GET as eventsApiHandler } from './events/api';
 import { GET as wifiQrCodeApiHandler } from './wifi-qr-code/api';
 import { GET as polestarApiHandler } from './polestar/api';
 import { GET as googleTasksApiHandler } from './google-tasks/api';
+import { GET as migraineRiskApiHandler } from './migraine-risk/api';
 
 // Map component IDs to their API handlers
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -27,5 +28,6 @@ export const apiHandlerMap: Record<string, (config: any, request?: Request) => P
 	events: eventsApiHandler,
 	'wifi-qr-code': wifiQrCodeApiHandler,
 	polestar: polestarApiHandler,
-	'google-tasks': googleTasksApiHandler
+	'google-tasks': googleTasksApiHandler,
+	'migraine-risk': migraineRiskApiHandler
 };

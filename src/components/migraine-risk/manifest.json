@@ -1,0 +1,61 @@
+{
+	"id": "migraine-risk",
+	"name": "Migraine risk",
+	"version": "1.0.0",
+	"description": "Environmental migraine risk score (0–22) from the same weather data as the Weather component (Pirate Weather). Configure API key and location under Weather settings. Optional air quality factor is not available in standalone mode (always 0).",
+	"config": {
+		"title": "Migraine risk",
+		"description": "Display options. Uses Pirate Weather via the Weather component.",
+		"fields": [
+			{
+				"key": "showGauge",
+				"type": "checkbox",
+				"label": "Show semicircle gauge",
+				"description": "Turn off for a simple text score and risk level only (no radial arc).",
+				"default": true
+			},
+			{
+				"key": "showBreakdown",
+				"type": "checkbox",
+				"label": "Show factor breakdown",
+				"description": "List pressure, humidity, wind, UV, and other scoring factors.",
+				"default": true
+			},
+			{
+				"key": "onlyContributingFactors",
+				"type": "checkbox",
+				"label": "Only show contributing factors",
+				"description": "In the breakdown, hide rows with 0 points (only factors that add to the score).",
+				"default": false
+			},
+			{
+				"key": "showTomorrow",
+				"type": "checkbox",
+				"label": "Show tomorrow forecast",
+				"description": "Next-day risk score and level from the daily forecast.",
+				"default": true
+			},
+			{
+				"key": "showAirQualityNote",
+				"type": "checkbox",
+				"label": "Show air quality note",
+				"description": "Show the “not available (standalone)” line when AQI is not used.",
+				"default": true
+			},
+			{
+				"key": "showMaxScore",
+				"type": "checkbox",
+				"label": "Show max score (e.g. / 22)",
+				"description": "Display the denominator next to the numeric score.",
+				"default": true
+			},
+			{
+				"key": "compactLayout",
+				"type": "checkbox",
+				"label": "Compact layout",
+				"description": "Smaller type for tighter mirror corners.",
+				"default": false
+			}
+		]
+	}
+}

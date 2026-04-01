@@ -1,4 +1,4 @@
-import type { WeatherData, MeteoAlert } from './types';
+import type { WeatherData, MeteoAlert, WeatherIcon } from './types';
 import { TIMING_STRATEGIES } from '$lib/core/timing';
 import { getCached, setCache } from '$lib/core/utils';
 import type { CacheEntry } from '$lib/core/utils';
@@ -12,10 +12,18 @@ interface WeatherConfig {
 	alertsProvince?: string;
 }
 
+interface PirateDailyPoint {
+	time: number;
+	temperatureHigh: number;
+	temperatureLow: number;
+	icon: string;
+}
+
 let weatherCache: CacheEntry<WeatherData> | null = null;
 let alertsCache: CacheEntry<MeteoAlert[]> | null = null;
 
-async function fetchWeather(config: WeatherConfig): Promise<WeatherData> {
+/** Full Pirate Weather / Dark-Sky-style JSON (for consumers that need hourly/daily/native fields). */
+export async function fetchPirateWeatherJson(config: WeatherConfig): Promise<unknown> {
 	const { apiKey, latitude, longitude } = config;
 
 	if (!apiKey) throw new Error('Missing Pirate Weather API key');
@@ -27,17 +35,24 @@ async function fetchWeather(config: WeatherConfig): Promise<WeatherData> {
 
 	if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
-	const data = await res.json();
+	return res.json();
+}
+
+async function fetchWeather(config: WeatherConfig): Promise<WeatherData> {
+	const data = (await fetchPirateWeatherJson(config)) as {
+		currently: { temperature: number; summary: string; icon: string };
+		daily: { data: PirateDailyPoint[] };
+	};
 
 	const current = {
 		tempC: Math.round(data.currently.temperature),
 		condition: data.currently.summary,
-		icon: data.currently.icon
+		icon: data.currently.icon as WeatherIcon
 	};
 
-	const forecast = data.daily.data.slice(0, 3).map((d: any) => ({
+	const forecast = data.daily.data.slice(0, 3).map((d) => ({
 		day: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(d.time * 1000).getDay()],
-		icon: d.icon,
+		icon: d.icon as WeatherIcon,
 		hi: Math.round(d.temperatureHigh),
 		lo: Math.round(d.temperatureLow)
 	}));
@@ -45,7 +60,8 @@ async function fetchWeather(config: WeatherConfig): Promise<WeatherData> {
 	return { current, forecast };
 }
 
-async function fetchAlerts(config: WeatherConfig): Promise<MeteoAlert[]> {
+/** Meteoalarm CAP feed; exported for migraine-risk thunderstorm scoring. */
+export async function fetchMeteoAlerts(config: WeatherConfig): Promise<MeteoAlert[]> {
 	try {
 		const country = config.alertsCountry || 'united-kingdom';
 		const province = config.alertsProvince || '';
@@ -141,7 +157,7 @@ export async function GET(
 				return { alerts: cached };
 			}
 
-			const alerts = await fetchAlerts(config);
+			const alerts = await fetchMeteoAlerts(config);
 			alertsCache = setCache(alertsCache, alerts, Date.now() + TIMING_STRATEGIES.STANDARD.interval);
 			return { alerts };
 		}
