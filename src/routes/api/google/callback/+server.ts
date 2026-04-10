@@ -24,14 +24,19 @@ export const GET: RequestHandler = async ({ url }) => {
 	try {
 		const { tokens } = await oauth2Client.getToken(code);
 
-		// Save tokens to file instead of cookies
-		if (tokens.refresh_token) {
-			await TokenStorage.saveTokens({
-				refreshToken: tokens.refresh_token,
-				accessToken: tokens.access_token || undefined,
-				expiryDate: tokens.expiry_date || undefined
+		const previous = await TokenStorage.loadTokens();
+		const refreshToken = tokens.refresh_token ?? previous?.refreshToken;
+		if (!refreshToken) {
+			return new Response('No refresh token from Google. Try signing in again.', {
+				status: 400
 			});
 		}
+
+		await TokenStorage.saveTokens({
+			refreshToken,
+			accessToken: tokens.access_token || undefined,
+			expiryDate: tokens.expiry_date || undefined
+		});
 
 		return new Response(null, {
 			status: 302,

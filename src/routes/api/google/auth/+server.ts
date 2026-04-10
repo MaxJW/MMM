@@ -1,5 +1,6 @@
 import type { RequestHandler } from './$types';
 import { getGoogleConfig } from '$lib/config/userConfig';
+import { TokenStorage } from '$lib/services/tokenStorage';
 import { google } from 'googleapis';
 
 export const GET: RequestHandler = async (event) => {
@@ -22,10 +23,14 @@ export const GET: RequestHandler = async (event) => {
 		'https://www.googleapis.com/auth/calendar.readonly',
 		'https://www.googleapis.com/auth/tasks.readonly'
 	];
+
+	// Only force the consent screen when we need a new refresh token (first link or
+	// after deleting google-tokens.json). Otherwise Google re-prompts every login.
+	const existing = await TokenStorage.loadTokens();
 	const authUrl = oauth2Client.generateAuthUrl({
 		access_type: 'offline',
-		prompt: 'consent',
-		scope
+		scope,
+		...(!existing?.refreshToken ? { prompt: 'consent' as const } : {})
 	});
 
 	return new Response(null, {
