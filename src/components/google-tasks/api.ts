@@ -79,7 +79,8 @@ export async function GET(
 	request?: Request
 ): Promise<GoogleTask[] | { error: string }> {
 	try {
-		const resolvedConfig = config.clientId ? config : await getTasksConfig();
+		const resolvedConfig =
+			config.clientId && config.clientSecret ? config : await getTasksConfig();
 		const origin = request ? new URL(request.url).origin : 'http://localhost:5173';
 		return await getTasksToday(origin, resolvedConfig);
 	} catch (error) {

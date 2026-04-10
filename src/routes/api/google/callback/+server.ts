@@ -4,6 +4,12 @@ import { google } from 'googleapis';
 import { TokenStorage } from '$lib/services/tokenStorage';
 
 export const GET: RequestHandler = async ({ url }) => {
+	const oauthError = url.searchParams.get('error');
+	if (oauthError) {
+		const desc = url.searchParams.get('error_description') || oauthError;
+		return new Response(`Google OAuth error: ${desc}`, { status: 400 });
+	}
+
 	const code = url.searchParams.get('code');
 	if (!code) {
 		return new Response('Missing code', { status: 400 });

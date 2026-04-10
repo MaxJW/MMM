@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 import { TIMING_STRATEGIES } from '$lib/core/timing';
+import { getGoogleConfig } from '$lib/config/userConfig';
 import { getAuthenticatedClient } from '$lib/services/googleAuth';
 
 type SimplifiedEvent = {
@@ -295,7 +296,10 @@ export async function GET(
 	try {
 		// Get origin from request URL
 		const origin = request ? new URL(request.url).origin : 'http://localhost:5173';
-		const data = await GoogleCalendarService.getEvents(origin, config);
+		// Match google-tasks: OAuth can live on either calendar or google-tasks component
+		const resolvedConfig =
+			config.clientId && config.clientSecret ? config : await getGoogleConfig();
+		const data = await GoogleCalendarService.getEvents(origin, resolvedConfig);
 		return data;
 	} catch (error) {
 		if ((error as Error).message === 'Not authenticated') {
