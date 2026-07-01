@@ -21,22 +21,49 @@ const CONSTANTS = {
 };
 
 const QUERIES = {
+	// NOTE: The battery `chargingStatus` field was renamed to `chargingStatusV2`
+	// upstream (pypolestar). Requesting the old field name is a GraphQL validation
+	// error that fails the whole query, so keep this in sync with the schema.
 	TELEMATICS_V2: `
     query CarTelematicsV2($vins: [String!]!) {
         carTelematicsV2(vins: $vins) {
             battery {
+                vin
                 batteryChargeLevelPercentage
-                chargingStatus
+                chargingStatusV2
                 estimatedChargingTimeToFullMinutes
                 estimatedDistanceToEmptyKm
             }
             odometer {
+                vin
                 odometerMeters
             }
         }
     }
   `
 };
+
+// The new `chargingStatusV2` enum uses different values than the old
+// `chargingStatus`. Normalise to the strings the UI already understands.
+function normalizeChargingStatus(statusV2: string | null | undefined): string {
+	switch (statusV2) {
+		case 'CHARGING_STATUS_V2_CHARGING':
+			return 'CHARGING';
+		case 'CHARGING_STATUS_V2_IDLE':
+			return 'IDLE';
+		default:
+			return statusV2 ?? 'UNKNOWN';
+	}
+}
+
+// battery/odometer are arrays (one entry per requested VIN). Match by VIN,
+// falling back to the first entry, mirroring pypolestar's data_for_vin.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function pickForVin(entries: any, vin: string): any {
+	if (!Array.isArray(entries)) return entries;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return entries.find((e: any) => e?.vin === vin) ?? entries[0];
+}
 
 // ==========================================
 // Utils & Cookie Jar
@@ -316,11 +343,25 @@ export async function GET(config: PolestarConfig): Promise<PolestarData | { erro
 			throw new Error('No telematics data found for this VIN');
 		}
 
-		// Simplify the response object structure
-		// The battery and odometer fields are also arrays in the response
+		// Simplify the response object structure.
+		// The battery and odometer fields are arrays (one entry per VIN requested).
+		const rawBattery = pickForVin(carData.battery, config.vin);
+		const rawOdometer = pickForVin(carData.odometer, config.vin);
+
+		if (!rawBattery || !rawOdometer) {
+			throw new Error('Incomplete telematics data for this VIN');
+		}
+
 		const data: PolestarData = {
-			battery: Array.isArray(carData.battery) ? carData.battery[0] : carData.battery,
-			odometer: Array.isArray(carData.odometer) ? carData.odometer[0] : carData.odometer
+			battery: {
+				batteryChargeLevelPercentage: rawBattery.batteryChargeLevelPercentage,
+				chargingStatus: normalizeChargingStatus(rawBattery.chargingStatusV2),
+				estimatedChargingTimeToFullMinutes: rawBattery.estimatedChargingTimeToFullMinutes,
+				estimatedDistanceToEmptyKm: rawBattery.estimatedDistanceToEmptyKm
+			},
+			odometer: {
+				odometerMeters: rawOdometer.odometerMeters
+			}
 		};
 
 		dataCache = setCache(dataCache, data, Date.now() + TIMING_STRATEGIES.INFREQUENT.interval);
