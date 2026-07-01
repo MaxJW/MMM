@@ -1,4 +1,4 @@
-import { readFile, writeFile, mkdir } from 'fs/promises';
+import { readFile, writeFile, mkdir, unlink } from 'fs/promises';
 import { existsSync } from 'fs';
 import { join } from 'path';
 
@@ -32,5 +32,9 @@ export class TokenStorage {
 			console.error('Error loading tokens:', error);
 			return null;
 		}
+	}
+
+	static async deleteTokens() {
+		if (existsSync(TOKEN_FILE)) await unlink(TOKEN_FILE);
 	}
 }

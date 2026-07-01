@@ -38,10 +38,27 @@ export async function getAuthenticatedClient(config: GoogleAuthConfig): Promise<
 				expiry_date: tokenData.expiryDate
 			});
 
-			const { token } = await oauth2Client.getAccessToken();
+			let token: string | null | undefined;
+			try {
+				({ token } = await oauth2Client.getAccessToken());
+			} catch (err) {
+				// A revoked/expired refresh token surfaces as `invalid_grant`. The stored
+				// token is dead and will fail forever, so clear it and signal re-auth. This
+				// also makes the next auth flow force Google's consent screen (see
+				// src/routes/api/google/auth/+server.ts), yielding a fresh refresh token.
+				const e = err as Error & { response?: { data?: { error?: string } } };
+				const isInvalidGrant =
+					e.message?.includes('invalid_grant') || e.response?.data?.error === 'invalid_grant';
+				if (isInvalidGrant) {
+					await TokenStorage.deleteTokens();
+					throw new Error('Not authenticated');
+				}
+				// Anything else (e.g. transient network errors) is not the token's fault —
+				// leave it in place so the component self-heals once connectivity returns.
+				throw err;
+			}
 
-			const newRefreshToken =
-				oauth2Client.credentials.refresh_token || tokenData.refreshToken;
+			const newRefreshToken = oauth2Client.credentials.refresh_token || tokenData.refreshToken;
 			const newExpiry = oauth2Client.credentials.expiry_date || undefined;
 
 			if (
