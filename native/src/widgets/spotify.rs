@@ -41,8 +41,8 @@ const ACCOUNT_TIMEOUT: Duration = Duration::from_secs(15);
 const JOB_TIMEOUT: Duration = Duration::from_secs(25);
 /// A shown track survives this many failed polls of its account (no flicker on a blip).
 const KEEP_THROUGH_FAILURES: u32 = 2;
-/// Per-account backoff: 10s, 20s, 40s ... up to this (a revoked token needs a re-auth,
-/// which edits the config and restarts the app anyway).
+/// Per-account backoff: 10s, 20s, 40s ... up to this (a revoked token needs
+/// `mmm-native auth spotify` and a restart anyway).
 const ACCOUNT_BACKOFF_CAP: Duration = Duration::from_secs(15 * 60);
 /// When a 429 has no usable Retry-After, and the most we wait for one.
 const RETRY_AFTER_DEFAULT: Duration = Duration::from_secs(60);
@@ -453,6 +453,26 @@ struct Row {
 struct Credentials {
     id: String,
     secret: String,
+    /// spotify-tokens.json (see src/spotify_tokens.rs).
+    tokens_path: std::path::PathBuf,
+    write_warned: std::sync::atomic::AtomicBool,
+}
+
+impl Credentials {
+    /// Save a rotated refresh token under the account's name. If that fails (or the
+    /// account has no name) it stays in memory only; logged once per process.
+    fn persist(&self, label: &str, name: &str, token: &str) {
+        let result = if name.is_empty() {
+            Err("the account has no name in config".to_string())
+        } else {
+            crate::spotify_tokens::save(&self.tokens_path, name, token)
+        };
+        if let Err(e) = result {
+            if !self.write_warned.swap(true, std::sync::atomic::Ordering::Relaxed) {
+                eprintln!("spotify: {label}: cannot save the new refresh token ({e}); keeping it in memory");
+            }
+        }
+    }
 }
 
 enum Failure {
@@ -544,8 +564,9 @@ async fn poll_account(
             let a = &mut s.accounts[i];
             a.token
                 .store(fresh.access_token.clone(), fresh.expires_in, Instant::now());
-            // Kept in memory only: the config file is read-only here.
-            if let Some(rotated) = fresh.refresh_token.filter(|t| !t.is_empty()) {
+            // Rotated: saved to spotify-tokens.json, never to the config file.
+            if let Some(rotated) = fresh.refresh_token.filter(|t| !t.is_empty() && *t != a.refresh_token) {
+                creds.persist(&a.label, &a.name, &rotated);
                 a.refresh_token = rotated;
             }
             fresh.access_token
@@ -704,14 +725,25 @@ pub fn start(ctx: &Ctx) {
         eprintln!("spotify: Missing Spotify credentials; not polling");
         return;
     }
-    let accounts: Vec<Account> = s
+    // Saved (rotated or `mmm-native auth spotify`) tokens win over config ones by name.
+    let tokens_path = crate::spotify_tokens::path_for(&crate::config::path_from_args());
+    let saved = crate::spotify_tokens::load(&tokens_path).unwrap_or_else(|e| {
+        eprintln!("spotify: {e}; using the tokens from config");
+        Default::default()
+    });
+    let configured: Vec<(Option<String>, Option<String>)> = s
         .accounts
         .unwrap_or_default()
         .into_iter()
-        .enumerate()
-        .filter_map(|(i, a)| {
-            let token = a.refresh_token.filter(|t| !t.is_empty())?;
-            Some(Account::new(i, a.name.unwrap_or_default(), token))
+        .map(|a| (a.name, a.refresh_token))
+        .collect();
+    let accounts: Vec<Account> = crate::spotify_tokens::resolve(&configured, &saved)
+        .into_iter()
+        .map(|r| {
+            if r.from_file {
+                eprintln!("spotify: account {}: using the saved refresh token", r.index + 1);
+            }
+            Account::new(r.index, r.name, r.refresh_token)
         })
         .collect();
     if accounts.is_empty() {
@@ -726,7 +758,12 @@ pub fn start(ctx: &Ctx) {
         style(&[s.episode_style.as_deref()], Style::Cassette),
     );
 
-    let creds = Arc::new(Credentials { id, secret });
+    let creds = Arc::new(Credentials {
+        id,
+        secret,
+        tokens_path,
+        write_warned: Default::default(),
+    });
     let state = Arc::new(Mutex::new(Shared {
         accounts,
         blocked_until: None,

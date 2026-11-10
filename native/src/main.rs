@@ -1,10 +1,13 @@
 //! mmm-native: the MMM dashboard as one native Wayland client (see ROADMAP.md).
 
+mod auth_cli;
 mod config;
 mod fetch;
 mod google_auth;
 mod layout;
 mod qr;
+mod sd_notify;
+mod spotify_tokens;
 mod timing;
 mod widgets;
 
@@ -18,6 +21,10 @@ slint::include_modules!();
 const EMOJI_FONT: &str = "/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf";
 
 fn main() -> Result<(), slint::PlatformError> {
+    // `mmm-native auth ...`: a terminal command; no Slint, no display.
+    if let Some(code) = auth_cli::run_if_requested() {
+        std::process::exit(code);
+    }
     prefer_colour_emoji();
     let path = config::path_from_args();
     let (config, error) = match config::Config::load(&path) {
@@ -39,6 +46,9 @@ fn main() -> Result<(), slint::PlatformError> {
     widgets::start_all(&ui, &config, &fetcher);
     start_nudge(&ui);
     let _watch = config::watch(path);
+    start_watchdog(&config);
+    // Runs once the event loop is going, i.e. after `run` has shown the window.
+    slint::Timer::single_shot(std::time::Duration::ZERO, sd_notify::ready);
 
     ui.run()
 }
@@ -51,6 +61,14 @@ fn main() -> Result<(), slint::PlatformError> {
 fn prefer_colour_emoji() {
     if std::env::var_os("SLINT_FONT_PATH").is_none() && std::path::Path::new(EMOJI_FONT).exists() {
         std::env::set_var("SLINT_FONT_PATH", EMOJI_FONT);
+    }
+}
+
+/// systemd watchdog keep-alives from the UI thread (see sd_notify.rs). The clock's
+/// once-a-second tick sends them; without a clock widget a 10s timer does.
+fn start_watchdog(config: &config::Config) {
+    if !config.placements.iter().any(|p| p.id == "clock") {
+        timing::every_aligned(timing::FAST, sd_notify::watchdog);
     }
 }
 

@@ -1,0 +1,42 @@
+# mmm-native: the native dashboard, a Wayland client of the labwc session of user max.
+# Install: see deploy/README.md. Written for systemd 252 (Debian 12): every directive
+# here exists in 252 (none of the 254+ ones such as RestartSteps=/RestartMaxDelaySec=).
+
+[Unit]
+Description=MMM native dashboard (Slint, Wayland)
+# Ordered after the graphical session is up. Deliberately no ordering or Wants= on
+# dashboard-kiosk.service or any other kiosk unit: an ordering cycle of that kind once
+# made systemd silently drop a unit at boot on this machine.
+After=graphical.target
+# Never give up restarting. With the default limit (5 starts in 10s) the unit could
+# end up permanently failed; pacing comes from RestartSec= below instead.
+# (StartLimitIntervalSec= is a [Unit] option since systemd 229.)
+StartLimitIntervalSec=0
+
+[Service]
+# READY=1 once the window is up, then WATCHDOG=1 from the UI thread (src/sd_notify.rs).
+Type=notify
+NotifyAccess=main
+# A frozen UI stops the keep-alives; after 90s systemd aborts the process and
+# Restart= brings it back. The app pings every 10s.
+WatchdogSec=90
+User=max
+Environment=XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-0
+# Wait up to 30s for the compositor's socket. If it is not there, this attempt fails
+# and Restart= tries again after RestartSec=.
+ExecStartPre=/usr/bin/timeout 30 /bin/sh -c 'until [ -S /run/user/1000/wayland-0 ]; do sleep 1; done'
+ExecStart=/opt/mmm-native/mmm-native --config /opt/stacks/mirror/data/config.json
+Restart=always
+# Every start performs a real Polestar login (and Google/Spotify token refreshes), so a
+# crash loop must not hammer those identity providers: at most one start a minute.
+RestartSec=60
+# Hardening that cannot affect a Wayland/GL client:
+# - the app never needs privileges (no setuid helpers);
+NoNewPrivileges=yes
+# - it never writes /usr, /boot or /etc (it writes only beside the config file under
+#   /opt/stacks/mirror/data, and Mesa's shader cache under ~/.cache).
+ProtectSystem=full
+# No MemoryMax=: this Pi has no memory cgroup controller, so it would be a no-op.
+
+[Install]
+WantedBy=graphical.target

@@ -60,7 +60,8 @@ pub struct When {
 #[derive(Clone, Debug, PartialEq)]
 pub struct Event {
     title: String,
-    /// "9:15 - 9:30" or "All day".
+    /// "9:15 - 9:30", "All day", or for a timed event over several days "From 9:15" /
+    /// "All day" / "Until 9:30" (see `time_text`).
     time: String,
     location: Option<String>,
     all_day: bool,
@@ -218,6 +219,9 @@ fn midnight<Tz: TimeZone>(date: NaiveDate, tz: &Tz) -> Option<DateTime<Tz>> {
 
 /// `timeMin` and `timeMax` for events.list: from now until the end of the last day
 /// shown. (api.ts used now + 3 days, which left day 4 always empty and cut day 3 short.)
+/// `timeMin` bounds an event's *end* time, so events that started earlier and are still
+/// running are returned too
+/// (https://developers.google.com/workspace/calendar/api/v3/reference/events/list).
 pub fn window<Tz: TimeZone>(now: &DateTime<Tz>) -> (String, String) {
     let fmt = |t: DateTime<Utc>| t.format("%Y-%m-%dT%H:%M:%SZ").to_string();
     let end = now
@@ -229,8 +233,58 @@ pub fn window<Tz: TimeZone>(now: &DateTime<Tz>) -> (String, String) {
     (fmt(now.with_timezone(&Utc)), fmt(end))
 }
 
+/// When an event happens, in the display zone.
+#[derive(Clone, Debug)]
+enum Span {
+    /// All-day: the covered dates come from `start.date` / `end.date` alone.
+    AllDay,
+    /// Timed, with local start and (if given) end.
+    Timed { start: NaiveDateTime, end: Option<NaiveDateTime> },
+}
+
+/// One event before it is placed on days: shown on every date in `first..=last`.
+struct Placed {
+    sort: i64,
+    first: NaiveDate,
+    last: NaiveDate,
+    span: Span,
+    event: Event,
+}
+
+/// The last local date a timed event covers. It ends *before* `end` (`end` is
+/// exclusive, https://developers.google.com/workspace/calendar/api/v3/reference/events),
+/// so an event ending exactly at midnight does not reach into the next day.
+fn last_timed_day(start: NaiveDateTime, end: NaiveDateTime) -> NaiveDate {
+    if end <= start {
+        return start.date();
+    }
+    let d = end.date();
+    if end.time() == chrono::NaiveTime::MIN && d > start.date() {
+        d.pred_opt().unwrap_or(d)
+    } else {
+        d
+    }
+}
+
+/// Time text for `span` on `date`. One-day timed events: "9:15 - 9:30". Timed events
+/// over several days: "From 23:30" on the first day, "Until 0:30" on the last and
+/// "All day" on the days in between. All-day events (and timed ones with no end, as
+/// before): "All day". The flag says whether the row gets the all-day icon.
+fn time_text(span: &Span, date: NaiveDate, first: NaiveDate, last: NaiveDate) -> (String, bool) {
+    let hm = |t: &NaiveDateTime| t.format("%-H:%M").to_string();
+    match span {
+        Span::AllDay | Span::Timed { end: None, .. } => ("All day".into(), matches!(span, Span::AllDay)),
+        Span::Timed { start, end: Some(end) } if first == last => (format!("{} - {}", hm(start), hm(end)), false),
+        Span::Timed { start, .. } if date == first => (format!("From {}", hm(start)), false),
+        Span::Timed { end: Some(end), .. } if date == last => (format!("Until {}", hm(end)), false),
+        Span::Timed { .. } => ("All day".into(), true),
+    }
+}
+
 /// The day list shown by the widget, from events of all calendars (each paired with
-/// its calendar's name). Mirrors the grouping and `maxEvents` logic of api.ts.
+/// its calendar's name). Mirrors the grouping and `maxEvents` logic of api.ts, except
+/// that an event lasting several days is listed on each day it covers (api.ts listed
+/// it only under its start date, so one that began before today was missing).
 pub fn build_days<Tz: TimeZone>(
     events: &[(ApiEvent, Option<String>)],
     colors: &[(String, String)],
@@ -238,35 +292,46 @@ pub fn build_days<Tz: TimeZone>(
     now: &DateTime<Tz>,
 ) -> Vec<Day> {
     let tz = now.timezone();
-    let mut list: Vec<(i64, NaiveDate, Event)> = events
+    let mut list: Vec<Placed> = events
         .iter()
         .filter_map(|(e, calendar)| {
             let start = e.start.as_ref()?;
             let timed = start.date_time.as_deref().filter(|s| !s.is_empty());
-            let (sort, date, start_time) = match timed {
+            let (sort, first, last, span) = match timed {
                 Some(s) => {
                     let t = instant(s, &tz)?;
-                    (t.timestamp_millis(), t.date_naive(), Some(t))
+                    let end = e.end.as_ref().and_then(|w| instant(w.date_time.as_deref()?, &tz));
+                    let (start, end) = (t.naive_local(), end.map(|e| e.naive_local()));
+                    let last = end.map_or(start.date(), |end| last_timed_day(start, end));
+                    (t.timestamp_millis(), start.date(), last, Span::Timed { start, end })
                 }
-                // An all-day date is a calendar date: no time zone conversion.
+                // An all-day date is a calendar date: no time zone conversion. Its
+                // `end.date` is exclusive (the `end` property is "The (exclusive) end
+                // time of the event", Events resource docs above), so a one-day event
+                // on the 10th ends on the 11th. A missing or non-increasing end means
+                // one day.
                 None => {
-                    let d = NaiveDate::parse_from_str(start.date.as_deref()?.get(..10)?, "%Y-%m-%d").ok()?;
-                    (midnight(d, &tz).map_or(i64::MIN, |t| t.timestamp_millis()), d, None)
+                    let date = |w: &When| NaiveDate::parse_from_str(w.date.as_deref()?.get(..10)?, "%Y-%m-%d").ok();
+                    let d = date(start)?;
+                    let last = e
+                        .end
+                        .as_ref()
+                        .and_then(date)
+                        .filter(|end| *end > d)
+                        .and_then(|end| end.pred_opt())
+                        .unwrap_or(d);
+                    (midnight(d, &tz).map_or(i64::MIN, |t| t.timestamp_millis()), d, last, Span::AllDay)
                 }
-            };
-            let end_time = e.end.as_ref().and_then(|w| instant(w.date_time.as_deref()?, &tz));
-            let time = match (&start_time, &end_time) {
-                (Some(s), Some(e)) => format!("{} - {}", s.naive_local().format("%-H:%M"), e.naive_local().format("%-H:%M")),
-                _ => "All day".into(),
             };
             let location = e.location.as_deref().map(short_location).filter(|l| !l.is_empty());
             let title = e.summary.as_deref().filter(|s| !s.is_empty()).map_or_else(|| "(No title)".into(), collapse_spaces);
             let color = bar_color(&color_class(colors, calendar.as_deref()));
-            let all_day = start_time.is_none();
-            Some((sort, date, Event { title, time, location, all_day, color }))
+            let all_day = matches!(span, Span::AllDay);
+            let event = Event { title, time: String::new(), location, all_day, color };
+            Some(Placed { sort, first, last, span, event })
         })
         .collect();
-    list.sort_by_key(|(sort, _, _)| *sort); // stable, like Array.sort
+    list.sort_by_key(|p| p.sort); // stable, like Array.sort
 
     let mut days = Vec::new();
     let mut count: i64 = 0;
@@ -279,9 +344,12 @@ pub fn build_days<Tz: TimeZone>(
         }
         let events: Vec<Event> = list
             .iter()
-            .filter(|(_, d, _)| *d == date)
+            .filter(|p| p.first <= date && date <= p.last)
             .take(remaining as usize)
-            .map(|(_, _, e)| e.clone())
+            .map(|p| {
+                let (time, all_day) = time_text(&p.span, date, p.first, p.last);
+                Event { time, all_day, ..p.event.clone() }
+            })
             .collect();
         // A day without events still takes one row ("No events").
         count += (events.len() as i64).max(1);
@@ -295,9 +363,12 @@ pub fn build_days<Tz: TimeZone>(
 }
 
 pub fn included(c: &CalendarEntry) -> bool {
-    // api.ts: !deleted && selected !== false && id. (The API documents `selected` as
-    // default false when absent; api.ts shows such calendars, and so does this.)
-    !c.deleted.unwrap_or(false) && c.selected != Some(false) && c.id.as_deref().is_some_and(|id| !id.is_empty())
+    // Only calendars ticked in Google Calendar. `selected` is "Whether the calendar
+    // content shows up in the calendar UI. Optional. The default is False."
+    // (https://developers.google.com/workspace/calendar/api/v3/reference/calendarList),
+    // so a missing value counts as unticked. (api.ts used `selected !== false` and so
+    // also showed entries without the field.)
+    !c.deleted.unwrap_or(false) && c.selected == Some(true) && c.id.as_deref().is_some_and(|id| !id.is_empty())
 }
 
 /// Events requested for one calendar.
@@ -498,8 +569,8 @@ mod tests {
                         "Demo day ✨ | 14:00 - 14:15".into(),
                     ]
                 ),
-                (11, "Wed".into(), vec!["Late one | 23:30 - 0:30".into()]),
-                (12, "Thu".into(), vec!["(No title) | 10:00 - 11:00".into()]),
+                (11, "Wed".into(), vec!["Late one | From 23:30".into()]),
+                (12, "Thu".into(), vec!["Late one | Until 0:30".into(), "(No title) | 10:00 - 11:00".into()]),
                 (13, "Fri".into(), vec![]),
                 (14, "Sat".into(), vec![]),
             ]
@@ -552,8 +623,10 @@ mod tests {
         // 4 events today: 3 fit, nothing after.
         assert_eq!(rows(3).len(), 1);
         assert_eq!(rows(3)[0].2.len(), 3);
-        // 4 + 1 + 1 = 6 rows, then the empty Friday takes the 7th.
-        let r = rows(7);
+        // 4 + 1 + 2 = 7 rows (the midnight-crossing event counts on both days), then
+        // the empty Friday takes the 8th.
+        assert_eq!(rows(7).len(), 3);
+        let r = rows(8);
         assert_eq!(r.len(), 4);
         assert!(r[3].2.is_empty());
         assert!(rows(0).is_empty());
@@ -599,11 +672,13 @@ mod tests {
             { "id": "hidden@example.com", "summary": "Off", "selected": false },
             { "id": "gone@example.com", "deleted": true },
             { "id": "en.uk#holiday@group.v.calendar.google.com", "summary": "Holidays" },
+            { "id": "shared@example.com", "summary": "Shared", "selected": true },
             { "summary": "no id" },
         ]))
         .unwrap();
         let ids: Vec<_> = list.iter().filter(|c| included(c)).filter_map(|c| c.id.as_deref()).collect();
-        assert_eq!(ids, ["me@example.com", "en.uk#holiday@group.v.calendar.google.com"]);
+        // Without `selected` (documented default false) a calendar is unticked: left out.
+        assert_eq!(ids, ["me@example.com", "shared@example.com"]);
     }
 
     #[test]
@@ -640,11 +715,68 @@ mod tests {
         assert_eq!(short_location("HTTP://Example.COM:8080/x"), "Example.COM");
         assert_eq!(short_location("zoom.us"), "zoom.us");
         assert_eq!(short_location("meet.example.com?room=1"), "meet.example.com");
-        assert_eq!(short_location(" Queen Margaret Hospital, Whitefield Rd, Dunfermline "), "Queen Margaret Hospital");
+        assert_eq!(short_location(" Example Hospital, Example Road, Exampletown "), "Example Hospital");
         assert_eq!(short_location("St. Andrews, Fife"), "St. Andrews");
         assert_eq!(short_location("10.0.0.1"), "10.0.0.1"); // numeric TLD: not a URL, no comma
         assert_eq!(short_location("example.com:abc"), "example.com:abc");
         assert_eq!(short_location("-bad.com"), "-bad.com");
+    }
+
+    fn events(v: Value) -> Vec<(ApiEvent, Option<String>)> {
+        serde_json::from_value::<Vec<ApiEvent>>(v).unwrap().into_iter().map(|e| (e, None)).collect()
+    }
+
+    #[test]
+    fn all_day_events_cover_each_day_up_to_the_exclusive_end_date() {
+        let e = events(json!([
+            // Started two days before today; end.date 12th is exclusive: shown 10th, 11th.
+            { "summary": "Holiday", "start": { "date": "2026-11-08" }, "end": { "date": "2026-11-12" } },
+            // One day: the end date is the next day and is not shown.
+            { "summary": "Day out", "start": { "date": "2026-11-11" }, "end": { "date": "2026-11-12" } },
+            // Missing or non-increasing end: one day.
+            { "summary": "No end", "start": { "date": "2026-11-13" } },
+            { "summary": "Same end", "start": { "date": "2026-11-14" }, "end": { "date": "2026-11-14" } },
+            // Entirely before today: not shown.
+            { "summary": "Past", "start": { "date": "2026-11-01" }, "end": { "date": "2026-11-10" } },
+        ]));
+        let s = summary(&build_days(&e, &[], 12, &at(tz(0), "2026-11-10 08:00")));
+        let titles: Vec<Vec<&str>> =
+            s.iter().map(|d| d.2.iter().map(|t| t.split(" | ").next().unwrap()).collect()).collect();
+        assert_eq!(
+            titles,
+            vec![vec!["Holiday"], vec!["Holiday", "Day out"], vec![], vec!["No end"], vec!["Same end"]]
+        );
+        assert!(s.iter().flat_map(|d| &d.2).all(|t| t.ends_with("| All day")));
+    }
+
+    #[test]
+    fn timed_events_over_several_days() {
+        let e = events(json!([
+            // Began yesterday evening, ends this afternoon.
+            { "summary": "Night shift", "start": { "dateTime": "2026-11-09T20:00:00Z" }, "end": { "dateTime": "2026-11-10T15:00:00Z" } },
+            // Four days: first, two middle days, last.
+            { "summary": "Conference", "start": { "dateTime": "2026-11-11T09:30:00Z" }, "end": { "dateTime": "2026-11-14T17:00:00Z" } },
+            // Ends exactly at midnight: one day only.
+            { "summary": "Party", "start": { "dateTime": "2026-11-12T20:00:00Z" }, "end": { "dateTime": "2026-11-13T00:00:00Z" } },
+        ]));
+        let days = build_days(&e, &[], 12, &at(tz(0), "2026-11-10 08:00"));
+        assert_eq!(
+            summary(&days).into_iter().map(|d| d.2).collect::<Vec<_>>(),
+            vec![
+                vec!["Night shift | Until 15:00".to_string()],
+                vec!["Conference | From 9:30".into()],
+                vec!["Conference | All day".into(), "Party | 20:00 - 0:00".into()],
+                vec!["Conference | All day".into()],
+                vec!["Conference | Until 17:00".into()],
+            ]
+        );
+        // Middle days get the all-day icon; first and last days keep the clock.
+        assert!(!days[1].events[0].all_day && days[2].events[0].all_day && !days[4].events[0].all_day);
+        // The local zone decides the days: in UTC+10 the night shift runs from 6:00 on
+        // the 10th to 1:00 on the 11th.
+        let s = summary(&build_days(&e, &[], 12, &at(tz(10), "2026-11-10 08:00")));
+        assert_eq!(s[0].2[0], "Night shift | From 6:00");
+        assert_eq!(s[1].2[0], "Night shift | Until 1:00");
     }
 
     #[test]

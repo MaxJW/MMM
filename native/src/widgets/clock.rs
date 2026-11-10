@@ -12,6 +12,8 @@ pub fn start(ctx: &Ctx) {
     update(ctx.ui);
     let weak = ctx.ui.as_weak();
     timing::every_aligned(timing::REALTIME, move || {
+        // systemd watchdog: this tick runs on the UI thread, so a frozen UI stops it.
+        crate::sd_notify::watchdog();
         if let Some(ui) = weak.upgrade() {
             update(&ui);
         }

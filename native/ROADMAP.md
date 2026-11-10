@@ -77,6 +77,10 @@ Layout of the code:
     src/layout.rs      per-area id lists pushed to Slint; `set_visible`
     src/fetch.rs       fetch scheduler (+ unit tests); `spawn` and `spawn_paced`
     src/google_auth.rs Google OAuth token refresh shared by calendar + google-tasks (Phase 2)
+    src/auth_cli.rs    `mmm-native auth google|spotify` (Phase 3)
+    src/spotify_tokens.rs  spotify-tokens.json: saved Spotify refresh tokens (Phase 3)
+    src/sd_notify.rs   systemd READY=1 / WATCHDOG=1 (Phase 3)
+    deploy/            systemd unit, deploy.sh, README.md (install, deploy, rollback) (Phase 3)
     src/timing.rs      cadences from timing.ts; `every_aligned` wall-clock timers
     src/qr.rs          QR code -> Slint image
     src/widgets/       mod.rs (registry, Ctx) + one file per widget
@@ -267,14 +271,93 @@ Open:
 - Idle CPU (3.4–3.8 %) is above the Phase 0/1 figures. Options: drop or shorten the
   rss-feed crossfade, or accept it. Needs a decision.
 - Spotify needs re-authorised refresh tokens before it can be checked on the device
-  (Phase 3 `mmm auth spotify`).
+  (Phase 3 `mmm-native auth spotify`).
 - Token file ownership: the web container writes `google-tokens.json` as root, so this
-  app cannot persist refreshed Google tokens while the web app is still installed.
+  app cannot persist refreshed Google tokens while the web app is still installed
+  (the cutover steps in deploy/README.md chown it).
 
-## Phase 3: cutover
+## Phase 3: cutover (DONE, 2026-11-10)
 
-- systemd unit, watchdog, rollback path back to Chromium.
-- `mmm auth google|spotify` CLI for OAuth.
+Cutover performed 2026-11-10 21:45: `mmm-native.service` enabled and running on the Pi;
+`dashboard-kiosk.service`, `dashboard-monitor.service`, `kiosk-page-watchdog.service` and
+`dashboard-kiosk-nightly.timer` disabled (not removed); `mirror` container stopped (not
+removed); `google-tokens.json` now owned by max (0600). Pre-cutover backup on the Pi:
+`/home/max/backups/cutover-2026-11-10/`. Measured after cutover with all widgets:
+100 MB PSS, ~3.3% of one core, 0 restarts, watchdog pings arriving.
+
+Still open: Spotify accounts need re-authorising (`mmm-native auth spotify`); not yet
+exercised on the device: Google token refresh + save, `auth` flows, watchdog-triggered
+restart, behaviour across a reboot and across an HDMI drop, `deploy.sh`.
+
+### Phase 3 code notes
+
+Code and deploy files are written and unit-tested. Nothing has been installed on the Pi
+yet. The install, cutover and rollback steps are in `deploy/README.md`.
+
+- **systemd** (`deploy/mmm-native.service`, systemd 252):
+  - `Type=notify`, `NotifyAccess=main`, `WatchdogSec=90`; runs as `max` with the labwc
+    session's `XDG_RUNTIME_DIR`/`WAYLAND_DISPLAY`.
+  - `ExecStartPre` waits up to 30s for `/run/user/1000/wayland-0`.
+  - `Restart=always`, `RestartSec=60`, `StartLimitIntervalSec=0`: at most one start
+    (and so one Polestar login) a minute, and the unit never gives up.
+  - `WantedBy=`/`After=graphical.target`. Deliberately no ordering on
+    `dashboard-kiosk.service`: an ordering cycle of that kind once dropped a unit at boot.
+  - Hardening: `NoNewPrivileges=yes`, `ProtectSystem=full`. No `MemoryMax=` (the Pi
+    has no memory cgroup controller).
+  - `systemd-analyze verify` (systemd 262 on the dev machine) only reports the missing
+    binary path.
+- **sd_notify** (`src/sd_notify.rs`): no new dependency. It sends a datagram to
+  `$NOTIFY_SOCKET` (path or `@` abstract name).
+  - `READY=1` goes out from a zero timer once the event loop runs, i.e. after the window
+    is shown.
+  - `WATCHDOG=1` is sent from the clock widget's 1s UI-thread tick, rate-limited to one
+    per `min(WATCHDOG_USEC/2, 10s)`. A frozen UI stops it. A 10s timer stands in if no
+    clock is placed.
+  - It does nothing without `NOTIFY_SOCKET`. The variables survive the config re-exec,
+    which keeps the same PID.
+- **`deploy/deploy.sh`**:
+  - cross-builds and checks that `readelf` NEEDED shows only libc/libm;
+  - `scp`s the binary to a temp name in `/opt/mmm-native/`;
+  - hard-links the current binary to `mmm-native.prev`;
+  - `mv`s the new one into place;
+  - `sudo systemctl restart mmm-native`.
+- **Spotify tokens** (`spotify-tokens.json` beside the config, `{name: refreshToken}`,
+  written atomically with mode 0600):
+  - For an account whose name has an entry in the file, the file's token wins over
+    `components.spotify.accounts[].refreshToken`. An account may have only a name in
+    config.
+  - Rotated refresh tokens are saved there. If saving fails, or the account has no
+    name, the token stays in memory and this is logged once.
+  - The app never writes `config.json`.
+- **`mmm-native auth google|spotify [--name N] [--config P] [--redirect-uri U]`**:
+  - Terminal only, no Slint. It prints the authorisation URL, the user pastes back the
+    redirected URL, and the command checks `state`, exchanges the code and saves the
+    tokens.
+  - Scopes, `access_type=offline` and the redirect paths are the web app's.
+  - Google always sends `prompt=consent`, so a new refresh token is issued. The web app
+    sent it only when none was stored.
+  - Spotify adds `state`.
+  - Default redirect URIs:
+    - Google: `http://localhost:4000/api/google/callback`;
+    - Spotify: `http://127.0.0.1:4000/api/spotify/callback`. Spotify rejects
+      `localhost`, so this is the web app's path on the loopback IP.
+  - Google tokens go to `google-tokens.json` in the existing format; the running app
+    picks them up. Spotify tokens go to `spotify-tokens.json`, then restart the app. If
+    config has no account with that name, the command says what to add.
+- **Calendar** (decisions made in Phase 3):
+  - Multi-day events are listed on every day they cover in the 5-day window, including
+    ones that began before today. An all-day `end.date` is exclusive.
+  - Timed events over several days show "From 9:30" on the first day, "All day" (with
+    the all-day icon) on days in between, and "Until 17:00" on the last day. An event
+    ending exactly at midnight stays on one day.
+  - Only calendars with `selected == true` are shown. The API's default for a missing
+    `selected` is false; the web app showed those calendars.
+
+Unverified until the cutover:
+- the unit on the Pi (boot ordering, watchdog restarts, ProtectSystem with Mesa);
+- the real OAuth flows. Neither redirect URI default is confirmed as registered, and
+  the Spotify app must have the 127.0.0.1 URI (or pass `--redirect-uri`);
+- `deploy.sh` (written, not run).
 
 ## Future
 
