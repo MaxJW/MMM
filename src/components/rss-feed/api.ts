@@ -52,7 +52,7 @@ interface ParsedRSSItem {
 }
 
 async function fetchFeed(feed: FeedConfig): Promise<Article[]> {
-	const res = await fetch(feed.url);
+	const res = await fetch(feed.url, { signal: AbortSignal.timeout(15_000) });
 	if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 	const xmlText = await res.text();
 
@@ -70,8 +70,14 @@ async function fetchFeed(feed: FeedConfig): Promise<Article[]> {
 	return items.map((item: ParsedRSSItem) => ({
 		title: item.title ? decodeNumericEntities(item.title) : 'Untitled',
 		source: feedTitle,
-		date: item.pubDate ? new Date(item.pubDate).toISOString() : ''
+		date: toISODate(item.pubDate)
 	}));
+}
+
+function toISODate(value: string | undefined): string {
+	if (!value) return '';
+	const date = new Date(value);
+	return isNaN(date.getTime()) ? '' : date.toISOString();
 }
 
 export async function GET(config: RSSConfig): Promise<{ articles: Article[] } | { error: string }> {
@@ -88,7 +94,26 @@ export async function GET(config: RSSConfig): Promise<{ articles: Article[] } | 
 			return { articles: [] };
 		}
 
-		const allArticles = await Promise.all(feeds.map((feed) => fetchFeed(feed)));
+		const results = await Promise.allSettled(feeds.map((feed) => fetchFeed(feed)));
+
+		const allArticles: Article[][] = [];
+		results.forEach((result, i) => {
+			if (result.status === 'fulfilled') {
+				allArticles.push(result.value);
+			} else {
+				const feed = feeds[i];
+				console.error(
+					`RSS feed failed (${feed.sourceName || 'unnamed'} - ${feed.url}):`,
+					result.reason instanceof Error ? result.reason.message : result.reason
+				);
+			}
+		});
+
+		// Only fail (and skip caching) if every feed failed
+		if (allArticles.length === 0) {
+			return { error: 'All RSS feeds failed to load' };
+		}
+
 		const articles = allArticles.flat();
 
 		// Filter to only include articles from the past week
