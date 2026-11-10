@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:media="http://search.yahoo.com/mrss/" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>World news | The Guardian</title>
+    <link>https://www.theguardian.com/world</link>
+    <description>(trimmed)</description>
+    <language>en-gb</language>
+    <copyright>Guardian News and Media Limited or its affiliated companies. All rights reserved. 2026</copyright>
+    <pubDate>Tue, 10 Nov 2026 10:36:22 GMT</pubDate>
+    <dc:date>2026-11-10T10:36:22Z</dc:date>
+    <dc:language>en-gb</dc:language>
+    <dc:rights>Guardian News and Media Limited or its affiliated companies. All rights reserved. 2026</dc:rights>
+    <image>
+      <title>The Guardian</title>
+      <url>https://assets.guim.co.uk/images/guardian-logo-rss.c45beb1bafa34b347ac333af2e6fe23f.png</url>
+      <link>https://www.theguardian.com</link>
+    </image>
+    <item>
+      <title>Collision of two trains in Egypt kills at least seven</title>
+      <link>https://www.theguardian.com/world/2026/nov/08/egypt-two-trains-deadly-collision</link>
+      <description>(trimmed)</description>
+      <category domain="https://www.theguardian.com/world/egypt">Egypt</category>
+      <category domain="https://www.theguardian.com/world/train-crashes">Train crashes</category>
+      <category domain="https://www.theguardian.com/world/rail-transport">Rail transport</category>
+      <category domain="https://www.theguardian.com/world/africa">Africa</category>
+      <category domain="https://www.theguardian.com/world/middleeast">Middle East and north Africa</category>
+      <category domain="https://www.theguardian.com/world/world">World news</category>
+      <pubDate>Sun, 08 Nov 2026 17:51:17 GMT</pubDate>
+      <guid>https://www.theguardian.com/world/2026/nov/08/egypt-two-trains-deadly-collision</guid>
+      <media:content width="140" url="https://i.guim.co.uk/img/media/7527078bbb41cf17b1a35718b70ebdceeada7492/206_271_4462_3569/master/4462.jpg?width=140&amp;quality=85&amp;auto=format&amp;fit=max&amp;s=24b5e48c937f7ee0a5afbdfdeb04cf94">
+        <media:credit scheme="urn:ebu">Photograph: AFP/Getty Images</media:credit>
+      </media:content>
+      <media:content width="460" url="https://i.guim.co.uk/img/media/7527078bbb41cf17b1a35718b70ebdceeada7492/206_271_4462_3569/master/4462.jpg?width=460&amp;quality=85&amp;auto=format&amp;fit=max&amp;s=be400dbf78861cb6c65bfd2d6d5ec67e">
+        <media:credit scheme="urn:ebu">Photograph: AFP/Getty Images</media:credit>
+      </media:content>
+      <media:content width="700" url="https://i.guim.co.uk/img/media/7527078bbb41cf17b1a35718b70ebdceeada7492/206_271_4462_3569/master/4462.jpg?width=700&amp;quality=85&amp;auto=format&amp;fit=max&amp;s=9a7f650e6ba494d56a7a03998e168b5f">
+        <media:credit scheme="urn:ebu">Photograph: AFP/Getty Images</media:credit>
+      </media:content>
+      <dc:creator>Associated Press</dc:creator>
+      <dc:date>2026-11-08T17:51:17Z</dc:date>
+    </item>
+    <item>
+      <title>How African philosophies inspired a new approach to staging film festivals in Manchester</title>
+      <link>https://www.theguardian.com/news/2026/nov/08/african-philosophies-see-my-world-film-festival-manchester</link>
+      <description>(trimmed)</description>
+      <category domain="https://www.theguardian.com/uk/manchester">Manchester</category>
+      <category domain="https://www.theguardian.com/culture/culture">Culture</category>
+      <category domain="https://www.theguardian.com/film/film">Film</category>
+      <category domain="https://www.theguardian.com/stage/theatre">Theatre</category>
+      <category domain="https://www.theguardian.com/uk/uk">UK news</category>
+      <category domain="https://www.theguardian.com/world/colonialism">Colonialism</category>
+      <category domain="https://www.theguardian.com/world/kenya">Kenya</category>
+      <category domain="https://www.theguardian.com/world/africa">Africa</category>
+      <pubDate>Sun, 08 Nov 2026 12:00:39 GMT</pubDate>
+      <guid>https://www.theguardian.com/news/2026/nov/08/african-philosophies-see-my-world-film-festival-manchester</guid>
+      <media:content width="140" url="https://i.guim.co.uk/img/media/bcb07f839060d7b54330feb02b27ea2cae25f696/62_0_2371_1897/master/2371.jpg?width=140&amp;quality=85&amp;auto=format&amp;fit=max&amp;s=aac1a0e90bbdcc40e6993511572b0f95">
+        <media:credit scheme="urn:ebu">Photograph: Omar Balaa</media:credit>
+      </media:content>
+      <media:content width="460" url="https://i.guim.co.uk/img/media/bcb07f839060d7b54330feb02b27ea2cae25f696/62_0_2371_1897/master/2371.jpg?width=460&amp;quality=85&amp;auto=format&amp;fit=max&amp;s=d454c4eee40e85ec50a9c4f4c51d3b9d">
+        <media:credit scheme="urn:ebu">Photograph: Omar Balaa</media:credit>
+      </media:content>
+      <media:content width="700" url="https://i.guim.co.uk/img/media/bcb07f839060d7b54330feb02b27ea2cae25f696/62_0_2371_1897/master/2371.jpg?width=700&amp;quality=85&amp;auto=format&amp;fit=max&amp;s=8654595ccf5516ad30142841d973f554">
+        <media:credit scheme="urn:ebu">Photograph: Omar Balaa</media:credit>
+      </media:content>
+      <dc:creator>Chris Osuh Community affairs correspondent</dc:creator>
+      <dc:date>2026-11-08T12:00:39Z</dc:date>
+    </item>
+    <item>
+      <title>Kenyan doomsday sect leader jailed for 200 years for murder of 190 children</title>
+      <link>https://www.theguardian.com/world/2026/nov/06/kenyan-doomsday-sect-leader-jailed-murders-paul-mackenzie</link>
+      <description>(trimmed)</description>
+      <category domain="https://www.theguardian.com/world/kenya">Kenya</category>
+      <category domain="https://www.theguardian.com/world/christianity">Christianity</category>
+      <category domain="https://www.theguardian.com/world/religion">Religion</category>
+      <category domain="https://www.theguardian.com/world/world">World news</category>
+      <category domain="https://www.theguardian.com/world/africa">Africa</category>
+      <pubDate>Fri, 06 Nov 2026 15:08:43 GMT</pubDate>
+      <guid>https://www.theguardian.com/world/2026/nov/06/kenyan-doomsday-sect-leader-jailed-murders-paul-mackenzie</guid>
+      <media:content width="140" url="https://i.guim.co.uk/img/media/017bd9f3ebe11c01312f4eefff5b6fce391376f3/332_0_3320_2656/master/3320.jpg?width=140&amp;quality=85&amp;auto=format&amp;fit=max&amp;s=de3f13d6c01242a2b2e958fbe65a4439">
+        <media:credit scheme="urn:ebu">Photograph: EPA</media:credit>
+      </media:content>
+      <media:content width="460" url="https://i.guim.co.uk/img/media/017bd9f3ebe11c01312f4eefff5b6fce391376f3/332_0_3320_2656/master/3320.jpg?width=460&amp;quality=85&amp;auto=format&amp;fit=max&amp;s=fe5aa1ace8ab49f452539ee117021b9c">
+        <media:credit scheme="urn:ebu">Photograph: EPA</media:credit>
+      </media:content>
+      <media:content width="700" url="https://i.guim.co.uk/img/media/017bd9f3ebe11c01312f4eefff5b6fce391376f3/332_0_3320_2656/master/3320.jpg?width=700&amp;quality=85&amp;auto=format&amp;fit=max&amp;s=8a0748f8e79a98a7be3eb273d2d19b8d">
+        <media:credit scheme="urn:ebu">Photograph: EPA</media:credit>
+      </media:content>
+      <dc:creator>Carlos Mureithi in Nairobi and agencies</dc:creator>
+      <dc:date>2026-11-06T15:08:43Z</dc:date>
+    </item>
+    <item>
+      <title>ANC faces bruising defeat in South African local elections with 80% of ballots counted</title>
+      <link>https://www.theguardian.com/world/2026/nov/06/anc-faces-defeat-south-african-local-elections</link>
+      <description>(trimmed)</description>
+      <category domain="https://www.theguardian.com/world/anc-african-national-congress">ANC (African National Congress)</category>
+      <category domain="https://www.theguardian.com/world/southafrica">South Africa</category>
+      <category domain="https://www.theguardian.com/world/africa">Africa</category>
+      <category domain="https://www.theguardian.com/world/world">World news</category>
+      <pubDate>Fri, 06 Nov 2026 12:48:37 GMT</pubDate>
+      <guid>https://www.theguardian.com/world/2026/nov/06/anc-faces-defeat-south-african-local-elections</guid>
+      <media:content width="140" url="https://i.guim.co.uk/img/media/ca80f1733421e850930a8c2267b7214219fef832/697_286_4649_3719/master/4649.jpg?width=140&amp;quality=85&amp;auto=format&amp;fit=max&amp;s=f4831bd02c6a91cdc25376cf8e9b3a3b">
+        <media:credit scheme="urn:ebu">Photograph: Siphiwe Sibeko/Reuters</media:credit>
+      </media:content>
+      <media:content width="460" url="https://i.guim.co.uk/img/media/ca80f1733421e850930a8c2267b7214219fef832/697_286_4649_3719/master/4649.jpg?width=460&amp;quality=85&amp;auto=format&amp;fit=max&amp;s=b4ad1607a312706dc717a8bcc71097d3">
+        <media:credit scheme="urn:ebu">Photograph: Siphiwe Sibeko/Reuters</media:credit>
+      </media:content>
+      <media:content width="700" url="https://i.guim.co.uk/img/media/ca80f1733421e850930a8c2267b7214219fef832/697_286_4649_3719/master/4649.jpg?width=700&amp;quality=85&amp;auto=format&amp;fit=max&amp;s=4b52fcd00653a4881aa4fe2b6b753875">
+        <media:credit scheme="urn:ebu">Photograph: Siphiwe Sibeko/Reuters</media:credit>
+      </media:content>
+      <dc:creator>Rachel Savage in Johannesburg</dc:creator>
+      <dc:date>2026-11-06T12:48:37Z</dc:date>
+    </item>
+  </channel>
+</rss>

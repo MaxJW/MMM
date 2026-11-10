@@ -1,0 +1,20 @@
+// A Lucide icon (ui/icons/*.svg, stroke=currentColor) tinted with `color` and centred
+// vertically in its row, like `flex items-center` does for the web app's <svg> icons.
+// (A fixed-size Image placed directly in a HorizontalLayout sits at the top of the row.)
+import { Theme } from "theme.slint";
+
+export component Icon inherits VerticalLayout {
+    in property <image> source;
+    in property <length> size: 24px;
+    in property <color> color: Theme.fg;
+    in property <float> alpha: 1;
+    alignment: center;
+
+    Image {
+        source: root.source;
+        width: root.size;
+        height: root.size;
+        colorize: root.color;
+        opacity: root.alpha;
+    }
+}

@@ -1,0 +1,42 @@
+// Port of src/components/events/component.svelte: the active event's image (by slug),
+// optional text (text-xl) and optional QR code (size-60), centred in a column.
+// The widget is removed from its area when no event is active (src/widgets/events.rs).
+import { Theme, Label } from "../theme.slint";
+
+export global EventsData {
+    in property <string> slug;
+    in property <string> text;
+    in property <image> qr;
+    in property <bool> has-qr;
+}
+
+export component Events inherits VerticalLayout {
+    alignment: start;
+
+    // Images are compiled in, so each slug needs a line here; the file goes in
+    // ui/assets/events/<slug>.png (copied from src/components/events/assets/).
+    if EventsData.slug == "halloween": HorizontalLayout {
+        alignment: center;
+        Image {
+            source: @image-url("../assets/events/halloween.png");
+            width: 612px;
+            height: 612px;
+        }
+    }
+
+    if EventsData.text != "": Label {
+        text: EventsData.text;
+        font-size: Theme.text-xl;
+        horizontal-alignment: center;
+    }
+
+    if EventsData.has-qr: HorizontalLayout {
+        alignment: center;
+        Image {
+            source: EventsData.qr;
+            width: 240px;
+            height: 240px;
+            image-rendering: pixelated;
+        }
+    }
+}

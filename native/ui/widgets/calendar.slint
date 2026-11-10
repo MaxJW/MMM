@@ -1,0 +1,242 @@
+// Port of src/components/calendar/component.svelte. Header (CalendarDays icon +
+// "Upcoming Events", text-lg, opacity-90), then one row per day: the date column
+// (min-w-11, text-3xl date over a text-base weekday) and the events column (pb-3 pl-4),
+// each event with a 2px timeline bar in its calendar's colour (w-0.5), title (text-lg)
+// and time/location lines (text-base, opacity-70, 16px stroke-3 icons at opacity-70).
+// The bottom third of the list fades to black (h-2/6 bg-gradient-to-t from-black).
+// CSS line heights are reproduced with fixed Label heights: text-lg 28px, text-base
+// 24px, text-3xl 36px. Data comes from src/widgets/calendar.rs.
+import { Theme, Label } from "../theme.slint";
+import { Icon } from "../icon.slint";
+
+export struct CalendarEvent {
+    title: string,
+    time: string,
+    location: string,
+    all-day: bool,
+    color: color,
+    first: bool,    // rounded-t
+    last: bool,     // rounded-b
+}
+
+export struct CalendarDay {
+    date: string,
+    day: string,
+    events: [CalendarEvent],
+}
+
+export global CalendarData {
+    // "loading", "error", "auth" (not authenticated) or "days"
+    in property <string> mode: "loading";
+    in property <[CalendarDay]> days;
+}
+
+// A 16px icon on a text-base (24px) line, at opacity-70 inside an opacity-70 line.
+component LineIcon inherits Icon {
+    size: 16px;
+    color: Theme.fg.with-alpha(0.49);
+}
+
+component InfoLine inherits HorizontalLayout {
+    in property <image> icon;
+    in property <string> text;
+    spacing: 8px;    // gap-2
+    LineIcon { source: root.icon; }
+    Label {
+        text: root.text;
+        font-size: Theme.text-base;
+        height: 24px;
+        vertical-alignment: center;
+        color: Theme.fg.with-alpha(0.7);
+    }
+}
+
+// Timeline bar: w-0.5, rounded (4px, so effectively the full 1px) at the day's ends.
+component Bar inherits Rectangle {
+    in property <bool> top;
+    in property <bool> bottom;
+    width: 2px;
+    border-top-left-radius: self.top ? 1px : 0;
+    border-top-right-radius: self.top ? 1px : 0;
+    border-bottom-left-radius: self.bottom ? 1px : 0;
+    border-bottom-right-radius: self.bottom ? 1px : 0;
+}
+
+export component Header inherits HorizontalLayout {
+    in property <image> icon;
+    in property <string> text;
+    spacing: 12px;    // gap-3
+    Icon {
+        source: root.icon;
+        size: 24px;
+        color: Theme.fg.with-alpha(Theme.dim);
+    }
+    Label {
+        text: root.text;
+        font-size: Theme.text-lg;
+        letter-spacing: 0.45px;    // tracking-wide (0.025em)
+        height: 28px;
+        vertical-alignment: center;
+        color: Theme.fg.with-alpha(Theme.dim);
+    }
+}
+
+// "rounded bg-green-600 px-3 py-2 text-white" button; shown, not clickable (no input on the panel).
+export component ConnectButton inherits Rectangle {
+    in property <string> text;
+    background: #00a63e;
+    border-radius: 4px;
+    HorizontalLayout {
+        padding-left: 12px;
+        padding-right: 12px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        Label {
+            text: root.text;
+            color: white;
+            font-size: Theme.text-base;
+            height: 24px;
+            vertical-alignment: center;
+        }
+    }
+}
+
+export component ErrorLine inherits HorizontalLayout {
+    in property <string> text;
+    spacing: 8px;    // gap-2, text-lg text-red-400 opacity-80, 22px icon
+    Icon {
+        source: @image-url("../icons/circle-alert.svg");
+        size: 22px;
+        color: Theme.error.with-alpha(0.8);
+    }
+    Label {
+        text: root.text;
+        font-size: Theme.text-lg;
+        height: 28px;
+        vertical-alignment: center;
+        color: Theme.error.with-alpha(0.8);
+    }
+}
+
+export component Calendar inherits VerticalLayout {
+    alignment: start;
+    spacing: 12px;    // gap-3
+
+    HorizontalLayout {
+        alignment: start;
+        Header {
+            icon: @image-url("../icons/calendar-days.svg");
+            text: "Upcoming Events";
+        }
+    }
+
+    if CalendarData.mode == "loading": Label {
+        text: "Loading calendar…";
+        font-size: Theme.text-lg;
+        height: 28px;
+        vertical-alignment: center;
+    }
+
+    if CalendarData.mode == "error": HorizontalLayout {
+        alignment: start;
+        ErrorLine { text: "Failed to load calendar"; }
+    }
+
+    if CalendarData.mode == "auth": HorizontalLayout {
+        alignment: start;
+        ConnectButton { text: "Connect Google Calendar"; }
+    }
+
+    if CalendarData.mode == "days": Rectangle {
+        min-width: list.min-width;
+        preferred-width: list.preferred-width;
+        min-height: list.min-height;
+        preferred-height: list.preferred-height;
+
+        list := VerticalLayout {
+            width: parent.width;
+            height: parent.height;
+            for day in CalendarData.days: HorizontalLayout {
+                // Date column: min-w-11, items-center.
+                VerticalLayout {
+                    alignment: start;
+                    min-width: 44px;
+                    horizontal-stretch: 0;
+                    Label {
+                        text: day.date;
+                        font-size: Theme.text-3xl;
+                        height: 36px;
+                        vertical-alignment: center;
+                        horizontal-alignment: center;
+                    }
+                    Label {
+                        text: day.day;
+                        font-size: Theme.text-base;
+                        font-weight: 500;    // font-medium
+                        height: 24px;
+                        vertical-alignment: center;
+                        horizontal-alignment: center;
+                        color: Theme.fg.with-alpha(Theme.dim);
+                    }
+                }
+                // Events column: flex-1 pb-3 pl-4.
+                VerticalLayout {
+                    padding-left: 16px;
+                    padding-bottom: 12px;
+                    horizontal-stretch: 1;
+                    if day.events.length == 0: HorizontalLayout {
+                        Bar {
+                            top: true;
+                            bottom: true;
+                            background: #99a1af;    // bg-gray-400
+                            opacity: 0.7;
+                        }
+                        HorizontalLayout {
+                            padding-left: 10px;    // pl-3 minus the 2px bar (the bar is absolute in CSS)
+                            Label {
+                                text: "No events";
+                                font-size: Theme.text-lg;
+                                min-height: 52px;
+                                vertical-alignment: center;
+                                color: Theme.fg.with-alpha(0.6);
+                            }
+                        }
+                    }
+                    for event in day.events: HorizontalLayout {
+                        Bar {
+                            top: event.first;
+                            bottom: event.last;
+                            background: event.color;
+                        }
+                        VerticalLayout {
+                            padding-left: 10px;    // pl-3 minus the 2px bar (the bar is absolute in CSS)
+                            Label {
+                                text: event.title;
+                                font-size: Theme.text-lg;
+                                height: 28px;
+                                vertical-alignment: center;
+                            }
+                            InfoLine {
+                                icon: event.all-day ? @image-url("../icons/circle-s3.svg") : @image-url("../icons/clock-s3.svg");
+                                text: event.time;
+                            }
+                            if event.location != "": InfoLine {
+                                icon: @image-url("../icons/map-pin-s3.svg");
+                                text: event.location;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Fade-out over the bottom third of the list (static, drawn once).
+        Rectangle {
+            x: 0;
+            y: parent.height * 4 / 6;
+            width: parent.width;
+            height: parent.height * 2 / 6;
+            background: @linear-gradient(0deg, black 0%, transparent 100%);
+        }
+    }
+}

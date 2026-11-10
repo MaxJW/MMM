@@ -1,0 +1,48 @@
+{
+  "latitude": 56.0,
+  "longitude": -3.2,
+  "timezone": "Europe/London",
+  "offset": 0.0,
+  "elevation": 52,
+  "currently": {
+    "time": 1794303420,
+    "summary": "Overcast",
+    "icon": "cloudy",
+    "nearestStormDistance": 0,
+    "precipIntensity": 0.0,
+    "precipProbability": 0.04,
+    "precipType": "none",
+    "temperature": 4.32,
+    "apparentTemperature": 1.88,
+    "dewPoint": 2.36,
+    "humidity": 0.87,
+    "pressure": 1008.62,
+    "windSpeed": 4.21,
+    "windGust": 8.9,
+    "windBearing": 233,
+    "cloudCover": 0.96,
+    "uvIndex": 0.4,
+    "visibility": 16.09,
+    "ozone": 291.4
+  },
+  "hourly": {
+    "summary": "Overcast throughout the day.",
+    "icon": "cloudy",
+    "data": [
+      { "time": 1794301200, "summary": "Overcast", "icon": "cloudy", "temperature": 4.1, "pressure": 1008.7, "humidity": 0.88, "windSpeed": 4.0, "uvIndex": 0.2, "precipProbability": 0.03 },
+      { "time": 1794304800, "summary": "Overcast", "icon": "cloudy", "temperature": 4.6, "pressure": 1008.4, "humidity": 0.86, "windSpeed": 4.4, "uvIndex": 0.5, "precipProbability": 0.05 },
+      { "time": 1794308400, "summary": "Mostly Cloudy", "icon": "partly-cloudy-day", "temperature": 5.2, "pressure": 1008.1, "humidity": 0.83, "windSpeed": 4.8, "uvIndex": 0.7, "precipProbability": 0.06 }
+    ]
+  },
+  "daily": {
+    "summary": "Light rain on Friday.",
+    "icon": "rain",
+    "data": [
+      { "time": 1794268800, "summary": "Overcast throughout the day.", "icon": "cloudy", "temperatureHigh": 6.31, "temperatureLow": 1.62, "temperatureMax": 6.31, "temperatureMin": 2.9, "humidity": 0.86, "pressure": 1008.9, "windSpeed": 4.3, "uvIndex": 0.9, "precipProbability": 0.12 },
+      { "time": 1794355200, "summary": "Clear throughout the day.", "icon": "clear-day", "temperatureHigh": 5.9, "temperatureLow": 0.4, "temperatureMax": 6.1, "temperatureMin": 1.2, "humidity": 0.8, "pressure": 1015.2, "windSpeed": 3.1, "uvIndex": 1.2, "precipProbability": 0.02 },
+      { "time": 1794441600, "summary": "Clear throughout the day.", "icon": "clear-day", "temperatureHigh": 6.2, "temperatureLow": 0.2, "temperatureMax": 6.2, "temperatureMin": -0.6, "humidity": 0.79, "pressure": 1018.0, "windSpeed": 2.7, "uvIndex": 1.1, "precipProbability": 0.01 },
+      { "time": 1794528000, "summary": "Light rain in the afternoon.", "icon": "rain", "temperatureHigh": 8.4, "temperatureLow": 4.4, "temperatureMax": 8.4, "temperatureMin": 1.0, "humidity": 0.9, "pressure": 1004.0, "windSpeed": 6.2, "uvIndex": 0.8, "precipProbability": 0.83 }
+    ]
+  },
+  "flags": { "sources": ["ecmwf_ifs", "gfs"], "units": "si", "version": "V2.7" }
+}

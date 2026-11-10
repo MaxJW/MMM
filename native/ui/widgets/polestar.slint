@@ -1,0 +1,255 @@
+// Port of src/components/polestar/component.svelte. Header (car-front 24 + text-lg
+// font-medium, opacity-90), then the car image beside a column of Battery / Range /
+// Odometer. In the right-hand areas the row is reversed and the image mirrored
+// (flex-row-reverse + scaleX(-1)). Line heights follow Tailwind (text-sm 20px,
+// text-lg 28px, text-2xl 32px) so rows land where Chromium puts them.
+// Without data: a static skeleton (the web one pulses), or the error line.
+import { Theme, Label } from "../theme.slint";
+
+export global PolestarData {
+    in property <bool> has-data;
+    in property <string> error;
+    in property <string> battery;
+    in property <bool> charging;
+    in property <bool> low;         // battery <= 20%
+    in property <string> range;     // miles
+    in property <string> odometer;  // miles, grouped
+    in property <bool> right-side;
+}
+
+// A Lucide icon (stroke=currentColor), tinted.
+component Icon inherits Image {
+    in property <length> size;
+    width: self.size;
+    height: self.size;
+    colorize: Theme.fg;
+}
+
+// One CSS line box: glyphs centred in `height`, as half-leading does.
+component Line inherits Label {
+    vertical-alignment: center;
+}
+
+// An inline span sharing a line with larger text: its baseline sits `baseline` below
+// the top of a `line`-tall box. 0.928em is Roboto's ascent.
+component Span inherits Rectangle {
+    in property <string> text;
+    in property <length> size;
+    in property <length> line;
+    in property <length> baseline;
+    in property <int> weight: 700;
+    in property <float> alpha: 1;
+    width: t.preferred-width;
+    height: self.line;
+    t := Label {
+        y: root.baseline - root.size * 0.928;
+        text: root.text;
+        font-size: root.size;
+        font-weight: root.weight;
+        opacity: root.alpha;
+    }
+}
+
+// "Battery" / "Range" / "Odometer": flex items-center gap-2 text-sm opacity-70.
+component StatLabel inherits HorizontalLayout {
+    in property <string> text;
+    in property <image> icon;
+    in property <bool> has-icon: true;
+    alignment: start;
+    spacing: 8px;
+    height: 20px;
+    if root.has-icon: Icon {
+        size: 14px;
+        y: 3px;
+        source: root.icon;
+        opacity: 0.7;
+    }
+    Line {
+        text: root.text;
+        font-size: Theme.text-sm;
+        height: 20px;
+        opacity: 0.7;
+    }
+}
+
+export component Polestar inherits VerticalLayout {
+    alignment: start;
+    spacing: 16px; // gap-4
+
+    header := HorizontalLayout {
+        alignment: start;
+        spacing: 12px;
+        height: 28px;
+        Icon {
+            size: 24px;
+            y: 2px;
+            source: @image-url("../icons/car-front.svg");
+            opacity: Theme.dim;
+        }
+        Line {
+            text: "Polestar";
+            font-size: Theme.text-lg;
+            font-weight: 500;
+            height: 28px;
+            opacity: Theme.dim;
+        }
+    }
+
+    if !PolestarData.has-data && PolestarData.error == "": VerticalLayout {
+        spacing: 8px;
+        HorizontalLayout {
+            alignment: start;
+            Rectangle {
+                width: header.preferred-width * 0.75;
+                height: 16px;
+                border-radius: 4px;
+                background: #ffffff1a;
+            }
+        }
+        HorizontalLayout {
+            alignment: start;
+            Rectangle {
+                width: header.preferred-width * 0.5;
+                height: 16px;
+                border-radius: 4px;
+                background: #ffffff1a;
+            }
+        }
+    }
+
+    if !PolestarData.has-data && PolestarData.error != "": HorizontalLayout {
+        alignment: start;
+        spacing: 8px;
+        Icon {
+            size: 16px;
+            y: 2px;
+            source: @image-url("../icons/triangle-alert.svg");
+            colorize: Theme.error;
+        }
+        Label {
+            text: PolestarData.error;
+            font-size: Theme.text-sm;
+            color: Theme.error;
+            max-width: 480px;
+            wrap: word-wrap;
+        }
+    }
+
+    if PolestarData.has-data: Rectangle {
+        // The image box is w-32 with the PNG's aspect (290x345); the picture itself is
+        // scale-125 about its centre and -translate-x-4, overflowing the box.
+        property <length> box-w: 128px;
+        property <length> box-h: 128px * 345 / 290;
+        property <bool> right: PolestarData.right-side;
+        property <length> box-x: self.right ? stats.preferred-width + 16px : 0;
+        width: stats.preferred-width + 16px + self.box-w;
+        height: max(stats.preferred-height, self.box-h);
+
+        Image {
+            source: @image-url("../assets/polestar/polestar_nose.png");
+            width: parent.box-w * 1.25;
+            height: parent.box-h * 1.25;
+            x: parent.box-x + (parent.right ? 0 : -32px);
+            y: (parent.height - self.height) / 2;
+            transform-scale-x: parent.right ? -100% : 100%;
+        }
+
+        // flex-col justify-center gap-4 py-2 pr-2
+        stats := VerticalLayout {
+            x: parent.right ? 0 : parent.box-w + 16px;
+            y: (parent.height - self.preferred-height) / 2;
+            width: self.preferred-width;
+            height: self.preferred-height;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            padding-right: 8px;
+            spacing: 16px;
+
+            VerticalLayout {
+                spacing: 2px;
+                StatLabel {
+                    text: "Battery";
+                    icon: @image-url("../icons/battery.svg");
+                }
+                // flex items-baseline gap-2: the zap's bottom sits on the baseline (24.2px).
+                HorizontalLayout {
+                    alignment: start;
+                    spacing: 8px;
+                    height: 32px;
+                    if PolestarData.charging: Rectangle {
+                        width: 16px;
+                        Icon {
+                            size: 16px;
+                            x: 0;
+                            y: 8px;
+                            source: @image-url("../icons/zap.svg");
+                            colorize: #facc15; // text-yellow-400 (static; the web one pulses)
+                        }
+                    }
+                    Line {
+                        text: PolestarData.battery;
+                        font-size: Theme.text-2xl;
+                        height: 32px;
+                        // text-green-400 / text-yellow-400 / text-white
+                        color: PolestarData.charging ? #4ade80 : PolestarData.low ? #facc15 : #ffffff;
+                    }
+                }
+            }
+
+            VerticalLayout {
+                spacing: 2px;
+                StatLabel {
+                    text: "Range";
+                    icon: @image-url("../icons/gauge.svg");
+                }
+                HorizontalLayout {
+                    alignment: start;
+                    spacing: 6px; // the space glyph at 24px
+                    height: 32px;
+                    Line {
+                        text: PolestarData.range;
+                        font-size: Theme.text-2xl;
+                        height: 32px;
+                    }
+                    Span {
+                        text: "mi";
+                        size: Theme.text-base;
+                        line: 32px;
+                        baseline: 24.2px;
+                        weight: 400;
+                        alpha: 0.7;
+                    }
+                }
+            }
+
+            VerticalLayout {
+                spacing: 2px;
+                StatLabel {
+                    text: "Odometer";
+                    has-icon: false;
+                }
+                // text-lg font-medium opacity-90, then "mi" text-sm font-normal opacity-70
+                HorizontalLayout {
+                    alignment: start;
+                    spacing: 4.5px;
+                    height: 28px;
+                    Line {
+                        text: PolestarData.odometer;
+                        font-size: Theme.text-lg;
+                        font-weight: 500;
+                        height: 28px;
+                        opacity: Theme.dim;
+                    }
+                    Span {
+                        text: "mi";
+                        size: Theme.text-sm;
+                        line: 28px;
+                        baseline: 20.2px;
+                        weight: 400;
+                        alpha: 0.63;
+                    }
+                }
+            }
+        }
+    }
+}

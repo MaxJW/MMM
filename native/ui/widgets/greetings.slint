@@ -1,0 +1,23 @@
+// Port of src/components/greetings/component.svelte: one centred text-5xl line,
+// leading-none, opacity-90. The greeting text is chosen in src/widgets/greetings.rs.
+import { Theme, Label } from "../theme.slint";
+
+export global GreetingsData {
+    in property <string> text;
+}
+
+export component Greetings {
+    // CSS line box is exactly 48px (leading-none); Roboto's natural line is 1.17em.
+    min-height: 48px;
+    preferred-height: 48px;
+    preferred-width: label.preferred-width;
+
+    label := Label {
+        width: parent.width;
+        y: (parent.height - self.preferred-height) / 2 + 1px;
+        text: GreetingsData.text;
+        font-size: Theme.text-5xl;
+        horizontal-alignment: center;
+        opacity: Theme.dim;
+    }
+}

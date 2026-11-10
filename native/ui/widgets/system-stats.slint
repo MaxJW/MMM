@@ -1,0 +1,91 @@
+// Port of src/components/system-stats/component.svelte: header (activity + "System",
+// tracking-wide), then CPU / Memory / Disk / Temp rows, right-aligned (items-end).
+// Rows are text-lg (28px line boxes) with 20px icons at opacity-80; the Temp row is
+// opacity-90 as a whole. Values come from src/widgets/system_stats.rs ("–" if unknown).
+import { Theme, Label } from "../theme.slint";
+import { Icon } from "../icon.slint";
+
+export global SystemStatsData {
+    in property <string> cpu: "–";
+    in property <string> memory: "–";
+    in property <string> disk: "–";
+    in property <string> temp: "–";
+}
+
+component StatRow inherits HorizontalLayout {
+    in property <image> icon;
+    in property <string> label;
+    in property <string> value;
+    in property <float> row-opacity: 1;
+    alignment: end;
+    spacing: 12px;
+
+    Icon {
+        source: root.icon;
+        size: 20px;
+        alpha: 0.8 * root.row-opacity;
+    }
+    Label {
+        text: root.label;
+        font-size: Theme.text-lg;
+        height: 28px;
+        vertical-alignment: center;
+        opacity: root.row-opacity;
+    }
+    Label {
+        text: root.value;
+        font-size: Theme.text-lg;
+        font-weight: 500;
+        height: 28px;
+        vertical-alignment: center;
+        opacity: root.row-opacity;
+    }
+}
+
+export component SystemStats inherits VerticalLayout {
+    alignment: start;
+    spacing: 12px;
+
+    HorizontalLayout {
+        alignment: end;
+        spacing: 12px;
+        Icon {
+            source: @image-url("../icons/activity.svg");
+            size: 24px;
+            alpha: Theme.dim;
+        }
+        Label {
+            text: "System";
+            font-size: Theme.text-lg;
+            letter-spacing: 0.025 * Theme.text-lg; // tracking-wide
+            height: 28px;
+            vertical-alignment: center;
+            opacity: Theme.dim;
+        }
+    }
+
+    VerticalLayout {
+        spacing: 8px;
+        StatRow {
+            icon: @image-url("../icons/cpu.svg");
+            label: "CPU";
+            value: SystemStatsData.cpu;
+        }
+        StatRow {
+            icon: @image-url("../icons/memory-stick.svg");
+            label: "Memory";
+            value: SystemStatsData.memory;
+        }
+        StatRow {
+            icon: @image-url("../icons/hard-drive.svg");
+            label: "Disk";
+            value: SystemStatsData.disk;
+        }
+        StatRow {
+            icon: @image-url("../icons/thermometer.svg");
+            label: "Temp";
+            value: SystemStatsData.temp;
+            row-opacity: Theme.dim;
+        }
+    }
+}

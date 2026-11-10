@@ -1,0 +1,103 @@
+// Port of src/components/google-tasks/component.svelte: ListTodo header "Tasks Today",
+// then the tasks (gap-2): a 20px square-check icon at opacity-70 and the title
+// (text-lg, truncated), with a due-time line (14px clock, text-base, opacity-70) when
+// a task has a time. Shares the header, error line and connect button with the
+// calendar. Data comes from src/widgets/google_tasks.rs.
+import { Theme, Label } from "../theme.slint";
+import { Icon } from "../icon.slint";
+import { Header, ErrorLine, ConnectButton } from "calendar.slint";
+
+export struct GoogleTask {
+    title: string,
+    time: string,
+}
+
+export global GoogleTasksData {
+    // "loading", "error", "auth" (not authenticated), "empty" or "tasks"
+    in property <string> mode: "loading";
+    in property <[GoogleTask]> tasks;
+}
+
+export component GoogleTasks inherits VerticalLayout {
+    alignment: start;
+    spacing: 12px;    // gap-3
+
+    HorizontalLayout {
+        alignment: start;
+        Header {
+            icon: @image-url("../icons/list-todo.svg");
+            text: "Tasks Today";
+        }
+    }
+
+    if GoogleTasksData.mode == "loading": Label {
+        text: "Loading tasks…";
+        font-size: Theme.text-lg;
+        height: 28px;
+        vertical-alignment: center;
+    }
+
+    if GoogleTasksData.mode == "error": HorizontalLayout {
+        alignment: start;
+        ErrorLine { text: "Failed to load tasks"; }
+    }
+
+    if GoogleTasksData.mode == "auth": VerticalLayout {
+        spacing: 8px;    // gap-2
+        Label {
+            text: "Connect or reconnect Google to show tasks. If you already use Calendar, click to grant Tasks access.";
+            font-size: Theme.text-base;
+            height: 24px;
+            vertical-alignment: center;
+            color: Theme.fg.with-alpha(0.8);
+        }
+        HorizontalLayout {
+            alignment: start;
+            ConnectButton { text: "Connect Google Tasks"; }
+        }
+    }
+
+    if GoogleTasksData.mode == "empty": Label {
+        text: "No tasks due today";
+        font-size: Theme.text-lg;
+        height: 28px;
+        vertical-alignment: center;
+        color: Theme.fg.with-alpha(0.7);
+    }
+
+    if GoogleTasksData.mode == "tasks": VerticalLayout {
+        spacing: 8px;    // gap-2
+        for task in GoogleTasksData.tasks: HorizontalLayout {
+            spacing: 12px;    // gap-3, items-center
+            Icon {
+                source: @image-url("../icons/square-check-big.svg");
+                size: 20px;
+                color: Theme.fg.with-alpha(0.7);
+            }
+            VerticalLayout {
+                Label {
+                    text: task.title;
+                    font-size: Theme.text-lg;
+                    height: 28px;
+                    vertical-alignment: center;
+                    overflow: elide;    // truncate
+                }
+                if task.time != "": HorizontalLayout {
+                    spacing: 8px;
+                    Icon {
+                        source: @image-url("../icons/clock.svg");
+                        size: 14px;
+                        color: Theme.fg.with-alpha(0.7);
+                    }
+                    Label {
+                        text: task.time;
+                        font-size: Theme.text-base;
+                        height: 24px;
+                        vertical-alignment: center;
+                        color: Theme.fg.with-alpha(0.7);
+                    }
+                }
+            }
+        }
+    }
+}

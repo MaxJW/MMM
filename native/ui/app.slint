@@ -1,0 +1,116 @@
+// Dashboard window: positions the layout areas of src/lib/components/Dashboard.svelte.
+// Which widgets sit in which area (and in what order) comes from config at run time
+// (src/layout.rs).
+import "./fonts/Roboto-Regular.ttf";
+import "./fonts/Roboto-Medium.ttf";
+import "./fonts/Roboto-Bold.ttf";
+import { Theme, Label } from "theme.slint";
+
+// ---- Widget registry (Slint side) ------------------------------------------------
+// Two lines per widget: (1) import its component and data global and re-export the
+// global so Rust can reach it; (2) an `if` line in WidgetSlot. The Rust side lists
+// the same widget in src/widgets/mod.rs.
+import { Clock, ClockData } from "widgets/clock.slint"; export { ClockData }
+import { Greetings, GreetingsData } from "widgets/greetings.slint"; export { GreetingsData }
+import { Events, EventsData } from "widgets/events.slint"; export { EventsData }
+import { Weather, WeatherData } from "widgets/weather.slint"; export { WeatherData }
+import { MigraineRisk, MigraineData } from "widgets/migraine-risk.slint"; export { MigraineData }
+import { Calendar, CalendarData } from "widgets/calendar.slint"; export { CalendarData }
+import { GoogleTasks, GoogleTasksData } from "widgets/google-tasks.slint"; export { GoogleTasksData }
+import { RssFeed, RssFeedData } from "widgets/rss-feed.slint"; export { RssFeedData }
+import { Reminders, RemindersData } from "widgets/reminders.slint"; export { RemindersData }
+import { Spotify, SpotifyData, SpotifyRow } from "widgets/spotify.slint"; export { SpotifyData, SpotifyRow }
+import { Polestar, PolestarData } from "widgets/polestar.slint"; export { PolestarData }
+import { Adguard, AdguardData } from "widgets/adguard.slint"; export { AdguardData }
+import { SystemStats, SystemStatsData } from "widgets/system-stats.slint"; export { SystemStatsData }
+import { WifiQrCode, WifiQrCodeData } from "widgets/wifi-qr-code.slint"; export { WifiQrCodeData }
+
+// Renders the widget whose manifest id is `widget` (at most one branch matches).
+component WidgetSlot inherits VerticalLayout {
+    in property <string> widget;
+
+    if root.widget == "clock": Clock { }
+    if root.widget == "greetings": Greetings { }
+    if root.widget == "events": Events { }
+    if root.widget == "weather": Weather { }
+    if root.widget == "migraine-risk": MigraineRisk { }
+    if root.widget == "calendar": Calendar { }
+    if root.widget == "google-tasks": GoogleTasks { }
+    if root.widget == "rss-feed": RssFeed { }
+    if root.widget == "reminders": Reminders { }
+    if root.widget == "spotify": Spotify { }
+    if root.widget == "polestar": Polestar { }
+    if root.widget == "adguard": Adguard { }
+    if root.widget == "system-stats": SystemStats { }
+    if root.widget == "wifi-qr-code": WifiQrCode { }
+}
+// -----------------------------------------------------------------------------------
+
+// One area: a column with gap-6; `align` is the CSS items-start/center/end of the area.
+component Area inherits VerticalLayout {
+    in property <[string]> widgets;
+    in property <LayoutAlignment> align;
+    spacing: Theme.gap;
+    width: self.preferred-width;
+    height: self.preferred-height;
+
+    for id in root.widgets: HorizontalLayout {
+        alignment: root.align;
+        WidgetSlot {
+            widget: id;
+        }
+    }
+}
+
+export component AppWindow inherits Window {
+    // Widget ids per area. Index order must match `Area::ALL` in src/config.rs.
+    in property <[[string]]> areas;
+    // Shown at the bottom of the screen when the config could not be loaded.
+    in property <string> error;
+    // Burn-in nudge (Dashboard.svelte animates 0-2px over 120s; here it steps once a minute).
+    in property <length> nudge;
+
+    title: "MMM";
+    background: black;
+    default-font-family: "Roboto";
+    default-font-weight: 700;
+    preferred-width: 1080px;
+    preferred-height: 1920px;
+
+    Rectangle {
+        y: root.nudge;
+        width: root.width;
+        height: root.height;
+
+        // top-left
+        Area { widgets: root.areas[0]; align: start; x: 0; y: 0; }
+        // top-center
+        Area { widgets: root.areas[1]; align: start; x: (root.width - self.width) / 2; y: 0; }
+        // top-right
+        Area { widgets: root.areas[2]; align: end; x: root.width - self.width; y: 0; }
+        // middle-left
+        Area { widgets: root.areas[3]; align: start; x: 0; y: (root.height - self.height) / 2; }
+        // middle-right
+        Area { widgets: root.areas[4]; align: end; x: root.width - self.width; y: (root.height - self.height) / 2; }
+        // center: bottom edge at 75% of the height
+        Area { widgets: root.areas[5]; align: center; x: (root.width - self.width) / 2; y: root.height * 0.75 - self.height; }
+        // bottom-left / bottom-center / bottom-right: bottom-20
+        Area { widgets: root.areas[6]; align: start; x: 0; y: root.height - 80px - self.height; }
+        Area { widgets: root.areas[7]; align: center; x: (root.width - self.width) / 2; y: root.height - 80px - self.height; }
+        Area { widgets: root.areas[8]; align: end; x: root.width - self.width; y: root.height - 80px - self.height; }
+        // notifications: bottom-4, w-2/3, centred
+        Area { widgets: root.areas[9]; align: center; width: root.width * 2 / 3; x: (root.width - self.width) / 2; y: root.height - 16px - self.height; }
+        // overlay: whole screen, on top
+        Area { widgets: root.areas[10]; align: center; alignment: center; x: 0; y: 0; width: root.width; height: root.height; }
+    }
+
+    if root.error != "": Label {
+        x: 16px;
+        y: root.height - self.height - 16px;
+        width: root.width - 32px;
+        text: root.error;
+        color: Theme.error;
+        font-size: Theme.text-lg;
+        wrap: word-wrap;
+    }
+}

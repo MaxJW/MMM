@@ -1,0 +1,197 @@
+// Port of src/components/weather/component.svelte. Right-aligned column: icon (80) +
+// temperature (text-8xl semibold), condition (text-2xl, my-3), three forecast columns
+// (gap-10), then MeteoAlarm warning cards (350px, gap-4). Line boxes use the CSS line
+// heights with the text centred in them, which is where Chromium puts the glyphs.
+import { Theme, Label } from "../theme.slint";
+
+export struct WeatherDay {
+    day: string,
+    icon: string, // Lucide icon name, "" for none
+    hi: string,
+    lo: string,
+}
+
+export struct WeatherAlert {
+    event: string,
+    dates: string,
+    text: string,
+    level: int, // 0 red, 1 amber, 2 yellow, 3 green, 4 grey
+}
+
+export global WeatherData {
+    in property <bool> loading: true;
+    in property <string> error;
+    in property <bool> has-data;
+    in property <string> temp;
+    in property <string> condition;
+    in property <string> icon;
+    in property <[WeatherDay]> days;
+    in property <[WeatherAlert]> alerts;
+}
+
+// A Lucide icon by name (ui/icons/<name>.svg), drawn in `color`.
+export component LucideIcon inherits Image {
+    in property <string> name;
+    in property <color> color: Theme.fg;
+    colorize: color;
+    source: name == "sun" ? @image-url("../icons/sun.svg")
+        : name == "moon" ? @image-url("../icons/moon.svg")
+        : name == "cloud-rain" ? @image-url("../icons/cloud-rain.svg")
+        : name == "snowflake" ? @image-url("../icons/snowflake.svg")
+        : name == "cloud-hail" ? @image-url("../icons/cloud-hail.svg")
+        : name == "wind" ? @image-url("../icons/wind.svg")
+        : name == "cloud-fog" ? @image-url("../icons/cloud-fog.svg")
+        : name == "cloudy" ? @image-url("../icons/cloudy.svg")
+        : name == "cloud-sun" ? @image-url("../icons/cloud-sun.svg")
+        : name == "cloud-moon" ? @image-url("../icons/cloud-moon.svg")
+        : name == "cloud-lightning" ? @image-url("../icons/cloud-lightning.svg")
+        : name == "cloud-sun-rain" ? @image-url("../icons/cloud-sun-rain.svg")
+        : name == "cloud-off" ? @image-url("../icons/cloud-off.svg")
+        : name == "circle-alert" ? @image-url("../icons/circle-alert.svg")
+        : name == "triangle-alert" ? @image-url("../icons/triangle-alert.svg")
+        : @image-url("");
+}
+
+// Text centred in a CSS line box of height `line`.
+component Line inherits Label {
+    in property <length> line;
+    min-height: line;
+    // A single line keeps exactly the CSS line box, even when it is smaller than
+    // Roboto's natural 1.17em (leading-none); wrapped text may grow.
+    max-height: self.wrap == TextWrap.no-wrap ? line : 10000px;
+    vertical-alignment: center;
+}
+
+component AlertCard inherits Rectangle {
+    in property <WeatherAlert> alert;
+    // bg-red-600/amber-500/yellow-400/green-200/gray-300 (Tailwind v4 colours as sRGB).
+    property <color> ink: alert.level == 0 ? white : black;
+    width: 350px;
+    border-radius: 8px; // rounded-lg
+    background: alert.level == 0 ? #e7000b
+        : alert.level == 1 ? #fe9a00
+        : alert.level == 2 ? #fdc700
+        : alert.level == 3 ? #b9f8cf
+        : #d1d5dc;
+
+    VerticalLayout {
+        padding: 16px; // p-4
+        spacing: 8px; // mt-2
+        HorizontalLayout {
+            spacing: 16px; // gap-4, items-center
+            VerticalLayout {
+                alignment: center;
+                LucideIcon { name: "circle-alert"; color: root.ink; width: 30px; height: 30px; }
+            }
+            VerticalLayout {
+                // text-xl leading-tight font-semibold; the dates inherit leading-tight.
+                Line {
+                    text: root.alert.event;
+                    line: 25px;
+                    font-size: Theme.text-xl;
+                    font-weight: 600;
+                    color: root.ink;
+                    wrap: word-wrap;
+                }
+                Line {
+                    text: root.alert.dates;
+                    line: 17.5px;
+                    font-size: Theme.text-sm;
+                    color: root.ink;
+                    opacity: 0.8;
+                    wrap: word-wrap;
+                }
+            }
+        }
+        if root.alert.text != "": Line {
+            text: root.alert.text;
+            line: 22px; // text-base leading-snug
+            font-size: Theme.text-base;
+            color: root.ink;
+            wrap: word-wrap;
+        }
+    }
+}
+
+export component Weather inherits VerticalLayout {
+    alignment: start;
+    spacing: Theme.gap; // the weather block and the alerts are separate items of the area
+
+    if WeatherData.loading: HorizontalLayout {
+        alignment: end;
+        Line { text: "Loading weather…"; line: 28px; font-size: Theme.text-xl; }
+    }
+
+    if !WeatherData.loading && WeatherData.error != "": HorizontalLayout {
+        alignment: end;
+        Line {
+            text: WeatherData.error;
+            line: 28px;
+            font-size: Theme.text-xl;
+            color: Theme.error;
+            opacity: Theme.dim;
+        }
+    }
+
+    if !WeatherData.loading && WeatherData.error == "" && WeatherData.has-data: VerticalLayout {
+        HorizontalLayout {
+            alignment: end;
+            spacing: 24px; // gap-6
+            VerticalLayout {
+                alignment: center;
+                LucideIcon { name: WeatherData.icon; width: 80px; height: 80px; }
+            }
+            Line {
+                text: WeatherData.temp;
+                line: 96px; // text-8xl, line-height 1
+                font-size: 96px;
+                font-weight: 600;
+            }
+        }
+        HorizontalLayout {
+            alignment: end;
+            padding-top: 12px; // my-3
+            padding-bottom: 12px;
+            Line {
+                text: WeatherData.condition;
+                line: 33px; // text-2xl leading-snug
+                font-size: Theme.text-2xl;
+                max-width: 384px; // max-w-[24rem]
+                wrap: word-wrap;
+                horizontal-alignment: right;
+                opacity: Theme.dim;
+            }
+        }
+        HorizontalLayout {
+            alignment: end;
+            spacing: 40px; // gap-10
+            for day in WeatherData.days: VerticalLayout {
+                spacing: 12px; // gap-3
+                Line {
+                    text: day.day;
+                    line: 28px;
+                    font-size: Theme.text-xl;
+                    horizontal-alignment: center;
+                    opacity: 0.8;
+                }
+                HorizontalLayout {
+                    alignment: center;
+                    LucideIcon { name: day.icon; width: 36px; height: 36px; }
+                }
+                HorizontalLayout {
+                    alignment: center;
+                    Line { text: day.hi; line: 28px; font-size: Theme.text-xl; }
+                    Line { text: " / " + day.lo; line: 28px; font-size: Theme.text-xl; opacity: 0.7; }
+                }
+            }
+        }
+    }
+
+    if WeatherData.alerts.length > 0: VerticalLayout {
+        spacing: 16px; // gap-4
+        for alert in WeatherData.alerts: HorizontalLayout {
+            alignment: end;
+            AlertCard { alert: alert; }
+        }
+    }
+}

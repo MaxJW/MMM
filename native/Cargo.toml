@@ -1,0 +1,65 @@
+[package]
+name = "mmm-native"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Native (Slint) replacement for the MMM Chromium kiosk dashboard"
+
+# Renderer is chosen at build time via features and at run time via SLINT_BACKEND
+# (e.g. SLINT_BACKEND=winit-femtovg | winit-software | winit-skia).
+[features]
+default = ["femtovg"]
+femtovg = ["slint/renderer-femtovg"]
+software = ["slint/renderer-software"]
+skia = ["slint/renderer-skia"]
+
+[dependencies]
+slint = { version = "=1.18.1", default-features = false, features = [
+    "std",
+    "compat-1-2",
+    "backend-winit-wayland",
+] }
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# Network data for widgets (see src/fetch.rs). rustls with the ring provider and
+# bundled Mozilla roots: no OpenSSL/aws-lc, no system cert store, links only libc.
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls-webpki-roots", "json"] }
+tokio = { version = "1", default-features = false, features = ["rt", "time", "sync"] }
+# IANA time zone lookup (google-tasks `timezone`) from the system tzdb (/usr/share/zoneinfo).
+jiff = { version = "0.2", default-features = false, features = ["std", "tzdb-zoneinfo"] }
+# Polestar PKCE login: SHA-256 + CSPRNG and base64url. Both crates are already in the
+# tree (ring via rustls, base64 0.22 via reqwest), so nothing new is compiled.
+ring = { version = "0.17", default-features = false }
+base64 = "0.22"
+# QR matrix only (no image/svg renderers); pixels are drawn in src/qr.rs.
+qrcode = { version = "0.14", default-features = false }
+# statvfs("/") for the system-stats disk figure; already in the tree via wayland/winit (pure Rust).
+rustix = { version = "1.1", features = ["fs"] }
+# Album art decoding (spotify). Slint's runtime already builds image 0.25 with exactly
+# these features (pure Rust, zune-jpeg/png), so this adds no new code.
+image = { version = "0.25", default-features = false, features = ["jpeg", "png"] }
+# RSS/Atom parsing (rss-feed) and the MeteoAlarm Atom feed (weather). Pure Rust; already
+# in the tree via Slint's SVG support.
+roxmltree = "0.21"
+
+# Not used directly: enables dlopen of libfontconfig in Slint's font stack, so the
+# binary does not link fontconfig and cross-compiling needs no aarch64 sysroot.
+# Must match the fontique version slint pulls in (check `cargo tree -i fontique`).
+[target.'cfg(target_os = "linux")'.dependencies]
+fontique = { version = "=0.11.1", default-features = false, features = ["fontconfig-dlopen"] }
+
+[dev-dependencies]
+tokio = { version = "1", default-features = false, features = ["rt", "time", "macros", "test-util"] }
+
+[build-dependencies]
+slint-build = "=1.18.1"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+# Unwind (not abort) so a panic in one fetch job or widget callback is caught and
+# isolated instead of taking the whole display down.
+panic = "unwind"
+strip = true

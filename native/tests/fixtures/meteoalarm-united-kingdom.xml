@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2">
+  <link rel="hub" href="https://pubsubhubbub.appspot.com/"/>
+  <link type="application/atom+xml" rel="self" href="https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-united-kingdom"/>
+  <link type="text/html" rel="alternate" href="https://meteoalarm.org"/>
+  <rights>Copyright © 2026 MeteoAlarm.Org. Licensed under terms equivalent to CC BY 4.0, with additional requirements for redistributing outlined in our Terms and Conditions.</rights>
+  <generator>MeteoAlarm Producer Server</generator>
+  <logo>https://feeds.meteoalarm.org/images/logo.svg</logo>
+  <author>
+    <name>meteoalarm.org</name>
+    <uri>https://meteoalarm.org</uri>
+    <email>meteoalarm@geosphere.at</email>
+  </author>
+  <id>tag:meteoalarm.org,2021-02-19:UK</id>
+  <title>MeteoAlarm - Alerting Europe for Extreme Weather</title>
+  <updated>2026-11-10T10:35:36.177343Z</updated>
+  <entry>
+    <cap:polygon>52.7625,0.4261 52.7616,0.4412 52.7626,0.4566</cap:polygon>
+    <link title="East Midlands | East of England | London &amp; South East England | North West England | South West England | Wales | West Midlands | Yorkshire &amp; Humber" href="https://meteoalarm.org?polygon=d8cd0eee-39f2-4bcd-9537-15896bc0adeb,0,0,0" hreflang="en"/>
+    <cap:areaDesc>East Midlands | East of England | London &amp; South East England | North West England | South West England | Wales | West Midlands | Yorkshire &amp; Humber</cap:areaDesc>
+    <cap:event>Yellow fog warning</cap:event>
+    <cap:sent>2026-11-09T08:45:27+00:00</cap:sent>
+    <cap:expires>2026-11-10T10:00:00+00:00</cap:expires>
+    <cap:onset>2026-11-09T18:00:00+00:00</cap:onset>
+    <cap:certainty>Likely</cap:certainty>
+    <cap:severity>Moderate</cap:severity>
+    <cap:urgency>Future</cap:urgency>
+    <cap:scope>Public</cap:scope>
+    <cap:message_type>Alert</cap:message_type>
+    <cap:status>Actual</cap:status>
+    <cap:identifier>2.49.0.0.826.0.GB_261109084527_cdb621a0.v1.0.F</cap:identifier>
+    <link type="application/cap+xml" href="https://feeds.meteoalarm.org/api/v1/warnings/feeds-united-kingdom/d8cd0eee-39f2-4bcd-9537-15896bc0adeb"/>
+    <link title="United Kingdom" rel="related" href="https://meteoalarm.org?region=UK" hreflang="en"/>
+    <author>
+      <name>meteoalarm.org</name>
+      <uri>https://meteoalarm.org</uri>
+    </author>
+    <published>2026-11-09T08:45:27Z</published>
+    <id>https://feeds.meteoalarm.org/api/v1/warnings/feeds-united-kingdom/d8cd0eee-39f2-4bcd-9537-15896bc0adeb?index_info=0&amp;index_area=0&amp;index_polygon=0</id>
+    <title>Yellow Fog Warning issued for United Kingdom - East Midlands | East of England | London &amp; South East England | North West England | South West England | Wales | West Midlands | Yorkshire &amp; Humber</title>
+    <updated>2026-11-09T08:45:27Z</updated>
+  </entry>
+  <entry>
+    <cap:polygon>54.4412,-8.1679 54.4404,-8.1677 54.4396,-8.1671</cap:polygon>
+    <link title="Northern Ireland" href="https://meteoalarm.org?polygon=db039de4-7a51-4f43-b5c8-db011616d38c,0,0,0" hreflang="en"/>
+    <cap:areaDesc>Northern Ireland</cap:areaDesc>
+    <cap:event>Yellow fog warning</cap:event>
+    <cap:sent>2026-11-08T21:53:10+00:00</cap:sent>
+    <cap:expires>2026-11-09T10:00:00+00:00</cap:expires>
+    <cap:onset>2026-11-08T22:00:00+00:00</cap:onset>
+    <cap:certainty>Likely</cap:certainty>
+    <cap:severity>Moderate</cap:severity>
+    <cap:urgency>Immediate</cap:urgency>
+    <cap:scope>Public</cap:scope>
+    <cap:message_type>Alert</cap:message_type>
+    <cap:status>Actual</cap:status>
+    <cap:identifier>2.49.0.0.826.0.GB_261108215310_ff9bc895.v1.0.F</cap:identifier>
+    <link type="application/cap+xml" href="https://feeds.meteoalarm.org/api/v1/warnings/feeds-united-kingdom/db039de4-7a51-4f43-b5c8-db011616d38c"/>
+    <link title="United Kingdom" rel="related" href="https://meteoalarm.org?region=UK" hreflang="en"/>
+    <author>
+      <name>meteoalarm.org</name>
+      <uri>https://meteoalarm.org</uri>
+    </author>
+    <published>2026-11-08T21:53:10Z</published>
+    <id>https://feeds.meteoalarm.org/api/v1/warnings/feeds-united-kingdom/db039de4-7a51-4f43-b5c8-db011616d38c?index_info=0&amp;index_area=0&amp;index_polygon=0</id>
+    <title>Yellow Fog Warning issued for United Kingdom - Northern Ireland</title>
+    <updated>2026-11-08T21:53:10Z</updated>
+  </entry>
+  <entry>
+    <cap:polygon>53.994,-0.8691 53.9839,-0.8303 53.9736,-0.7911</cap:polygon>
+    <link title="East Midlands | East of England | London &amp; South East England | North West England | South West England | Wales | West Midlands | Yorkshire &amp; Humber" href="https://meteoalarm.org?polygon=490057af-d66d-4729-82cb-fc46981f799e,0,0,0" hreflang="en"/>
+    <cap:areaDesc>East Midlands | East of England | London &amp; South East England | North West England | South West England | Wales | West Midlands | Yorkshire &amp; Humber</cap:areaDesc>
+    <cap:event>Yellow fog warning</cap:event>
+    <cap:sent>2026-11-08T09:58:22+00:00</cap:sent>
+    <cap:expires>2026-11-09T11:00:00+00:00</cap:expires>
+    <cap:onset>2026-11-08T18:00:00+00:00</cap:onset>
+    <cap:certainty>Likely</cap:certainty>
+    <cap:severity>Moderate</cap:severity>
+    <cap:urgency>Future</cap:urgency>
+    <cap:scope>Public</cap:scope>
+    <cap:message_type>Alert</cap:message_type>
+    <cap:status>Actual</cap:status>
+    <cap:identifier>2.49.0.0.826.0.GB_261108095822_dd63f8cc.v1.0.F</cap:identifier>
+    <link type="application/cap+xml" href="https://feeds.meteoalarm.org/api/v1/warnings/feeds-united-kingdom/490057af-d66d-4729-82cb-fc46981f799e"/>
+    <link title="United Kingdom" rel="related" href="https://meteoalarm.org?region=UK" hreflang="en"/>
+    <author>
+      <name>meteoalarm.org</name>
+      <uri>https://meteoalarm.org</uri>
+    </author>
+    <published>2026-11-08T09:58:22Z</published>
+    <id>https://feeds.meteoalarm.org/api/v1/warnings/feeds-united-kingdom/490057af-d66d-4729-82cb-fc46981f799e?index_info=0&amp;index_area=0&amp;index_polygon=0</id>
+    <title>Yellow Fog Warning issued for United Kingdom - East Midlands | East of England | London &amp; South East England | North West England | South West England | Wales | West Midlands | Yorkshire &amp; Humber</title>
+    <updated>2026-11-08T09:58:22Z</updated>
+  </entry>
+</feed>

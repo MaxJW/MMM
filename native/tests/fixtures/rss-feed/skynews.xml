@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <atom:link href="https://news-api.cf.sky.com/feeds/rss/home.xml" rel="self" type="application/rss+xml"/>
+    <title>The Latest News from the UK and Around the World | Sky News</title>
+    <link>https://news.sky.com/home</link>
+    <image>
+      <title>The Latest News from the UK and Around the World | Sky News</title>
+      <url>https://e3.365dm.com/skynews/logo.png</url>
+      <link>https://news.sky.com/home</link>
+    </image>
+    <description>(trimmed)</description>
+    <language>en-GB</language>
+    <copyright>Copyright 2026, Sky UK. All Rights Reserved.</copyright>
+    <lastBuildDate>Tue, 10 Nov 2026 06:37:00 +0000</lastBuildDate>
+    <category>Sky News</category>
+    <ttl>1</ttl>
+    <item>
+      <title>Hundreds more prisoners being released early</title>
+      <link>https://news.sky.com/story/hundreds-more-prisoners-being-freed-early-in-latest-wave-of-scheme-13610445</link>
+      <description>(trimmed)</description>
+      <pubDate>Tue, 10 Nov 2026 06:37:00 +0000</pubDate>
+      <guid>https://news.sky.com/story/hundreds-more-prisoners-being-freed-early-in-latest-wave-of-scheme-13610445</guid>
+      <enclosure url="https://e3.365dm.com/26/11/1920x1080/skynews-prisoner-release-hmp-wandsworth_7402767.jpg?20261110093552" length="0" type="image/jpeg"/>
+      <media:description type="html">Prisoner released from HMP Wandsworth. Pic: PA</media:description>
+      <media:thumbnail url="https://e3.365dm.com/26/11/1920x1080/skynews-prisoner-release-hmp-wandsworth_7402767.jpg?20261110093552" width="1920" height="1080"/>
+      <media:content type="image/jpeg" url="https://e3.365dm.com/26/11/1920x1080/skynews-prisoner-release-hmp-wandsworth_7402767.jpg?20261110093552"/>
+    </item>
+    <item>
+      <title>New interactive tool reveals weather patterns in your area</title>
+      <link>https://news.sky.com/story/the-weather-record-search-your-postcode-to-see-if-a-wet-start-to-autumn-has-made-up-for-the-dry-summer-where-you-live-13610298</link>
+      <description>(trimmed)</description>
+      <pubDate>Tue, 10 Nov 2026 03:22:00 +0000</pubDate>
+      <guid>https://news.sky.com/story/the-weather-record-search-your-postcode-to-see-if-a-wet-start-to-autumn-has-made-up-for-the-dry-summer-where-you-live-13610298</guid>
+      <enclosure url="https://e3.365dm.com/26/10/1920x1080/skynews-weather-lookup-tool_7369573.png?20261006120830" length="0" type="image/png"/>
+      <media:description type="html"> </media:description>
+      <media:thumbnail url="https://e3.365dm.com/26/10/1920x1080/skynews-weather-lookup-tool_7369573.png?20261006120830" width="1920" height="1080"/>
+      <media:content type="image/png" url="https://e3.365dm.com/26/10/1920x1080/skynews-weather-lookup-tool_7369573.png?20261006120830"/>
+    </item>
+    <item>
+      <title>FBI investigating Nvidia CEO over affair with alleged Chinese spy </title>
+      <link>https://news.sky.com/story/fbi-to-investigate-nvidia-ceo-over-affair-with-alleged-chinese-spy-trump-says-13610382</link>
+      <description>(trimmed)</description>
+      <pubDate>Tue, 10 Nov 2026 02:06:00 +0000</pubDate>
+      <guid>https://news.sky.com/story/fbi-to-investigate-nvidia-ceo-over-affair-with-alleged-chinese-spy-trump-says-13610382</guid>
+      <enclosure url="https://e3.365dm.com/26/11/1920x1080/skynews-jensen-huang-nvidia_7402606.jpg?20261110022343" length="0" type="image/jpeg"/>
+      <media:description type="html">Jensen Huang. Reuters file pic</media:description>
+      <media:thumbnail url="https://e3.365dm.com/26/11/1920x1080/skynews-jensen-huang-nvidia_7402606.jpg?20261110022343" width="1920" height="1080"/>
+      <media:content type="image/jpeg" url="https://e3.365dm.com/26/11/1920x1080/skynews-jensen-huang-nvidia_7402606.jpg?20261110022343"/>
+    </item>
+    <item>
+      <title>FDA orders blindness risk warning on weight loss drugs</title>
+      <link>https://news.sky.com/story/fda-orders-blindness-risk-warning-on-weight-loss-drugs-13610424</link>
+      <description>(trimmed)</description>
+      <pubDate>Tue, 10 Nov 2026 00:24:00 +0000</pubDate>
+      <guid>https://news.sky.com/story/fda-orders-blindness-risk-warning-on-weight-loss-drugs-13610424</guid>
+      <enclosure url="https://e3.365dm.com/26/06/1920x1080/skynews-wegovy-weight-loss_7270949.jpg?20260611170032" length="0" type="image/jpeg"/>
+      <media:description type="html">The Wegovy pill, pictured, is manufactured by Danish healthcare firm Novo Nordisk. Pic: Novo Nordisk</media:description>
+      <media:thumbnail url="https://e3.365dm.com/26/06/1920x1080/skynews-wegovy-weight-loss_7270949.jpg?20260611170032" width="1920" height="1080"/>
+      <media:content type="image/jpeg" url="https://e3.365dm.com/26/06/1920x1080/skynews-wegovy-weight-loss_7270949.jpg?20260611170032"/>
+    </item>
+  </channel>
+</rss>

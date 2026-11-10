@@ -1,0 +1,94 @@
+// Port of src/components/rss-feed/component.svelte: one centred headline (text-2xl)
+// over "source · HH:mm DD/MM" (text-base, opacity-80), gap-1. A new headline crossfades
+// over the old one (Svelte `transition:fade`, 400ms). Status lines are text-2xl
+// opacity-80 ("No articles available" is text-xl), with a circle-alert icon for errors.
+// Data and rotation: src/widgets/rss_feed.rs.
+import { Theme, Label } from "../theme.slint";
+import { Icon } from "../icon.slint";
+
+export global RssFeedData {
+    // 0 loading, 1 every feed failed, 2 no recent articles, 3 headline
+    in property <int> mode;
+    // Two overlaid layers; `front-a` says which one is showing.
+    in property <string> title-a;
+    in property <string> meta-a;
+    in property <string> title-b;
+    in property <string> meta-b;
+    in property <bool> front-a;
+}
+
+component Headline inherits VerticalLayout {
+    in property <string> title;
+    in property <string> meta;
+    spacing: 4px; // gap-1
+
+    Label {
+        text: root.title;
+        font-size: Theme.text-2xl;
+        wrap: word-wrap;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+        min-height: 32px; // CSS line height of text-2xl
+    }
+
+    Label {
+        text: root.meta;
+        font-size: Theme.text-base;
+        opacity: 0.8;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+        height: 24px;
+    }
+}
+
+export component RssFeed inherits VerticalLayout {
+    // The notifications area is w-2/3 of the 1080px panel; long titles wrap at that width.
+    property <length> max-line: 720px;
+    alignment: start;
+
+    if RssFeedData.mode != 3: HorizontalLayout {
+        alignment: center;
+        spacing: 8px; // gap-2
+
+        if RssFeedData.mode == 1: Icon {
+            source: @image-url("../icons/circle-alert.svg");
+            size: 22px;
+            alpha: 0.8;
+        }
+
+        Label {
+            text: RssFeedData.mode == 0 ? "Loading feed..." : RssFeedData.mode == 1 ? "Feed unavailable" : "No articles available";
+            font-size: RssFeedData.mode == 2 ? Theme.text-xl : Theme.text-2xl;
+            height: RssFeedData.mode == 2 ? 28px : 32px;
+            vertical-alignment: center;
+            opacity: 0.8;
+        }
+    }
+
+    if RssFeedData.mode == 3: Rectangle {
+        preferred-width: RssFeedData.front-a ? a.width : b.width;
+        preferred-height: RssFeedData.front-a ? a.height : b.height;
+
+        a := Headline {
+            title: RssFeedData.title-a;
+            meta: RssFeedData.meta-a;
+            width: min(self.preferred-width, root.max-line);
+            height: self.preferred-height;
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            opacity: RssFeedData.front-a ? 1 : 0;
+            animate opacity { duration: 400ms; }
+        }
+
+        b := Headline {
+            title: RssFeedData.title-b;
+            meta: RssFeedData.meta-b;
+            width: min(self.preferred-width, root.max-line);
+            height: self.preferred-height;
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            opacity: RssFeedData.front-a ? 0 : 1;
+            animate opacity { duration: 400ms; }
+        }
+    }
+}

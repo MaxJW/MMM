@@ -1,0 +1,150 @@
+// Port of src/components/adguard/component.svelte: header (shield + "AdGuard"), then
+// either "Loading…", an error line, or queries / blocked counts and the block-rate bar.
+// Boxes follow the CSS: text-lg rows are 28px tall (Tailwind line-height), gap-3 = 12px,
+// gap-2 = 8px, mt-2 + gap-1 around the bar. Data comes from src/widgets/adguard.rs.
+import { Theme, Label } from "../theme.slint";
+import { Icon } from "../icon.slint";
+
+export global AdguardData {
+    in property <bool> loading: true;
+    // Shown only while there are no stats yet (the Rust side clears it on success).
+    in property <string> error;
+    in property <string> queries;
+    in property <string> blocked;
+    in property <string> rate-text;
+    // Block rate as 0..1, for the bar.
+    in property <float> rate;
+}
+
+component StatRow inherits HorizontalLayout {
+    in property <image> icon;
+    in property <string> label;
+    in property <string> value;
+    alignment: start;
+    spacing: 12px;
+
+    Icon {
+        source: root.icon;
+        size: 18px;
+        alpha: 0.8;
+    }
+    Label {
+        text: root.label;
+        font-size: Theme.text-base;
+        height: 28px;
+        vertical-alignment: center;
+    }
+    Label {
+        text: root.value;
+        font-size: Theme.text-lg;
+        font-weight: 500;
+        height: 28px;
+        vertical-alignment: center;
+    }
+}
+
+export component Adguard inherits VerticalLayout {
+    alignment: start;
+    spacing: 12px;
+
+    HorizontalLayout {
+        alignment: end;
+        spacing: 12px;
+        Icon {
+            source: @image-url("../icons/shield.svg");
+            size: 24px;
+            alpha: Theme.dim;
+        }
+        Label {
+            text: "AdGuard";
+            font-size: Theme.text-lg;
+            height: 28px;
+            vertical-alignment: center;
+            opacity: Theme.dim;
+        }
+    }
+
+    if AdguardData.error != "": HorizontalLayout {
+        alignment: end;
+        spacing: 8px;
+        Icon {
+            source: @image-url("../icons/circle-alert.svg");
+            size: 22px;
+            color: Theme.error;
+            alpha: 0.8;
+        }
+        Label {
+            text: AdguardData.error;
+            color: Theme.error;
+            font-size: Theme.text-lg;
+            height: 28px;
+            vertical-alignment: center;
+            opacity: 0.8;
+        }
+    }
+
+    if AdguardData.error == "" && AdguardData.loading: HorizontalLayout {
+        alignment: end;
+        Label {
+            text: "Loading…";
+            font-size: Theme.text-lg;
+            height: 28px;
+            vertical-alignment: center;
+            opacity: 0.8;
+        }
+    }
+
+    if AdguardData.error == "" && !AdguardData.loading: HorizontalLayout {
+        alignment: end;
+        VerticalLayout {
+            spacing: 8px;
+            StatRow {
+                icon: @image-url("../icons/globe.svg");
+                label: "Queries";
+                value: AdguardData.queries;
+            }
+            StatRow {
+                icon: @image-url("../icons/ban.svg");
+                label: "Blocked";
+                value: AdguardData.blocked;
+            }
+            VerticalLayout {
+                padding-top: 8px; // mt-2
+                spacing: 4px;
+                HorizontalLayout {
+                    Label {
+                        text: "Block Rate";
+                        font-size: Theme.text-sm;
+                        height: 20px;
+                        vertical-alignment: center;
+                        opacity: 0.7;
+                    }
+                    Rectangle {
+                        horizontal-stretch: 1;
+                    }
+                    Label {
+                        text: AdguardData.rate-text;
+                        font-size: Theme.text-sm;
+                        font-weight: 500;
+                        height: 20px;
+                        vertical-alignment: center;
+                    }
+                }
+                // h-1 rounded-full bg-neutral-800 track with a bg-neutral-100 fill.
+                Rectangle {
+                    height: 4px;
+                    border-radius: 2px;
+                    background: #262626;
+                    clip: true;
+                    Rectangle {
+                        x: 0;
+                        width: parent.width * clamp(AdguardData.rate, 0, 1);
+                        height: parent.height;
+                        border-radius: 2px;
+                        background: Theme.fg;
+                    }
+                }
+            }
+        }
+    }
+}

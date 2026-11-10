@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:media="http://search.yahoo.com/mrss/" xmlns:slash="http://purl.org/rss/1.0/modules/slash/" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" version="2.0">
+    <channel>
+        <title>Ars Technica - All content</title>
+        <atom:link href="https://arstechnica.com/feed/" rel="self" type="application/rss+xml"/>
+        <link>https://arstechnica.com</link>
+        <description>(trimmed)</description>
+        <lastBuildDate>Mon, 09 Nov 2026 22:30:34 +0000</lastBuildDate>
+        <language>en-US</language>
+        <sy:updatePeriod>
+            hourly        </sy:updatePeriod>
+        <sy:updateFrequency>
+            1        </sy:updateFrequency>
+        
+<image>
+	<url>https://cdn.arstechnica.net/wp-content/uploads/2016/10/cropped-ars-logo-512_480-60x60.png</url>
+	<title>Ars Technica</title>
+	<link>https://arstechnica.com</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+            <item>
+                <title>DCU shake-up: James Gunn and Peter Safran out post-merger</title>
+                <link>https://arstechnica.com/culture/2026/11/dcu-shake-up-james-gunn-and-peter-safran-out-post-merger/</link>
+                                    <comments>https://arstechnica.com/culture/2026/11/dcu-shake-up-james-gunn-and-peter-safran-out-post-merger/#comments</comments>
+                
+                <dc:creator>
+                    <![CDATA[Jennifer Ouellette]]>
+                </dc:creator>
+                <pubDate>Mon, 09 Nov 2026 21:55:35 +0000</pubDate>
+                		<category><![CDATA[Culture]]></category>
+		<category><![CDATA[DCU]]></category>
+		<category><![CDATA[James Gunn]]></category>
+		<category><![CDATA[Peter Safran]]></category>
+		<category><![CDATA[skydance]]></category>
+                <guid isPermaLink="true">https://arstechnica.com/culture/2026/11/dcu-shake-up-james-gunn-and-peter-safran-out-post-merger/</guid>
+
+                                    <description>(trimmed)</description>
+                                                                <content:encoded>(trimmed)</content:encoded>
+                                    
+                                    <slash:comments>36</slash:comments>
+                
+                
+                <media:content height="648" medium="image" type="image/jpeg" url="https://cdn.arstechnica.net/wp-content/uploads/2026/09/lanterns3-1152x648.jpg" width="1152">
+<media:thumbnail height="500" url="https://cdn.arstechnica.net/wp-content/uploads/2026/09/lanterns3-500x500.jpg" width="500"/>
+<media:credit>HBO</media:credit><media:text>HBO did right by the DCU with &lt;em&gt;Lanterns&lt;/em&gt;, while &lt;em&gt;Supergirl&lt;/em&gt; bombed at the box office.</media:text></media:content>
+            </item>
+                    <item>
+                <title>Man who lost $308,000 on sports bets sues Kalshi for offering illegal gambling</title>
+                <link>https://arstechnica.com/tech-policy/2026/11/man-who-lost-308000-on-sports-bets-sues-kalshi-for-offering-illegal-gambling/</link>
+                                    <comments>https://arstechnica.com/tech-policy/2026/11/man-who-lost-308000-on-sports-bets-sues-kalshi-for-offering-illegal-gambling/#comments</comments>
+                
+                <dc:creator>
+                    <![CDATA[Jon Brodkin]]>
+                </dc:creator>
+                <pubDate>Mon, 09 Nov 2026 21:13:39 +0000</pubDate>
+                		<category><![CDATA[Policy]]></category>
+		<category><![CDATA[Kalshi]]></category>
+		<category><![CDATA[prediction markets]]></category>
+                <guid isPermaLink="true">https://arstechnica.com/tech-policy/2026/11/man-who-lost-308000-on-sports-bets-sues-kalshi-for-offering-illegal-gambling/</guid>
+
+                                    <description>(trimmed)</description>
+                                                                <content:encoded>(trimmed)</content:encoded>
+                                    
+                                    <slash:comments>35</slash:comments>
+                
+                
+                <media:content height="648" medium="image" type="image/jpeg" url="https://cdn.arstechnica.net/wp-content/uploads/2026/11/kalshi-baseball-1152x648-1794257974.jpg" width="1152">
+<media:thumbnail height="500" url="https://cdn.arstechnica.net/wp-content/uploads/2026/11/kalshi-baseball-500x500-1794257986.jpg" width="500"/>
+<media:credit>Getty Images | San Diego Union-Tribune</media:credit></media:content>
+            </item>
+                    <item>
+                <title>A Sam Altman parody offers an amusing lesson in memory management</title>
+                <link>https://arstechnica.com/gadgets/2026/11/a-sam-altman-parody-offers-an-amusing-lesson-in-memory-management/</link>
+                                    <comments>https://arstechnica.com/gadgets/2026/11/a-sam-altman-parody-offers-an-amusing-lesson-in-memory-management/#comments</comments>
+                
+                <dc:creator>
+                    <![CDATA[Nick Indge]]>
+                </dc:creator>
+                <pubDate>Mon, 09 Nov 2026 20:49:09 +0000</pubDate>
+                		<category><![CDATA[Tech]]></category>
+		<category><![CDATA[MemAvailable]]></category>
+		<category><![CDATA[MemTotal]]></category>
+		<category><![CDATA[openai]]></category>
+		<category><![CDATA[ram-altman script]]></category>
+		<category><![CDATA[sam altman]]></category>
+                <guid isPermaLink="true">https://arstechnica.com/gadgets/2026/11/a-sam-altman-parody-offers-an-amusing-lesson-in-memory-management/</guid>
+
+                                    <description>(trimmed)</description>
+                                                                <content:encoded>(trimmed)</content:encoded>
+                                    
+                                    <slash:comments>38</slash:comments>
+                
+                
+                <media:content height="648" medium="image" type="image/jpeg" url="https://cdn.arstechnica.net/wp-content/uploads/2026/10/GettyImages-1723107474-1024x648.jpg" width="1024">
+<media:thumbnail height="500" url="https://cdn.arstechnica.net/wp-content/uploads/2026/10/GettyImages-1723107474-500x500.jpg" width="500"/>
+<media:credit>Getty</media:credit><media:text>A DDR4 8GB SODIMM RAM. </media:text></media:content>
+            </item>
+                    <item>
+                <title>Vulnerability that lets hackers SSH into Linux devices is under active exploitation</title>
+                <link>https://arstechnica.com/security/2026/11/vulnerability-that-lets-hackers-ssh-into-linux-devices-is-under-active-exploitation/</link>
+                                    <comments>https://arstechnica.com/security/2026/11/vulnerability-that-lets-hackers-ssh-into-linux-devices-is-under-active-exploitation/#comments</comments>
+                
+                <dc:creator>
+                    <![CDATA[Dan Goodin]]>
+                </dc:creator>
+                <pubDate>Mon, 09 Nov 2026 19:41:34 +0000</pubDate>
+                		<category><![CDATA[Biz & IT]]></category>
+		<category><![CDATA[Security]]></category>
+		<category><![CDATA[Linux]]></category>
+		<category><![CDATA[openssh]]></category>
+		<category><![CDATA[SSH]]></category>
+                <guid isPermaLink="true">https://arstechnica.com/security/2026/11/vulnerability-that-lets-hackers-ssh-into-linux-devices-is-under-active-exploitation/</guid>
+
+                                    <description>(trimmed)</description>
+                                                                <content:encoded>(trimmed)</content:encoded>
+                                    
+                                    <slash:comments>24</slash:comments>
+                
+                
+                <media:content medium="image" type="image/jpeg" url="https://cdn.arstechnica.net/wp-content/uploads/2023/07/exploit-vulnerability-security.jpg">
+<media:thumbnail height="500" url="https://cdn.arstechnica.net/wp-content/uploads/2023/07/exploit-vulnerability-security-500x500.jpg" width="500"/>
+<media:credit>Getty Images</media:credit></media:content>
+            </item>
+  </channel>
+</rss>

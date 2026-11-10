@@ -1,0 +1,289 @@
+// Port of src/components/migraine-risk/component.svelte: a right-aligned column
+// (max-w-md, gap-3) with a header, the score (semicircle gauge or plain text), the risk
+// level, an air-quality note, the factor breakdown and tomorrow's score. Options come
+// from config (src/widgets/migraine_risk/mod.rs). Text sits centred in CSS line boxes.
+import { Theme, Label } from "../theme.slint";
+import { LucideIcon } from "weather.slint";
+
+export struct MigraineFactor {
+    label: string,
+    pts: int,
+}
+
+export global MigraineData {
+    in property <bool> loading: true;
+    in property <string> error;
+    in property <bool> has-data;
+    in property <int> score;
+    in property <int> level; // 0 Low, 1 Moderate, 2 High, 3 Very High
+    in property <string> gauge-arc; // SVG commands in the 120x72 view box, "" for none
+    in property <[MigraineFactor]> factors; // already filtered by only-contributing
+    in property <bool> has-tomorrow;
+    in property <int> tomorrow-score;
+    in property <int> tomorrow-level;
+
+    in property <bool> show-gauge: true;
+    in property <bool> show-breakdown: true;
+    in property <bool> only-contributing;
+    in property <bool> show-tomorrow: true;
+    in property <bool> show-air-quality-note: true;
+    in property <bool> show-max-score: true;
+    in property <bool> compact;
+}
+
+component Line inherits Label {
+    in property <length> line;
+    min-height: line;
+    // A single line keeps exactly the CSS line box, even when it is smaller than
+    // Roboto's natural 1.17em (leading-none); wrapped text may grow.
+    max-height: self.wrap == TextWrap.no-wrap ? line : 10000px;
+    vertical-alignment: center;
+}
+
+global Level {
+    // levelAccent: text-emerald-400/amber-300/orange-400/red-400 (Tailwind v4 as sRGB).
+    pure public function accent(level: int) -> color {
+        return level == 0 ? #00d492 : level == 1 ? #ffd230 : level == 2 ? #ff8904 : #ff6467;
+    }
+    // levelStroke: the gauge colours are fixed hex values in the Svelte code.
+    pure public function stroke(level: int) -> color {
+        return level == 0 ? #34d399 : level == 1 ? #fcd34d : level == 2 ? #fb923c : #f87171;
+    }
+    pure public function label(level: int) -> string {
+        return level == 0 ? "Low" : level == 1 ? "Moderate" : level == 2 ? "High" : "Very High";
+    }
+}
+
+// h-[5.5rem] w-56 (compact h-[4.5rem] w-48); the 120x72 SVG is scaled to fit and centred.
+component Gauge inherits Rectangle {
+    property <bool> compact: MigraineData.compact;
+    property <float> scale: min(self.width / 120px, self.height / 72px);
+    width: compact ? 192px : 224px;
+    height: compact ? 72px : 88px;
+
+    Path {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        width: 120px * root.scale;
+        height: 72px * root.scale;
+        viewbox-width: 120;
+        viewbox-height: 72;
+        commands: "M 12 60 A 48 48 0 0 1 108 60";
+        stroke: #262626;
+        stroke-width: 8px * root.scale;
+        stroke-line-cap: round;
+    }
+
+    if MigraineData.gauge-arc != "": Path {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        width: 120px * root.scale;
+        height: 72px * root.scale;
+        viewbox-width: 120;
+        viewbox-height: 72;
+        commands: MigraineData.gauge-arc;
+        stroke: Level.stroke(MigraineData.level);
+        stroke-width: 8px * root.scale;
+        stroke-line-cap: round;
+    }
+
+    // Score and "/ 22", leading-none, stacked at the bottom centre.
+    VerticalLayout {
+        alignment: end;
+        Line {
+            text: MigraineData.score;
+            line: compact ? 36px : 48px;
+            font-size: compact ? Theme.text-4xl : Theme.text-5xl;
+            font-weight: 600;
+            horizontal-alignment: center;
+        }
+        if MigraineData.show-max-score: Line {
+            text: "/ 22";
+            line: 14px;
+            font-size: Theme.text-sm;
+            horizontal-alignment: center;
+            opacity: 0.7;
+        }
+    }
+}
+
+// Without the gauge: score and "/ 22" on one baseline (items-baseline gap-2, leading-none).
+component PlainScore inherits HorizontalLayout {
+    property <bool> compact: MigraineData.compact;
+    alignment: end;
+    spacing: 8px;
+    Line {
+        text: MigraineData.score;
+        line: compact ? 36px : 48px;
+        font-size: compact ? Theme.text-4xl : Theme.text-5xl;
+        font-weight: 600;
+    }
+    if MigraineData.show-max-score: Rectangle {
+        width: max.preferred-width;
+        // Puts its baseline on the score's: (line - 1.172em) / 2 + 0.928em per text.
+        max := Line {
+            y: compact ? 16.8px : 25.3px;
+            text: "/ 22";
+            line: compact ? 16px : 18px;
+            font-size: compact ? Theme.text-base : Theme.text-lg;
+            opacity: 0.7;
+        }
+    }
+}
+
+export component MigraineRisk inherits VerticalLayout {
+    property <bool> compact: MigraineData.compact;
+    property <length> body-line: compact ? 20px : 24px; // text-sm / text-base
+    alignment: start;
+    spacing: 12px; // gap-3
+    max-width: 448px; // max-w-md
+
+    HorizontalLayout {
+        alignment: end;
+        spacing: 8px; // gap-2
+        opacity: Theme.dim;
+        VerticalLayout {
+            alignment: center;
+            LucideIcon {
+                name: "triangle-alert";
+                width: compact ? 18px : 22px;
+                height: compact ? 18px : 22px;
+            }
+        }
+        Line {
+            text: "Migraine risk";
+            line: compact ? 24px : 28px;
+            font-size: compact ? Theme.text-base : Theme.text-lg;
+            letter-spacing: compact ? 0.4px : 0.45px; // tracking-wide
+        }
+    }
+
+    // Errors show only while there is no data (src/widgets/migraine_risk/mod.rs).
+    if MigraineData.error != "": HorizontalLayout {
+        alignment: end;
+        Line {
+            text: MigraineData.error;
+            line: 24px;
+            font-size: Theme.text-base;
+            color: Theme.error;
+            opacity: Theme.dim;
+            max-width: 320px; // max-w-xs
+            wrap: word-wrap;
+            horizontal-alignment: right;
+        }
+    }
+
+    if MigraineData.loading: HorizontalLayout {
+        alignment: end;
+        Line { text: "Loading…"; line: 28px; font-size: Theme.text-lg; opacity: 0.8; }
+    }
+
+    if MigraineData.has-data: VerticalLayout {
+        spacing: 4px; // gap-1
+        if MigraineData.show-gauge: HorizontalLayout {
+            alignment: end;
+            Gauge { }
+        }
+        if !MigraineData.show-gauge: PlainScore { }
+        HorizontalLayout {
+            alignment: end;
+            Line {
+                text: Level.label(MigraineData.level);
+                line: compact ? 28px : 32px;
+                font-size: compact ? Theme.text-xl : Theme.text-2xl;
+                color: Level.accent(MigraineData.level);
+            }
+        }
+    }
+
+    if MigraineData.has-data && MigraineData.show-air-quality-note: HorizontalLayout {
+        alignment: end;
+        padding-top: 4px; // mt-1
+        Line {
+            text: "Air quality: not available (standalone)";
+            line: 16px;
+            font-size: Theme.text-xs;
+            opacity: 0.48; // opacity-80 x opacity-60
+        }
+    }
+
+    if MigraineData.has-data && MigraineData.show-breakdown: VerticalLayout {
+        padding-top: 8px; // mt-2
+        spacing: 4px; // space-y-1
+        for row in MigraineData.factors: HorizontalLayout {
+            alignment: end;
+            spacing: 16px; // gap-4
+            property <color> ink: row.pts > 0 ? Theme.fg : #737373; // neutral-100 / neutral-500
+            property <int> weight: row.pts > 0 ? 500 : 700; // font-medium / inherited bold
+            Line {
+                text: row.label;
+                line: root.body-line;
+                font-size: compact ? Theme.text-sm : Theme.text-base;
+                font-weight: weight;
+                color: ink;
+                opacity: 0.9;
+                max-width: 176px; // max-w-[11rem] truncate
+                overflow: elide;
+            }
+            Line {
+                text: row.pts;
+                line: root.body-line;
+                font-size: compact ? Theme.text-sm : Theme.text-base;
+                font-weight: weight;
+                color: ink;
+                min-width: compact ? 16px : 18px; // min-w-[2ch]
+                horizontal-alignment: right;
+            }
+        }
+        if MigraineData.only-contributing && MigraineData.factors.length == 0: HorizontalLayout {
+            alignment: end;
+            Line {
+                text: "No contributing factors right now";
+                line: root.body-line;
+                font-size: compact ? Theme.text-sm : Theme.text-base;
+                color: #737373;
+                opacity: 0.8;
+            }
+        }
+    }
+
+    if MigraineData.has-data && MigraineData.show-tomorrow && MigraineData.has-tomorrow: VerticalLayout {
+        padding-top: 12px; // mt-3
+        Rectangle { height: 1px; background: #262626; } // border-t border-neutral-800
+        VerticalLayout {
+            padding-top: 12px; // pt-3
+            HorizontalLayout {
+                alignment: end;
+                Line {
+                    text: "TOMORROW";
+                    line: 16px;
+                    font-size: Theme.text-xs;
+                    font-weight: 600;
+                    letter-spacing: 0.6px; // tracking-wider
+                    opacity: 0.6;
+                }
+            }
+            VerticalLayout {
+                spacing: 2px; // gap-0.5
+                HorizontalLayout {
+                    alignment: end;
+                    Line {
+                        text: MigraineData.tomorrow-score + " pts";
+                        line: 28px;
+                        font-size: compact ? Theme.text-lg : Theme.text-xl;
+                        font-weight: 600;
+                    }
+                }
+                HorizontalLayout {
+                    alignment: end;
+                    Line {
+                        text: Level.label(MigraineData.tomorrow-level);
+                        line: compact ? 24px : 28px;
+                        font-size: compact ? Theme.text-base : Theme.text-lg;
+                        color: Level.accent(MigraineData.tomorrow-level);
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,299 @@
+// Port of src/components/spotify/component.svelte: a "Spotify" header (Music icon, text-lg,
+// opacity-90), then one row per account with a current item: album art in the configured
+// treatment (vinyl / rounded square / cassette, 128px / 128px / 140x100), the title
+// (text-xl font-medium), artist (text-base, opacity-80) and optional account and device
+// lines (text-sm, opacity-70, 14px Lucide icons). Line boxes use Tailwind line heights.
+//
+// Everything is static: the web version spins the vinyl and the cassette spools while
+// playing; here they are drawn once. Box shadows (black on black) and the cassette screw
+// "+" glyphs are left out. The widget is removed from its area while there are no rows
+// (src/widgets/spotify.rs).
+import { Theme, Label } from "../theme.slint";
+import { Icon } from "../icon.slint";
+
+export struct SpotifyRow {
+    title: string,
+    artist: string,
+    account: string,      // empty: no account line
+    device: string,       // display name; empty: no device line
+    device-icon: int,     // 0 speaker, 1 smartphone, 2 car
+    art: image,
+    has-art: bool,
+    style: int,           // 0 vinyl, 1 square, 2 cassette
+}
+
+export global SpotifyData {
+    in property <[SpotifyRow]> rows;
+}
+
+// One text line, elided rather than wider than the screen (CSS `truncate`).
+component Line inherits Label {
+    vertical-alignment: center;
+    overflow: elide;
+    max-width: 920px;
+}
+
+// Art clipped to a circle, the static part of the groove overlay (thin dark rings at the
+// radii of the CSS repeating-radial-gradient stops) and the centre label and hole.
+component Vinyl inherits Rectangle {
+    in property <image> art;
+    width: 128px;
+    height: 128px;
+
+    Rectangle {
+        border-radius: self.width / 2;
+        clip: true;
+        Image {
+            width: parent.width;
+            height: parent.height;
+            source: root.art;
+            image-fit: cover;
+        }
+    }
+    for ring in [
+        { r: 17px, a: 0.024 }, { r: 22.3px, a: 0.02 }, { r: 26.9px, a: 0.036 },
+        { r: 31.5px, a: 0.042 }, { r: 36px, a: 0.048 }, { r: 40.5px, a: 0.054 },
+        { r: 45px, a: 0.06 }, { r: 49.6px, a: 0.066 }, { r: 55px, a: 0.072 },
+        { r: 59.5px, a: 0.078 },
+    ]: Rectangle {
+        x: 64px - ring.r;
+        y: 64px - ring.r;
+        width: ring.r * 2;
+        height: ring.r * 2;
+        border-radius: ring.r;
+        border-width: 1px;
+        border-color: rgba(0, 0, 0, ring.a);
+    }
+    Rectangle {
+        x: 53px;
+        y: 53px;
+        width: 22px;
+        height: 22px;
+        border-radius: 11px;
+        background: @radial-gradient(circle, rgba(40, 40, 40, 0.8) 0%, rgba(20, 20, 20, 0.9) 70%, rgba(10, 10, 10, 1) 100%);
+    }
+    Rectangle {
+        x: 55px;
+        y: 55px;
+        width: 18px;
+        height: 18px;
+        border-radius: 9px;
+        background: @radial-gradient(circle, rgba(30, 30, 30, 0.9) 0%, rgba(15, 15, 15, 1) 50%, rgba(5, 5, 5, 1) 100%);
+    }
+    Rectangle {
+        x: 61px;
+        y: 61px;
+        width: 6px;
+        height: 6px;
+        border-radius: 3px;
+        background: rgba(0, 0, 0, 0.95);
+    }
+}
+
+component Square inherits Rectangle {
+    in property <image> art;
+    width: 128px;
+    height: 128px;
+    border-radius: 12px;
+    clip: true;
+    Image {
+        width: parent.width;
+        height: parent.height;
+        source: root.art;
+        image-fit: cover;
+    }
+}
+
+// Cassette spool: the toothed gear ring (conic gradient) with the white hub on top.
+component Spool inherits Rectangle {
+    width: 28px;
+    height: 28px;
+    border-radius: 14px;
+    border-width: 1.5px;
+    border-color: rgb(35, 35, 35);
+    background: @conic-gradient(
+        rgb(75, 75, 75) 0deg, rgb(75, 75, 75) 15deg, rgb(45, 45, 45) 15deg, rgb(45, 45, 45) 30deg,
+        rgb(75, 75, 75) 30deg, rgb(75, 75, 75) 45deg, rgb(45, 45, 45) 45deg, rgb(45, 45, 45) 60deg,
+        rgb(75, 75, 75) 60deg, rgb(75, 75, 75) 75deg, rgb(45, 45, 45) 75deg, rgb(45, 45, 45) 90deg,
+        rgb(75, 75, 75) 90deg, rgb(75, 75, 75) 105deg, rgb(45, 45, 45) 105deg, rgb(45, 45, 45) 120deg,
+        rgb(75, 75, 75) 120deg, rgb(75, 75, 75) 135deg, rgb(45, 45, 45) 135deg, rgb(45, 45, 45) 150deg,
+        rgb(75, 75, 75) 150deg, rgb(75, 75, 75) 165deg, rgb(45, 45, 45) 165deg, rgb(45, 45, 45) 180deg,
+        rgb(75, 75, 75) 180deg, rgb(75, 75, 75) 195deg, rgb(45, 45, 45) 195deg, rgb(45, 45, 45) 210deg,
+        rgb(75, 75, 75) 210deg, rgb(75, 75, 75) 225deg, rgb(45, 45, 45) 225deg, rgb(45, 45, 45) 240deg,
+        rgb(75, 75, 75) 240deg, rgb(75, 75, 75) 255deg, rgb(45, 45, 45) 255deg, rgb(45, 45, 45) 270deg,
+        rgb(75, 75, 75) 270deg, rgb(75, 75, 75) 285deg, rgb(45, 45, 45) 285deg, rgb(45, 45, 45) 300deg,
+        rgb(75, 75, 75) 300deg, rgb(75, 75, 75) 315deg, rgb(45, 45, 45) 315deg, rgb(45, 45, 45) 330deg,
+        rgb(75, 75, 75) 330deg, rgb(75, 75, 75) 345deg, rgb(45, 45, 45) 345deg, rgb(45, 45, 45) 360deg);
+    Rectangle {
+        x: 4px;
+        y: 4px;
+        width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        background: white;
+    }
+}
+
+component Screw inherits Rectangle {
+    width: 5px;
+    height: 5px;
+    border-radius: 2.5px;
+    background: @radial-gradient(circle, rgba(110, 110, 110, 0.9) 0%, rgba(80, 80, 80, 0.95) 40%, rgba(60, 60, 60, 1) 100%);
+}
+
+// 140x100 cassette. Positions follow the CSS boxes inside the 1px body border (138x98):
+// the art label fills it, the dark bottom 35% covers the label, and the tape window and
+// two spools sit in the band from 20% to 70% of the height.
+component Cassette inherits Rectangle {
+    in property <image> art;
+    width: 140px;
+    height: 100px;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.3);
+    background: @linear-gradient(180deg, rgb(35, 35, 35) 0%, rgb(28, 28, 28) 50%, rgb(22, 22, 22) 100%);
+
+    Rectangle {
+        x: 1px;
+        y: 1px;
+        width: 138px;
+        height: 98px;
+
+        Rectangle {
+            border-radius: 6px;
+            clip: true;
+            Image {
+                width: parent.width;
+                height: parent.height;
+                source: root.art;
+                image-fit: cover;
+            }
+            Rectangle {
+                background: @linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.1) 70%, rgba(0, 0, 0, 0.3) 100%);
+            }
+        }
+        Rectangle {
+            y: parent.height * 0.65;
+            height: parent.height * 0.35;
+            background: rgb(18, 18, 18);
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+        }
+        Rectangle {
+            x: (parent.width - self.width) / 2;
+            y: parent.height * 0.45 - 5px;
+            width: parent.width * 0.6;
+            height: 10px;
+            border-radius: 3px;
+            border-width: 1px;
+            border-color: rgba(0, 0, 0, 0.6);
+            background: rgb(18, 18, 18);
+        }
+        Spool {
+            x: 18px;
+            y: parent.height * 0.45 - 14px;
+        }
+        Spool {
+            x: parent.width - 18px - self.width;
+            y: parent.height * 0.45 - 14px;
+        }
+        Screw { x: 6px; y: 6px; }
+        Screw { x: parent.width - 11px; y: 6px; }
+        Screw { x: 6px; y: parent.height - 11px; }
+        Screw { x: parent.width - 11px; y: parent.height - 11px; }
+    }
+}
+
+// "mt-1 flex items-center gap-1.5": 14px icon and a text-sm line, both opacity-70.
+component Detail inherits HorizontalLayout {
+    in property <image> icon;
+    in property <string> text;
+    padding-top: 4px;
+    spacing: 6px;
+    alignment: start;
+
+    Icon {
+        source: root.icon;
+        size: 14px;
+        alpha: 0.7;
+    }
+    Line {
+        text: root.text;
+        font-size: Theme.text-sm;
+        height: 20px;
+        opacity: 0.7;
+    }
+}
+
+component TrackRow inherits HorizontalLayout {
+    in property <SpotifyRow> item;
+    spacing: 16px;
+    alignment: start;
+
+    if item.has-art && item.style == 0: VerticalLayout {
+        alignment: center;
+        Vinyl { art: item.art; }
+    }
+    if item.has-art && item.style == 1: VerticalLayout {
+        alignment: center;
+        Square { art: item.art; }
+    }
+    if item.has-art && item.style == 2: VerticalLayout {
+        alignment: center;
+        Cassette { art: item.art; }
+    }
+    VerticalLayout {
+        alignment: center;
+        Line {
+            text: item.title;
+            font-size: Theme.text-xl;
+            height: 28px;
+            font-weight: 500; // font-medium
+        }
+        Line {
+            text: item.artist;
+            font-size: Theme.text-base;
+            height: 24px;
+            opacity: 0.8;
+        }
+        if item.account != "": Detail {
+            icon: @image-url("../icons/user.svg");
+            text: item.account;
+        }
+        if item.device != "": Detail {
+            icon: item.device-icon == 2 ? @image-url("../icons/car.svg")
+                : item.device-icon == 1 ? @image-url("../icons/smartphone.svg")
+                : @image-url("../icons/speaker.svg");
+            text: "Playing on " + item.device;
+        }
+    }
+}
+
+export component Spotify inherits VerticalLayout {
+    alignment: start;
+    spacing: 12px; // gap-3
+
+    HorizontalLayout {
+        alignment: start;
+        spacing: 12px;
+        Icon {
+            source: @image-url("../icons/music.svg");
+            size: 24px;
+            alpha: Theme.dim;
+        }
+        Label {
+            text: "Spotify";
+            font-size: Theme.text-lg;
+            height: 28px;
+            vertical-alignment: center;
+            opacity: Theme.dim;
+        }
+    }
+
+    VerticalLayout {
+        spacing: 16px; // gap-4
+        for row in SpotifyData.rows: TrackRow {
+            item: row;
+        }
+    }
+}

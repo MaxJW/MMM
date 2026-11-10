@@ -1,0 +1,71 @@
+// Port of src/components/wifi-qr-code/component.svelte: header (wifi + "WiFi Details"),
+// the QR code (size-40) and "Network: <ssid>" (text-base, opacity-90), left-aligned
+// (items-start), or the error line. Data comes from src/widgets/wifi_qr_code.rs.
+import { Theme, Label } from "../theme.slint";
+import { Icon } from "../icon.slint";
+
+export global WifiQrCodeData {
+    in property <string> error;
+    in property <string> network;
+    in property <image> qr;
+}
+
+export component WifiQrCode inherits VerticalLayout {
+    alignment: start;
+    spacing: 12px;
+
+    HorizontalLayout {
+        alignment: start;
+        spacing: 12px;
+        Icon {
+            source: @image-url("../icons/wifi.svg");
+            size: 24px;
+            alpha: Theme.dim;
+        }
+        Label {
+            text: "WiFi Details";
+            font-size: Theme.text-lg;
+            height: 28px;
+            vertical-alignment: center;
+            opacity: Theme.dim;
+        }
+    }
+
+    if WifiQrCodeData.error != "": HorizontalLayout {
+        alignment: start;
+        spacing: 8px;
+        Icon {
+            source: @image-url("../icons/circle-alert.svg");
+            size: 22px;
+            color: Theme.error;
+            alpha: 0.8;
+        }
+        Label {
+            text: WifiQrCodeData.error;
+            color: Theme.error;
+            font-size: Theme.text-lg;
+            height: 28px;
+            vertical-alignment: center;
+            opacity: 0.8;
+        }
+    }
+
+    if WifiQrCodeData.network != "": HorizontalLayout {
+        alignment: start;
+        Image {
+            source: WifiQrCodeData.qr;
+            width: 160px;
+            height: 160px;
+            image-rendering: pixelated;
+        }
+    }
+
+    // "Network:" is font-extrabold in the web app; Bold is the heaviest embedded Roboto.
+    if WifiQrCodeData.network != "": Label {
+        text: "Network: " + WifiQrCodeData.network;
+        font-size: Theme.text-base;
+        height: 24px;
+        vertical-alignment: center;
+        opacity: Theme.dim;
+    }
+}

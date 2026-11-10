@@ -1,0 +1,41 @@
+// Port of src/components/clock/component.svelte: HH:mm (text-9xl), ss (text-5xl),
+// "dddd, D MMMM YYYY" (text-3xl). Positions reproduce the CSS boxes (leading-none,
+// -mt-4, items-end, pb-3, gap-3), so the glyphs land where Chromium draws them.
+import { Theme, Label } from "../theme.slint";
+
+export global ClockData {
+    in property <string> time: "--:--";
+    in property <string> seconds: "--";
+    in property <string> date;
+}
+
+export component Clock {
+    // The CSS box is 112px time row + 12px gap + 36px date line.
+    min-height: 160px;
+    preferred-height: 160px;
+    preferred-width: max(time.preferred-width + 16px + secs.preferred-width, date.preferred-width);
+
+    // y offsets put the Roboto baseline (ascent 0.928em) where CSS puts it.
+    time := Label {
+        x: 0;
+        y: -26px;
+        text: ClockData.time;
+        font-size: Theme.text-9xl;
+    }
+
+    secs := Label {
+        x: time.preferred-width + 16px;
+        y: 48px;
+        text: ClockData.seconds;
+        font-size: Theme.text-5xl;
+        opacity: Theme.dim;
+    }
+
+    date := Label {
+        x: 0;
+        y: 126px;
+        text: ClockData.date;
+        font-size: Theme.text-3xl;
+        opacity: Theme.dim;
+    }
+}

@@ -1,0 +1,66 @@
+{
+  "device": {
+    "id": "0d1841b0976bae2a3a310dd74c0f3df354899bc8",
+    "is_active": true,
+    "is_private_session": false,
+    "is_restricted": false,
+    "name": "Kitchen",
+    "type": "Speaker",
+    "volume_percent": 59,
+    "supports_volume": true
+  },
+  "repeat_state": "off",
+  "shuffle_state": false,
+  "context": {
+    "type": "album",
+    "href": "https://api.spotify.com/v1/albums/4aawyAB9vmqN3uQ7FjRGTy",
+    "external_urls": { "spotify": "https://open.spotify.com/album/4aawyAB9vmqN3uQ7FjRGTy" },
+    "uri": "spotify:album:4aawyAB9vmqN3uQ7FjRGTy"
+  },
+  "timestamp": 1762767420000,
+  "progress_ms": 42000,
+  "is_playing": true,
+  "item": {
+    "album": {
+      "album_type": "album",
+      "total_tracks": 10,
+      "available_markets": ["GB"],
+      "external_urls": { "spotify": "https://open.spotify.com/album/4aawyAB9vmqN3uQ7FjRGTy" },
+      "href": "https://api.spotify.com/v1/albums/4aawyAB9vmqN3uQ7FjRGTy",
+      "id": "4aawyAB9vmqN3uQ7FjRGTy",
+      "images": [
+        { "url": "https://i.scdn.co/image/ab67616d0000b2732c5b24ecfa39523a75c993c4", "height": 640, "width": 640 },
+        { "url": "https://i.scdn.co/image/ab67616d00001e022c5b24ecfa39523a75c993c4", "height": 300, "width": 300 },
+        { "url": "https://i.scdn.co/image/ab67616d000048512c5b24ecfa39523a75c993c4", "height": 64, "width": 64 }
+      ],
+      "name": "Global Warming",
+      "release_date": "2012-11-16",
+      "release_date_precision": "day",
+      "type": "album",
+      "uri": "spotify:album:4aawyAB9vmqN3uQ7FjRGTy",
+      "artists": [{ "name": "Pitbull", "type": "artist", "id": "0TnOYISbd1XYRBk9myaseg", "uri": "spotify:artist:0TnOYISbd1XYRBk9myaseg" }]
+    },
+    "artists": [
+      { "external_urls": { "spotify": "https://open.spotify.com/artist/0TnOYISbd1XYRBk9myaseg" }, "href": "https://api.spotify.com/v1/artists/0TnOYISbd1XYRBk9myaseg", "id": "0TnOYISbd1XYRBk9myaseg", "name": "Pitbull", "type": "artist", "uri": "spotify:artist:0TnOYISbd1XYRBk9myaseg" },
+      { "external_urls": { "spotify": "https://open.spotify.com/artist/7iJrDbKM5fEkGdm5kpjFzS" }, "href": "https://api.spotify.com/v1/artists/7iJrDbKM5fEkGdm5kpjFzS", "id": "7iJrDbKM5fEkGdm5kpjFzS", "name": "Sensato", "type": "artist", "uri": "spotify:artist:7iJrDbKM5fEkGdm5kpjFzS" }
+    ],
+    "available_markets": ["GB"],
+    "disc_number": 1,
+    "duration_ms": 85400,
+    "explicit": false,
+    "external_ids": { "isrc": "USJAY1200001" },
+    "external_urls": { "spotify": "https://open.spotify.com/track/6OmhkSOpvYBokMKQxpIGx2" },
+    "href": "https://api.spotify.com/v1/tracks/6OmhkSOpvYBokMKQxpIGx2",
+    "id": "6OmhkSOpvYBokMKQxpIGx2",
+    "is_playable": true,
+    "name": "Global Warming (feat. Sensato)",
+    "popularity": 50,
+    "preview_url": null,
+    "track_number": 1,
+    "type": "track",
+    "uri": "spotify:track:6OmhkSOpvYBokMKQxpIGx2",
+    "is_local": false
+  },
+  "currently_playing_type": "track",
+  "actions": { "disallows": { "resuming": true } }
+}

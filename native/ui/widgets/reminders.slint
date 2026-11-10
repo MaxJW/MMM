@@ -1,0 +1,79 @@
+// Port of src/components/reminders/component.svelte, a centred column with gap-4:
+// - bin line (text-2xl, gap-2): trash-2 icon (28px, opacity-80), "Tomorrow:" (opacity-80),
+//   "Green bin"; while loading or failed, a 22px icon and a status text, all opacity-80;
+// - one row per active reminder (text-2xl, opacity-90, gap-3): 28px icon (opacity-80).
+// Data: src/widgets/reminders.rs. Icons: ui/icons/ (Lucide).
+import { Theme, Label } from "../theme.slint";
+import { Icon } from "../icon.slint";
+
+export struct ReminderRow {
+    text: string,
+    icon: string, // file stem in ui/icons/
+}
+
+export global RemindersData {
+    // 0 no bin line, 1 loading, 2 failed, 3 collection today/tomorrow
+    in property <int> bin-mode;
+    in property <string> bin-when;   // "Today" / "Tomorrow"
+    in property <string> bin-text;   // "Green bin", "Blue, Grey bins"
+    in property <[ReminderRow]> rows;
+}
+
+// A Lucide icon by name, vertically centred in its row.
+component NamedIcon inherits Icon {
+    in property <string> name;
+    source: root.name == "trash-2" ? @image-url("../icons/trash-2.svg")
+        : root.name == "circle-alert" ? @image-url("../icons/circle-alert.svg")
+        : root.name == "milk" ? @image-url("../icons/milk.svg")
+        : root.name == "calendar" ? @image-url("../icons/calendar.svg")
+        : root.name == "clock" ? @image-url("../icons/clock.svg")
+        : root.name == "house" ? @image-url("../icons/house.svg")
+        : root.name == "shopping-cart" ? @image-url("../icons/shopping-cart.svg")
+        : root.name == "utensils" ? @image-url("../icons/utensils.svg")
+        : root.name == "package" ? @image-url("../icons/package.svg")
+        : root.name == "heart" ? @image-url("../icons/heart.svg")
+        : root.name == "star" ? @image-url("../icons/star.svg")
+        : root.name == "circle-check" ? @image-url("../icons/circle-check.svg")
+        : @image-url("../icons/bell.svg");
+}
+
+component Line inherits Label {
+    font-size: Theme.text-2xl;
+    height: 32px; // CSS line height of text-2xl
+    vertical-alignment: center;
+}
+
+export component Reminders inherits VerticalLayout {
+    alignment: start;
+    spacing: 16px; // gap-4
+
+    if RemindersData.bin-mode != 0: HorizontalLayout {
+        alignment: center;
+        spacing: 8px; // gap-2
+
+        NamedIcon {
+            name: RemindersData.bin-mode == 2 ? "circle-alert" : "trash-2";
+            size: RemindersData.bin-mode == 3 ? 28px : 22px;
+            alpha: 0.8;
+        }
+        if RemindersData.bin-mode == 1: Line { text: "Loading bin info..."; opacity: 0.8; }
+        if RemindersData.bin-mode == 2: Line { text: "Bin info unavailable"; opacity: 0.8; }
+        if RemindersData.bin-mode == 3: Line { text: RemindersData.bin-when + ":"; opacity: 0.8; }
+        if RemindersData.bin-mode == 3: Line { text: RemindersData.bin-text; }
+    }
+
+    for row in RemindersData.rows: HorizontalLayout {
+        alignment: center;
+        spacing: 12px; // gap-3
+
+        NamedIcon {
+            name: row.icon;
+            size: 28px;
+            alpha: 0.72; // opacity-80 inside the row's opacity-90
+        }
+        Line {
+            text: row.text;
+            opacity: 0.9;
+        }
+    }
+}
