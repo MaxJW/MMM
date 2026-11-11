@@ -25,6 +25,10 @@ Environment=XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-0
 # Wait up to 30s for the compositor's socket. If it is not there, this attempt fails
 # and Restart= tries again after RestartSec=.
 ExecStartPre=/usr/bin/timeout 30 /bin/sh -c 'until [ -S /run/user/1000/wayland-0 ]; do sleep 1; done'
+# Wait (best effort, max 45s) for DNS: AdGuard runs in Docker on this host and comes up
+# after us at boot. Without this every first fetch fails and the Polestar login enters
+# its failure cooldown. The leading '-' means a timeout does not block startup.
+ExecStartPre=-/usr/bin/timeout 45 /bin/sh -c 'until getent hosts pc-api.polestar.com >/dev/null 2>&1; do sleep 2; done'
 ExecStart=/opt/mmm-native/mmm-native --config /opt/stacks/mirror/data/config.json
 Restart=always
 # Every start performs a real Polestar login (and Google/Spotify token refreshes), so a

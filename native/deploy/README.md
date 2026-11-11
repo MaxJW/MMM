@@ -77,6 +77,12 @@ Roll back to the previous binary:
     ssh pi 'cd /opt/stacks/mirror && docker compose up -d'
     ssh -t pi 'sudo systemctl enable --now dashboard-kiosk.service dashboard-monitor.service kiosk-page-watchdog.service dashboard-kiosk-nightly.timer'
 
+Since 2026-11-11 those units and their scripts are no longer installed, and the desktop
+autostart is reduced to `kanshi`. Before the last command, restore them from
+`/home/max/backups/cleanup-2026-11-11/` on the Pi: the `.service`/`.timer` files to
+`/etc/systemd/system/`, the two `.sh` files to `/usr/local/bin/`, `autostart` to
+`/etc/xdg/labwc/autostart`, then `sudo systemctl daemon-reload`.
+
 The web app ignores `spotify-tokens.json`, so re-connect Spotify in its settings page
 if needed.
 

@@ -285,9 +285,24 @@ removed); `google-tokens.json` now owned by max (0600). Pre-cutover backup on th
 `/home/max/backups/cutover-2026-11-10/`. Measured after cutover with all widgets:
 100 MB PSS, ~3.3% of one core, 0 restarts, watchdog pings arriving.
 
+Follow-up 2026-11-11, after a 10.5 h soak (0 restarts, 97 MB PSS flat, Google token
+refresh + save seen working, a feed 403 backed off and recovered):
+
+- Rebooted twice; the app comes up unattended. The first reboot showed it starting before
+  AdGuard's DNS, so every first fetch failed and the Polestar login sat in its failure
+  cooldown. The unit now has a best-effort 45 s DNS wait in `ExecStartPre`; the second
+  reboot had no fetch errors.
+- Old kiosk units and scripts removed from the Pi (`dashboard-kiosk`, `dashboard-monitor`,
+  `kiosk-page-watchdog`, `dashboard-kiosk-nightly`). Copies are in
+  `/home/max/backups/cleanup-2026-11-11/` and `/home/max/backups/cutover-2026-11-10/`.
+- Desktop session stripped: `/etc/xdg/labwc/autostart` now starts only `kanshi` (output
+  rotation). No panel, desktop file manager or XDG autostart. Original in the same backup.
+- `pi-backup.sh` now copies `mmm-native.service` and the units that still exist.
+
 Still open: Spotify accounts need re-authorising (`mmm-native auth spotify`); not yet
-exercised on the device: Google token refresh + save, `auth` flows, watchdog-triggered
-restart, behaviour across a reboot and across an HDMI drop, `deploy.sh`.
+exercised on the device: `auth` flows, watchdog-triggered restart, behaviour across an
+HDMI drop, `deploy.sh`. The `mirror` container and image are stopped, not removed. While
+the Polestar login is in cooldown the widget keeps showing the original error text.
 
 ### Phase 3 code notes
 
