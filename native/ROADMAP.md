@@ -298,10 +298,17 @@ refresh + save seen working, a feed 403 backed off and recovered):
 - Desktop session stripped: `/etc/xdg/labwc/autostart` now starts only `kanshi` (output
   rotation). No panel, desktop file manager or XDG autostart. Original in the same backup.
 - `pi-backup.sh` now copies `mmm-native.service` and the units that still exist.
+- Seconds removed from the clock to stop per-second full-window redraws (HH:MM only).
+- Pi memory work: zram swap, memory cgroup enabled, `MemoryHigh=250M`/`MemoryMax=350M` on
+  the unit, caps on the other containers, unneeded user session daemons masked.
+- Spotify re-authorised with `mmm-native auth spotify` (both accounts); `deploy.sh` used
+  for a real deploy; `mirror` container and image removed.
+- CPU after removing seconds: 2.3% of one core (was 3.2%), all on the UI thread. The
+  remainder is most likely the 400 ms RSS headline crossfade every 10 s (about 24
+  full-window frames each time); not confirmed by experiment.
 
-Still open: Spotify accounts need re-authorising (`mmm-native auth spotify`); not yet
-exercised on the device: `auth` flows, watchdog-triggered restart, behaviour across an
-HDMI drop, `deploy.sh`. The `mirror` container and image are stopped, not removed. While
+Still open, not yet exercised on the device: `auth google`, watchdog-triggered restart,
+behaviour across an HDMI drop. While
 the Polestar login is in cooldown the widget keeps showing the original error text.
 
 ### Phase 3 code notes

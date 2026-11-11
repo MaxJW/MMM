@@ -36,6 +36,10 @@ Restart=always
 RestartSec=60
 # Hardening that cannot affect a Wayland/GL client:
 # - the app never needs privileges (no setuid helpers);
+# Caps (need the memory cgroup: cgroup_enable=memory in /boot/firmware/cmdline.txt).
+# Normal use is ~100 MB; a leak gets the app restarted instead of squeezing AdGuard.
+MemoryHigh=250M
+MemoryMax=350M
 NoNewPrivileges=yes
 # - it never writes /usr, /boot or /etc (it writes only beside the config file under
 #   /opt/stacks/mirror/data, and Mesa's shader cache under ~/.cache).

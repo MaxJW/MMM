@@ -13,7 +13,7 @@ const fn secs(s: u64) -> Duration {
     Duration::from_secs(s)
 }
 
-pub const REALTIME: Duration = secs(1); // clock seconds
+pub const REALTIME: Duration = secs(1); // clock tick (minute flip + watchdog)
 pub const VERY_FAST: Duration = secs(5); // spotify playing
 pub const FAST: Duration = secs(10);
 pub const MEDIUM_FAST: Duration = secs(30);
